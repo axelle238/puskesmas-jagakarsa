@@ -57,7 +57,7 @@ Route::get('/masuk', Masuk::class)->name('login');
 Route::get('/login', function() { return redirect('/masuk'); }); // Alias
 
 // Antrian Publik
-Route::get('/antrian-online', AmbilAntrian::class)->name('publik.antrian');
+Route::get('/antrian-online', AmbilAntrian::class)->name('publik.ambil-antrian');
 Route::get('/layar-antrian', LayarAntrian::class)->name('publik.layar-antrian');
 Route::get('/jadwal-dokter', JadwalDokter::class)->name('publik.jadwal'); // Route Jadwal Dokter Publik
 
