@@ -6,6 +6,7 @@ use App\Models\Antrian;
 use App\Models\DetailResep;
 use App\Models\Obat;
 use App\Models\RekamMedis;
+use App\Models\Tagihan;
 use App\Services\BpjsService; // Import Service
 use Livewire\Component;
 
@@ -98,10 +99,6 @@ class Pemeriksaan extends Component
         unset($this->resepList[$index]);
         $this->resepList = array_values($this->resepList); // Re-index
     }
-
-use App\Models\Tagihan; // Import Model
-
-    // ... (kode sebelumnya)
 
     public function simpanPemeriksaan(BpjsService $bpjsService)
     {
