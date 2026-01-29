@@ -48,6 +48,6 @@ class Masuk extends Component
 
     public function render()
     {
-        return view('livewire.auth.masuk')->layout('components.layouts.app');
+        return view('livewire.auth.masuk')->layout('components.layouts.auth');
     }
 }
