@@ -1,76 +1,64 @@
-# SISTEM INFORMASI PUSKESMAS JAGAKARSA (SIMPUS)
+# RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
-Status: **FINAL COMPLETED VERSION 1.5**
-Teknologi: Laravel 12, Livewire 4, Tailwind CSS
-Database: MySQL
+Status Dokumen: **FINAL ENTERPRISE RELEASE v1.6 (ADMINISTRATION & SECURITY)**
+Terakhir Diupdate: 29 January 2026
 
 ## 1. Ikhtisar Sistem
-Platform terintegrasi untuk operasional Puskesmas modern dengan standar **Integrasi Layanan Primer (ILP)** Kemenkes RI. Mengelola seluruh alur pasien mulai dari pendaftaran online hingga pengambilan obat.
+Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berbasis web yang dirancang untuk mendukung operasional Puskesmas modern dengan standar **Integrasi Layanan Primer (ILP)**. Sistem ini menghubungkan pelayanan front-office (pasien) dengan back-office (medis/admin) secara real-time.
 
-## 2. Fitur Unggulan (Key Features)
+## 2. Fitur Unggulan (Advanced & Enterprise)
+- **Administrasi Medis Digital:** Penerbitan Surat Keterangan Sakit, Sehat, dan Rujukan secara otomatis dengan format cetak standar.
+- **Audit Log Keamanan:** Perekaman aktivitas pengguna (Siapa, Kapan, Apa) untuk transparansi dan keamanan data.
+- **Layar Antrian TV (Digital Signage):** Tampilan full-screen untuk ruang tunggu dengan pemanggilan suara otomatis (Text-to-Speech).
+- **Rekam Medis Komprehensif:** Dokter dapat melihat riwayat kunjungan pasien sebelumnya (diagnosis & obat) saat melakukan pemeriksaan.
+- **Visual Analytics Dashboard:** Grafik tren kunjungan mingguan real-time.
+- **Epidemiology Report:** Analisis otomatis 10 Besar Penyakit (Morbiditas) berdasarkan kode ICD-10.
 
-### A. Layanan Publik (Front Office)
-*   **Pendaftaran Antrian Online:** Pasien mendaftar mandiri via web.
-*   **Layar Antrian TV (Digital Signage):** Tampilan ruang tunggu dengan panggilan suara otomatis.
-*   **Portal Informasi:** Jadwal dokter, info fasilitas, dan artikel edukasi kesehatan.
+## 3. Modul Utama
 
-### B. Layanan Klinis (Medical Record)
-*   **Rekam Medis Elektronik (EMR):** Pencatatan SOAP, Tanda Vital, dan Riwayat Pasien.
-*   **Integrasi Farmasi:** Resep elektronik yang langsung memotong stok obat.
-*   **Laporan Morbiditas:** Analisis otomatis 10 Besar Penyakit (ICD-10).
+### A. Halaman Publik (Front Office)
+*Akses: Masyarakat Umum*
+- **Layar Antrian TV:** Menampilkan nomor yang dipanggil dan status per poli secara real-time.
+- **Beranda Interaktif:** Menampilkan informasi layanan, jadwal dokter, dan statistik.
+- **CMS Edukasi Kesehatan:** Portal artikel/berita kesehatan yang dikelola admin/dokter.
+- **Info Fasilitas:** Direktori fasilitas puskesmas lengkap dengan deskripsi.
+- **Ambil Antrian Online:** Wizard pendaftaran antrian mandiri + Cetak Tiket.
+- **Informasi Jadwal:** Jadwal praktik dokter real-time.
 
-### C. Manajemen Admin (Back Office)
-*   **Dashboard Visual:** Grafik kunjungan harian/mingguan real-time.
-*   **Manajemen SDM & Akses:** Kelola dokter, perawat, dan staf.
-*   **Pengaturan Poli & Jadwal:** Fleksibel sesuai Klaster ILP.
+### B. Layanan Medis (Doctor's Desk)
+*Akses: Dokter, Perawat*
+- **Antrian Poli Real-time:** Dashboard khusus dokter untuk melihat pasien yang menunggu di polinya.
+- **Administrasi Surat:** Penerbitan surat keterangan medis dan rujukan.
+- **Pemeriksaan Medis (SOAP):**
+  - **Riwayat Medis Pasien:** Tab khusus untuk melihat history diagnosis dan resep terdahulu.
+  - **Subjektif:** Input keluhan utama & riwayat penyakit.
+  - **Objektif:** Input tanda vital (Tensi, Suhu, Nadi, RR, BB, TB).
+  - **Asesmen:** Input Diagnosis (ICD-10) dan diagnosis klinis.
+  - **Plan:** Perencanaan terapi dan edukasi.
+- **Resep Elektronik:** Input resep obat dinamis yang terintegrasi langsung dengan stok farmasi.
+- **Tindakan Medis:** Input tindakan/jasa medis yang dilakukan.
 
-## 3. Panduan Instalasi (Deployment)
+### C. Farmasi (Apotek)
+*Akses: Apoteker*
+- **Antrian Resep Digital:** Menerima resep langsung dari meja dokter.
+- **Workflow Status:** Kelola status obat (Menunggu -> Disiapkan -> Selesai).
+- **Cetak Resep:** Fitur cetak salinan resep untuk pasien.
+- **Manajemen Stok:** CRUD data obat, pantau stok minimum & kedaluwarsa.
 
-### Persyaratan Server
-- PHP >= 8.2
-- Composer
-- Node.js & NPM
-- MySQL
+### D. Manajemen Admin (Back Office)
+*Akses: Admin, Kepala Puskesmas*
+- **Dasbor Operasional:** Statistik real-time & Visual Charts.
+- **Manajemen SDM:** Pendaftaran pegawai & akun login.
+- **Manajemen Konten (CMS):** Kelola Artikel Edukasi & Fasilitas untuk web publik.
+- **Manajemen Poli & Klaster:** Pengaturan unit layanan yang terstruktur berdasarkan Klaster ILP.
+- **Laporan:**
+    - Laporan Kunjungan Harian/Bulanan.
+    - Laporan 10 Besar Penyakit (Grafik + Tabel).
+- **Keamanan & Audit:**
+    - Log Aktivitas Pengguna (Audit Trail).
+    - Pengaturan Profil & Kata Sandi Mandiri.
 
-### Langkah Instalasi
-1.  **Clone Repository:**
-    ```bash
-    git clone https://github.com/axelle238/puskesmas-jagakarsa.git
-    cd puskesmas-jagakarsa
-    ```
-
-2.  **Install Dependencies:**
-    ```bash
-    composer install
-    npm install && npm run build
-    ```
-
-3.  **Konfigurasi Environment:**
-    ```bash
-    cp .env.example .env
-    # Edit .env sesuaikan database (DB_DATABASE, DB_USERNAME, DB_PASSWORD)
-    php artisan key:generate
-    ```
-
-4.  **Migrasi & Seeding Data (Wajib):**
-    ```bash
-    php artisan migrate:fresh --seed
-    ```
-    *Perintah ini akan membuat tabel dan mengisi data awal (Admin, Poli, Obat, dll).*
-
-5.  **Jalankan Server:**
-    ```bash
-    php artisan serve
-    ```
-
-## 4. Akun Demo (Default)
-
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Admin** | `admin@puskesmas.id` | `admin123` |
-| **Dokter** | `dokter@puskesmas.id` | `dokter123` |
-| **Apoteker** | `farmasi@puskesmas.id` | `farmasi123` |
-
----
-**Hak Cipta & Pengembang**
-Dikembangkan oleh Tim IT Puskesmas Jagakarsa (AI Assisted).
+## 4. Keamanan & Performa
+- **Transaction Handling:** Penyimpanan data kritis menggunakan Database Transaction.
+- **Role-Based Access Control:** Validasi akses ketat per modul.
+- **Real-Time UI:** Livewire untuk interaksi tanpa reload (SPA).

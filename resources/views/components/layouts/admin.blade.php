@@ -42,6 +42,7 @@
             
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Layanan Medis</div>
             <x-nav-link href="/pemeriksaan" icon="🩺" :active="request()->is('pemeriksaan*')">Pemeriksaan</x-nav-link>
+            <x-nav-link href="/surat-keterangan" icon="📝" :active="request()->is('surat-keterangan*')">Surat & Rujukan</x-nav-link>
             <x-nav-link href="/farmasi/resep" icon="💊" :active="request()->is('farmasi/resep*')">Resep Masuk</x-nav-link>
             <x-nav-link href="/pasien" icon="👥" :active="request()->is('pasien*')">Data Pasien</x-nav-link>
             
@@ -51,9 +52,10 @@
             <x-nav-link href="/publikasi/artikel" icon="📰" :active="request()->is('publikasi/artikel*')">Artikel Edukasi</x-nav-link>
             <x-nav-link href="/publikasi/fasilitas" icon="🏥" :active="request()->is('publikasi/fasilitas*')">Data Fasilitas</x-nav-link>
             
-            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Laporan</div>
+            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Laporan & Audit</div>
             <x-nav-link href="/laporan/kunjungan" icon="📊" :active="request()->is('laporan/kunjungan*')">Kunjungan</x-nav-link>
             <x-nav-link href="/laporan/penyakit" icon="🦠" :active="request()->is('laporan/penyakit*')">10 Besar Penyakit</x-nav-link>
+            <x-nav-link href="/audit-log" icon="🛡️" :active="request()->is('audit-log*')">Log Aktivitas</x-nav-link>
             
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Pengaturan</div>
             <x-nav-link href="/poli" icon="⚙️" :active="request()->is('poli*')">Poli / Unit</x-nav-link>

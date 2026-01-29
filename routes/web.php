@@ -10,11 +10,13 @@ use App\Livewire\Master\DaftarPoli;
 use App\Livewire\Master\JadwalPraktik;
 use App\Livewire\Medis\AntrianPoli;
 use App\Livewire\Medis\Pemeriksaan;
+use App\Livewire\Medis\BuatSurat; // Import Baru
 use App\Livewire\Farmasi\DaftarResep;
 use App\Livewire\Farmasi\StokObat;
 use App\Livewire\Laporan\LaporanKunjungan;
 use App\Livewire\Laporan\LaporanPenyakit;
-use App\Livewire\Pengaturan\Profil; // Import Baru
+use App\Livewire\Pengaturan\Profil;
+use App\Livewire\Pengaturan\LogAktivitas; // Import Baru
 use App\Livewire\Publik\AmbilAntrian;
 use App\Livewire\Publik\EdukasiKesehatan;
 use App\Livewire\Publik\BacaArtikel;
@@ -51,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
     // Layanan Medis (Dokter/Perawat)
     Route::get('/pemeriksaan', AntrianPoli::class)->name('medis.antrian');
     Route::get('/pemeriksaan/{idAntrian}', Pemeriksaan::class)->name('medis.periksa');
+    Route::get('/surat-keterangan', BuatSurat::class)->name('medis.surat'); // Route Baru
 
     // Farmasi (Apoteker)
     Route::get('/farmasi/resep', DaftarResep::class)->name('farmasi.resep');
@@ -61,5 +64,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/laporan/penyakit', LaporanPenyakit::class)->name('laporan.penyakit');
 
     // Pengaturan
-    Route::get('/profil', Profil::class)->name('pengaturan.profil'); // Route Baru
+    Route::get('/profil', Profil::class)->name('pengaturan.profil');
+    Route::get('/audit-log', LogAktivitas::class)->name('pengaturan.log'); // Route Baru
 });
