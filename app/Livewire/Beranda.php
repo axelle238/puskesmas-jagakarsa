@@ -2,28 +2,37 @@
 
 namespace App\Livewire;
 
+use App\Models\Antrian;
+use App\Models\ArtikelEdukasi;
+use App\Models\KlasterIlp;
+use Carbon\Carbon;
 use Livewire\Component;
-use App\Models\Poli;
-use App\Models\JadwalDokter;
 
 class Beranda extends Component
 {
     public function render()
     {
-        // Ambil data Poli untuk ditampilkan di layanan
-        $daftarPoli = Poli::withCount('tindakan')->get();
+        // Data Klaster ILP
+        $klaster = KlasterIlp::with('poli')->get();
 
-        // Ambil jadwal dokter yang aktif, diurutkan hari
-        $jadwalDokter = JadwalDokter::with(['dokter', 'poli', 'dokter.pengguna'])
-                        ->where('aktif', true)
-                        ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu')")
-                        ->orderBy('jam_mulai')
-                        ->get()
-                        ->groupBy('hari');
+        // Data Artikel Edukasi (3 terbaru)
+        $artikel = ArtikelEdukasi::latest()->take(3)->get();
+
+        // Statistik Sederhana Hari Ini
+        $totalAntrian = Antrian::whereDate('created_at', Carbon::today())->count();
+        $sedangDilayani = Antrian::whereDate('created_at', Carbon::today())
+            ->where('status', 'dilayani')
+            ->count();
+        $sisaAntrian = Antrian::whereDate('created_at', Carbon::today())
+            ->where('status', 'menunggu')
+            ->count();
 
         return view('livewire.beranda', [
-            'daftarPoli' => $daftarPoli,
-            'jadwalDokter' => $jadwalDokter
-        ])->layout('components.layouts.public', ['title' => 'Beranda - Puskesmas Jagakarsa']);
+            'klaster' => $klaster,
+            'artikel' => $artikel,
+            'totalAntrian' => $totalAntrian,
+            'sedangDilayani' => $sedangDilayani,
+            'sisaAntrian' => $sisaAntrian,
+        ]);
     }
 }

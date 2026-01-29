@@ -11,8 +11,8 @@ use App\Livewire\Master\JadwalPraktik;
 use App\Livewire\Medis\AntrianPoli;
 use App\Livewire\Medis\Pemeriksaan;
 use App\Livewire\Medis\BuatSurat;
-use App\Livewire\Laboratorium\InputHasil; // Import Baru
-use App\Livewire\Kasir\Pembayaran; // Import Baru
+use App\Livewire\Laboratorium\InputHasil;
+use App\Livewire\Kasir\Pembayaran;
 use App\Livewire\Farmasi\DaftarResep;
 use App\Livewire\Farmasi\StokObat;
 use App\Livewire\Laporan\LaporanKunjungan;
@@ -27,49 +27,80 @@ use App\Livewire\Publik\LayarAntrian;
 use App\Livewire\Publikasi\KelolaArtikel;
 use App\Livewire\Publikasi\KelolaFasilitas;
 
-// Halaman Publik
+// -----------------------------------------------------------------------------
+// HALAMAN PUBLIK (Akses Terbuka)
+// -----------------------------------------------------------------------------
 Route::get('/', Beranda::class)->name('beranda');
-Route::get('/login', Masuk::class)->name('login');
-Route::get('/antrian', AmbilAntrian::class)->name('antrian.ambil');
-Route::get('/layar-antrian', LayarAntrian::class)->name('layar.antrian');
-Route::get('/edukasi', EdukasiKesehatan::class)->name('edukasi');
-Route::get('/edukasi/{slug}', BacaArtikel::class)->name('artikel.baca');
-Route::get('/fasilitas', FasilitasPublik::class)->name('fasilitas.publik');
+Route::get('/masuk', Masuk::class)->name('login'); // Name 'login' tetap standar Laravel auth
 
-// Halaman Admin / Pegawai (Protected)
+// Layanan Publik
+Route::get('/ambil-antrian', AmbilAntrian::class)->name('publik.ambil-antrian');
+Route::get('/layar-antrian', LayarAntrian::class)->name('publik.layar-antrian');
+Route::get('/jadwal-dokter', JadwalPraktik::class)->name('publik.jadwal'); // Reuse komponen dulu dengan mode view-only
+
+// Informasi & Edukasi
+Route::get('/artikel', EdukasiKesehatan::class)->name('publik.artikel');
+Route::get('/artikel/{slug}', BacaArtikel::class)->name('publik.artikel.baca');
+Route::get('/fasilitas', FasilitasPublik::class)->name('publik.fasilitas');
+Route::get('/layanan', function() { return redirect('/'); }); // Redirect sementara ke beranda
+
+// -----------------------------------------------------------------------------
+// HALAMAN SISTEM (Butuh Login)
+// -----------------------------------------------------------------------------
 Route::middleware(['auth'])->group(function () {
     Route::get('/dasbor', Dasbor::class)->name('dasbor');
     
-    // Manajemen Utama
-    Route::get('/pasien', DaftarPasien::class)->name('pasien.daftar');
-    Route::get('/pegawai', DaftarPegawai::class)->name('pegawai.daftar');
-    
-    // Master Data
-    Route::get('/poli', DaftarPoli::class)->name('master.poli');
-    Route::get('/jadwal', JadwalPraktik::class)->name('master.jadwal');
-    
-    // Publikasi (CMS)
-    Route::get('/publikasi/artikel', KelolaArtikel::class)->name('cms.artikel');
-    Route::get('/publikasi/fasilitas', KelolaFasilitas::class)->name('cms.fasilitas');
-    
-    // Layanan Medis (Dokter/Perawat)
-    Route::get('/pemeriksaan', AntrianPoli::class)->name('medis.antrian');
-    Route::get('/pemeriksaan/{idAntrian}', Pemeriksaan::class)->name('medis.periksa');
-    Route::get('/surat-keterangan', BuatSurat::class)->name('medis.surat');
+    // 1. MANAJEMEN PENDAFTARAN & PASIEN
+    Route::prefix('pasien')->group(function () {
+        Route::get('/', DaftarPasien::class)->name('pasien.daftar');
+    });
 
-    // Penunjang Medis & Keuangan (Modul Baru)
+    // 2. MANAJEMEN MEDIS (DOKTER/PERAWAT)
+    Route::prefix('medis')->group(function () {
+        Route::get('/antrian', AntrianPoli::class)->name('medis.antrian');
+        Route::get('/periksa/{idAntrian}', Pemeriksaan::class)->name('medis.periksa');
+        Route::get('/surat', BuatSurat::class)->name('medis.surat');
+    });
+
+    // 3. PENUNJANG (LAB & FARMASI)
     Route::get('/laboratorium', InputHasil::class)->name('lab.input');
+    
+    Route::prefix('farmasi')->group(function () {
+        Route::get('/resep', DaftarResep::class)->name('farmasi.resep');
+        Route::get('/stok', StokObat::class)->name('farmasi.stok');
+    });
+
+    // 4. KEUANGAN
     Route::get('/kasir', Pembayaran::class)->name('kasir.bayar');
 
-    // Farmasi (Apoteker)
-    Route::get('/farmasi/resep', DaftarResep::class)->name('farmasi.resep');
-    Route::get('/farmasi/stok', StokObat::class)->name('farmasi.stok');
+    // 5. MANAJEMEN SDM (PEGAWAI)
+    Route::get('/pegawai', DaftarPegawai::class)->name('pegawai.daftar');
 
-    // Laporan
-    Route::get('/laporan/kunjungan', LaporanKunjungan::class)->name('laporan.kunjungan');
-    Route::get('/laporan/penyakit', LaporanPenyakit::class)->name('laporan.penyakit');
+    // 6. MASTER DATA
+    Route::prefix('master')->group(function () {
+        Route::get('/poli', DaftarPoli::class)->name('master.poli');
+        Route::get('/jadwal', JadwalPraktik::class)->name('master.jadwal');
+    });
 
-    // Pengaturan
+    // 7. PUBLIKASI (CMS)
+    Route::prefix('publikasi')->group(function () {
+        Route::get('/artikel', KelolaArtikel::class)->name('cms.artikel');
+        Route::get('/fasilitas', KelolaFasilitas::class)->name('cms.fasilitas');
+    });
+
+    // 8. LAPORAN
+    Route::prefix('laporan')->group(function () {
+        Route::get('/kunjungan', LaporanKunjungan::class)->name('laporan.kunjungan');
+        Route::get('/penyakit', LaporanPenyakit::class)->name('laporan.penyakit');
+    });
+
+    // 9. PENGATURAN
     Route::get('/profil', Profil::class)->name('pengaturan.profil');
-    Route::get('/audit-log', LogAktivitas::class)->name('pengaturan.log');
+    Route::get('/log-aktivitas', LogAktivitas::class)->name('pengaturan.log');
+    
+    // Logout route (biasanya via POST/Livewire action, tapi ini fallback)
+    Route::post('/keluar', function () {
+        auth()->logout();
+        return redirect('/');
+    })->name('logout');
 });

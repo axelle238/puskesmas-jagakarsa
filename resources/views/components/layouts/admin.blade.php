@@ -3,109 +3,119 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Admin Panel - Puskesmas Jagakarsa' }}</title>
+    <title>{{ $title ?? 'Sistem Informasi Puskesmas' }}</title>
     
-    <!-- Scripts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        utama: '#0f172a', // Slate 900
-                        aksen: '#3b82f6', // Blue 500
-                    }
-                }
-            }
-        }
-    </script>
+    @livewireStyles
 </head>
-<body class="bg-gray-100 font-sans antialiased flex h-screen overflow-hidden" x-data="{ sidebarOpen: true }">
+<body class="bg-slate-50 font-sans antialiased text-slate-800">
 
-    <!-- Sidebar -->
-    <aside class="bg-utama text-white flex flex-col transition-all duration-300 ease-in-out" 
-           :class="sidebarOpen ? 'w-64' : 'w-20'">
+    <div class="min-h-screen flex flex-col md:flex-row">
         
-        <!-- Logo -->
-        <div class="h-16 flex items-center justify-center border-b border-gray-800" :class="sidebarOpen ? 'px-6' : 'px-0'">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-aksen rounded flex items-center justify-center font-bold text-xl">P</div>
-                <span class="font-bold text-lg tracking-wider" x-show="sidebarOpen" x-transition>ADMIN</span>
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 md:h-screen md:sticky md:top-0 flex flex-col">
+            <!-- Logo -->
+            <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-800 bg-slate-950">
+                <div class="bg-emerald-500 text-white p-1 rounded">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                </div>
+                <span class="font-bold text-lg tracking-tight">SIP Jagakarsa</span>
             </div>
-        </div>
 
-        <!-- Menu -->
-        <nav class="flex-1 overflow-y-auto py-4 space-y-1">
-            <x-nav-link href="/dasbor" icon="🏠" :active="request()->is('dasbor')">Dasbor</x-nav-link>
-            
-            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Layanan Medis</div>
-            <x-nav-link href="/pemeriksaan" icon="🩺" :active="request()->is('pemeriksaan*')">Pemeriksaan</x-nav-link>
-            <x-nav-link href="/surat-keterangan" icon="📝" :active="request()->is('surat-keterangan*')">Surat & Rujukan</x-nav-link>
-            
-            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Penunjang</div>
-            <x-nav-link href="/laboratorium" icon="🔬" :active="request()->is('laboratorium*')">Laboratorium</x-nav-link>
-            <x-nav-link href="/farmasi/resep" icon="💊" :active="request()->is('farmasi/resep*')">Farmasi</x-nav-link>
-            <x-nav-link href="/kasir" icon="💳" :active="request()->is('kasir*')">Kasir & Billing</x-nav-link>
-
-            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Manajemen</div>
-            <x-nav-link href="/pasien" icon="👥" :active="request()->is('pasien*')">Data Pasien</x-nav-link>
-            <x-nav-link href="/pegawai" icon="id-card" :active="request()->is('pegawai*')">Data Pegawai</x-nav-link>
-            <x-nav-link href="/farmasi/stok" icon="📦" :active="request()->is('farmasi/stok*')">Stok Obat</x-nav-link>
-            <x-nav-link href="/publikasi/artikel" icon="📰" :active="request()->is('publikasi/artikel*')">Artikel Edukasi</x-nav-link>
-            <x-nav-link href="/publikasi/fasilitas" icon="🏥" :active="request()->is('publikasi/fasilitas*')">Data Fasilitas</x-nav-link>
-            
-            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Laporan & Audit</div>
-            <x-nav-link href="/laporan/kunjungan" icon="📊" :active="request()->is('laporan/kunjungan*')">Kunjungan</x-nav-link>
-            <x-nav-link href="/laporan/penyakit" icon="🦠" :active="request()->is('laporan/penyakit*')">10 Besar Penyakit</x-nav-link>
-            <x-nav-link href="/audit-log" icon="🛡️" :active="request()->is('audit-log*')">Log Aktivitas</x-nav-link>
-            
-            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Pengaturan</div>
-            <x-nav-link href="/poli" icon="⚙️" :active="request()->is('poli*')">Poli / Unit</x-nav-link>
-            <x-nav-link href="/jadwal" icon="📅" :active="request()->is('jadwal*')">Jadwal Praktik</x-nav-link>
-        </nav>
-
-        <!-- User Profile Bottom -->
-        <div class="p-4 border-t border-gray-800">
-            <div class="flex items-center gap-3">
-                <a href="/profil" class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition">
-                    👤
+            <!-- Nav Menu -->
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                
+                <a href="{{ route('dasbor') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('dasbor') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    Dasbor Utama
                 </a>
-                <div class="flex-1 min-w-0" x-show="sidebarOpen">
-                    <p class="text-sm font-medium text-white truncate">{{ auth()->user()->nama_lengkap ?? 'Admin' }}</p>
-                    <a href="/profil" class="text-xs text-gray-400 truncate hover:text-white">Pengaturan Akun</a>
-                </div>
-            </div>
-            <a href="/login" class="block mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm font-medium transition text-center" x-show="sidebarOpen">
-                Keluar
-            </a>
-        </div>
-    </aside>
 
-    <!-- Main Content Wrapper -->
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        
-        <!-- Topbar -->
-        <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6 z-10">
-            <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-gray-700 focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-            </button>
+                <div class="pt-4 pb-1 px-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Layanan Utama</div>
+                
+                <a href="{{ route('pasien.daftar') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('pasien.*') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Pendaftaran Pasien
+                </a>
+                
+                <a href="{{ route('medis.antrian') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('medis.*') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    Pemeriksaan Medis
+                </a>
+
+                <div class="pt-4 pb-1 px-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Penunjang</div>
+                
+                <a href="{{ route('lab.input') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('lab.*') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    Laboratorium
+                </a>
+                
+                <a href="{{ route('farmasi.resep') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('farmasi.*') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    Farmasi & Obat
+                </a>
+
+                <a href="{{ route('kasir.bayar') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('kasir.*') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Kasir & Pembayaran
+                </a>
+
+                <div class="pt-4 pb-1 px-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Manajemen</div>
+                
+                <a href="{{ route('pegawai.daftar') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('pegawai.*') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    Data Pegawai
+                </a>
+
+                <a href="{{ route('master.poli') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('master.poli') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    Master Poli
+                </a>
+
+                <a href="{{ route('master.jadwal') }}" wire:navigate class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('master.jadwal') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Jadwal Praktik
+                </a>
+
+            </nav>
             
-            <div class="flex items-center gap-4">
-                <span class="text-sm text-gray-500">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y') }}</span>
-                <div class="relative">
-                    <span class="w-2 h-2 bg-red-500 rounded-full absolute top-0 right-0"></span>
-                    <span class="text-xl">🔔</span>
+            <!-- User Profile -->
+            <div class="p-4 border-t border-slate-800 bg-slate-950">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-emerald-500 font-bold">
+                        {{ substr(auth()->user()->nama_lengkap ?? 'U', 0, 1) }}
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-sm font-medium text-white truncate">{{ auth()->user()->nama_lengkap ?? 'Guest' }}</p>
+                        <p class="text-xs text-slate-500 truncate capitalize">{{ auth()->user()->peran ?? 'Pengunjung' }}</p>
+                    </div>
+                    <button class="text-slate-400 hover:text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    </button>
                 </div>
             </div>
-        </header>
+        </aside>
 
-        <!-- Content Area -->
-        <main class="flex-1 overflow-y-auto p-6 bg-gray-100" id="main-content">
-            {{ $slot }}
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50">
+            <!-- Top Header (Mobile only) -->
+            <header class="md:hidden h-16 bg-white border-b border-slate-200 flex items-center px-4 justify-between">
+                <span class="font-bold text-slate-800">SIP Jagakarsa</span>
+                <button class="text-slate-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </header>
+
+            <!-- Scrollable Area -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-8">
+                {{ $slot }}
+            </div>
         </main>
     </div>
 
+    @livewireScripts
 </body>
 </html>

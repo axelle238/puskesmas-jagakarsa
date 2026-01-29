@@ -1,152 +1,192 @@
 <div>
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Manajemen Pasien</h1>
-        <button wire:click="tambah" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow transition">
-            <span>+</span> Tambah Pasien
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900">Manajemen Pasien</h1>
+            <p class="text-slate-500">Kelola data rekam medis dan informasi pasien.</p>
+        </div>
+        <button wire:click="tambah" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 transition-colors shadow-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Pasien Baru
         </button>
     </div>
 
-    <!-- Alert -->
-    @if (session()->has('pesan'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span class="block sm:inline">{{ session('pesan') }}</span>
-        </div>
+    <!-- Flash Message -->
+    @if(session('sukses'))
+    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        {{ session('sukses') }}
+    </div>
     @endif
 
-    <!-- Search & Filter -->
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
-        <div class="relative">
-            <input wire:model.live.debounce.300ms="cari" type="text" placeholder="Cari berdasarkan Nama, NIK, atau No. RM..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-            <div class="absolute left-3 top-2.5 text-gray-400">🔍</div>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table class="w-full text-left text-sm">
-            <thead class="bg-gray-50 text-gray-500 font-bold border-b border-gray-200">
-                <tr>
-                    <th class="px-6 py-4">No. RM</th>
-                    <th class="px-6 py-4">Nama Lengkap</th>
-                    <th class="px-6 py-4">NIK</th>
-                    <th class="px-6 py-4">Info Kontak</th>
-                    <th class="px-6 py-4 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse($pasiens as $pasien)
-                <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4 font-mono font-bold text-blue-600">{{ $pasien->no_rekam_medis }}</td>
-                    <td class="px-6 py-4">
-                        <div class="font-bold text-gray-800">{{ $pasien->nama_lengkap }}</div>
-                        <div class="text-xs text-gray-500">{{ $pasien->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}, {{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->age }} Thn</div>
-                    </td>
-                    <td class="px-6 py-4 text-gray-600">{{ $pasien->nik }}</td>
-                    <td class="px-6 py-4 text-gray-600">
-                        @if($pasien->no_bpjs)
-                        <span class="block text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded w-fit mb-1">BPJS: {{ $pasien->no_bpjs }}</span>
-                        @endif
-                        <span class="text-xs text-gray-500">{{ Str::limit($pasien->alamat_lengkap, 30) }}</span>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <div class="flex justify-center gap-2">
-                            <button wire:click="edit({{ $pasien->id }})" class="text-blue-600 hover:bg-blue-50 p-2 rounded transition" title="Edit">✏️</button>
-                            <button wire:click="hapus({{ $pasien->id }})" wire:confirm="Yakin ingin menghapus data pasien ini?" class="text-red-600 hover:bg-red-50 p-2 rounded transition" title="Hapus">🗑️</button>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-gray-400">Data tidak ditemukan.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-        <div class="px-6 py-4 border-t border-gray-100">
-            {{ $pasiens->links() }}
-        </div>
-    </div>
-
-    <!-- Modal Form -->
-    @if($tampilkanModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
-                <h3 class="font-bold text-lg text-gray-800">{{ $modeEdit ? 'Edit Data Pasien' : 'Tambah Pasien Baru' }}</h3>
-                <button wire:click="$set('tampilkanModal', false)" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+    <!-- Content Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        
+        <!-- Search Bar -->
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+            <div class="relative max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input wire:model.live.debounce.300ms="cari" type="text" class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm" placeholder="Cari Nama, NIK, atau No. RM...">
             </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">No. RM</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Identitas Pasien</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Jenis Kelamin</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Usia</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="relative px-6 py-3"><span class="sr-only">Aksi</span></th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-200">
+                    @forelse($dataPasien as $pasien)
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-emerald-600">
+                            {{ $pasien->no_rekam_medis }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-slate-900">{{ $pasien->nama_lengkap }}</div>
+                            <div class="text-sm text-slate-500">NIK: {{ $pasien->nik }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                            {{ $pasien->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                            {{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->age }} Tahun
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if($pasien->no_bpjs)
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">BPJS</span>
+                            @else
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-slate-100 text-slate-800">Umum</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button wire:click="edit({{ $pasien->id }})" class="text-emerald-600 hover:text-emerald-900 mr-3">Edit</button>
+                            <button wire:click="hapus({{ $pasien->id }})" class="text-red-600 hover:text-red-900" onclick="confirm('Yakin ingin menghapus pasien ini?') || event.stopImmediatePropagation()">Hapus</button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-slate-400">
+                            <svg class="mx-auto h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="mt-2 text-sm">Tidak ada data pasien ditemukan.</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="bg-slate-50 px-4 py-3 border-t border-slate-200 sm:px-6">
+            {{ $dataPasien->links() }}
+        </div>
+    </div>
+
+    <!-- MODAL FORM -->
+    @if($tampilkanModal)
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             
-            <form wire:submit="simpan" class="p-6 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nomor BPJS (Opsional)</label>
-                        <div class="flex gap-2">
-                            <input type="text" wire:model="no_bpjs" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Cek status...">
-                            <button type="button" wire:click="cekBpjs" class="bg-green-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-700 transition" wire:loading.attr="disabled">
-                                <span wire:loading.remove wire:target="cekBpjs">Cek</span>
-                                <span wire:loading wire:target="cekBpjs">...</span>
-                            </button>
-                        </div>
-                        @if($bpjs_message)
-                            <div class="mt-1 text-xs {{ $bpjs_status == 'success' ? 'text-green-600 font-bold' : 'text-red-500' }}">
-                                {{ $bpjs_message }}
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" aria-hidden="true" wire:click="tutupModal"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal Panel -->
+            <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <form wire:submit="simpan">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-medium text-slate-900 mb-6 border-b border-slate-100 pb-2" id="modal-title">
+                                    {{ $modeEdit ? 'Edit Data Pasien' : 'Tambah Pasien Baru' }}
+                                </h3>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <!-- No RM (Readonly) -->
+                                    <div class="col-span-2 sm:col-span-1">
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">No. Rekam Medis</label>
+                                        <input type="text" wire:model="no_rekam_medis" disabled class="bg-slate-100 text-slate-500 block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
+                                    </div>
+
+                                    <!-- NIK -->
+                                    <div class="col-span-2 sm:col-span-1">
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">NIK (KTP)</label>
+                                        <input type="text" wire:model="nik" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" maxlength="16">
+                                        @error('nik') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </div>
+
+                                    <!-- Nama Lengkap -->
+                                    <div class="col-span-2">
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
+                                        <input type="text" wire:model="nama_lengkap" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
+                                        @error('nama_lengkap') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </div>
+
+                                    <!-- TTL -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Tempat Lahir</label>
+                                        <input type="text" wire:model="tempat_lahir" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Lahir</label>
+                                        <input type="date" wire:model="tanggal_lahir" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
+                                        @error('tanggal_lahir') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </div>
+
+                                    <!-- Jenis Kelamin -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Kelamin</label>
+                                        <select wire:model="jenis_kelamin" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
+                                            <option value="L">Laki-laki</option>
+                                            <option value="P">Perempuan</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- No HP -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">No. Telepon / WA</label>
+                                        <input type="text" wire:model="no_telepon" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
+                                    </div>
+
+                                    <!-- Alamat -->
+                                    <div class="col-span-2">
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Lengkap</label>
+                                        <textarea wire:model="alamat_lengkap" rows="2" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm"></textarea>
+                                        @error('alamat_lengkap') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                    </div>
+                                    
+                                    <!-- No BPJS -->
+                                    <div class="col-span-2">
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Nomor BPJS (Opsional)</label>
+                                        <input type="text" wire:model="no_bpjs" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm" placeholder="Kosongkan jika pasien umum">
+                                    </div>
+                                </div>
                             </div>
-                        @endif
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">NIK (16 Digit)</label>
-                        <input type="text" wire:model="nik" maxlength="16" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                        @error('nik') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-auto sm:text-sm">
+                            <span wire:loading.remove wire:target="simpan">Simpan Data</span>
+                            <span wire:loading wire:target="simpan">Menyimpan...</span>
+                        </button>
+                        <button type="button" wire:click="tutupModal" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Batal
+                        </button>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                        <input type="text" wire:model="nama_lengkap" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                        @error('nama_lengkap') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tempat Lahir</label>
-                        <input type="text" wire:model="tempat_lahir" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                        @error('tempat_lahir') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
-                        <input type="date" wire:model="tanggal_lahir" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                        @error('tanggal_lahir') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
-                        <select wire:model="jenis_kelamin" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                            <option value="L">Laki-laki</option>
-                            <option value="P">Perempuan</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Golongan Darah</label>
-                        <select wire:model="golongan_darah" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                            <option value="">-</option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="AB">AB</option>
-                            <option value="O">O</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">No. Kontak Darurat</label>
-                        <input type="text" wire:model="no_telepon_darurat" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label>
-                    <textarea wire:model="alamat_lengkap" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500"></textarea>
-                    @error('alamat_lengkap') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-4">
-                    <button type="button" wire:click="$set('tampilkanModal', false)" class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition">Batal</button>
-                    <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-bold shadow transition">Simpan Data</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
     @endif

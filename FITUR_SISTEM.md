@@ -1,77 +1,64 @@
-# SISTEM INFORMASI PUSKESMAS JAGAKARSA (SIMPUS)
+# DOKUMENTASI HIDUP: SISTEM INFORMASI PUSKESMAS JAGAKARSA
 
-Status: **FINAL COMPLETED VERSION 2.2**
-Teknologi: Laravel 12, Livewire 4, Tailwind CSS
-Database: MySQL
+Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 
-## 1. Ikhtisar Sistem
-Platform terintegrasi untuk operasional Puskesmas modern dengan standar **Integrasi Layanan Primer (ILP)** Kemenkes RI. Mengelola seluruh alur pasien mulai dari pendaftaran online hingga pengambilan obat.
+## 1. Status Sistem
+- **Versi:** 1.0.0-beta
+- **Framework:** Laravel 12 / Livewire 3
+- **Basis Data:** MySQL / MariaDB
+- **Bahasa Kode:** 100% Bahasa Indonesia
 
-## 2. Fitur Unggulan (Key Features)
+## 2. Struktur Modul & Progres
 
-### A. Layanan Publik (Front Office)
-*   **Pendaftaran Antrian Online:** Pasien mendaftar mandiri via web.
-*   **Layar Antrian TV (Digital Signage):** Tampilan ruang tunggu dengan panggilan suara otomatis.
-*   **Portal Informasi:** Jadwal dokter, info fasilitas, dan artikel edukasi kesehatan.
+### A. Manajemen Pengguna & Autentikasi
+- [x] Tabel `pengguna` (Migrasi)
+- [x] Model `App\Models\Pengguna` (Autentikasi Kustom)
+- [x] Halaman Login (`Livewire\Auth\Masuk`)
+- [x] Middleware Peran (Admin, Dokter, dll) - *Menggunakan Auth default*
 
-### B. Layanan Klinis (Medical Record)
-*   **Rekam Medis Elektronik (EMR):** Pencatatan SOAP, Tanda Vital, dan Riwayat Pasien.
-*   **Integrasi Farmasi:** Resep elektronik yang langsung memotong stok obat.
-*   **Laporan Morbiditas:** Analisis otomatis 10 Besar Penyakit (ICD-10).
+### B. Manajemen Master Data
+- [x] Tabel `poli` (Klaster ILP)
+- [x] Tabel `pegawai`
+- [x] Tabel `jadwal_praktik`
+- [ ] CRUD Data Poli
+- [ ] CRUD Data Pegawai
 
-### C. Manajemen Admin (Back Office)
-*   **Dashboard Visual:** Grafik kunjungan harian/mingguan real-time.
-*   **Manajemen SDM & Akses:** Kelola dokter, perawat, dan staf.
-*   **Pengaturan Poli & Jadwal:** Fleksibel sesuai Klaster ILP.
-*   **Keuangan & Kasir:** Billing system otomatis dari Poli/Lab/Farmasi.
+### C. Layanan Medis (ILP)
+- [x] Tabel `pasien`
+- [x] Tabel `antrian`
+- [x] Tabel `rekam_medis`
+- [x] Modul Pendaftaran Pasien (CRUD)
+- [x] Modul Antrian Online (Frontend Publik)
+- [x] Dashboard Admin (Statistik Realtime)
 
-## 3. Panduan Instalasi (Deployment)
+### D. Penunjang Medis
+- [x] Tabel `obat` (Farmasi)
+- [x] Tabel `hasil_lab` (Laboratorium)
+- [ ] Manajemen Stok Obat
+- [ ] Input Hasil Lab
 
-### Persyaratan Server
-- PHP >= 8.2
-- Composer
-- Node.js & NPM
-- MySQL
+### E. Keuangan
+- [x] Tabel `tagihan`
+- [ ] Kasir & Pembayaran
 
-### Langkah Instalasi
-1.  **Clone Repository:**
-    ```bash
-    git clone https://github.com/axelle238/puskesmas-jagakarsa.git
-    cd puskesmas-jagakarsa
-    ```
+## 3. Fitur Unggulan Terselesaikan
+1.  **Antrian Online Terintegrasi ILP:**
+    - Pasien dapat mendaftar mandiri via web.
+    - Otomatisasi nomor antrian berdasarkan poli.
+    - Deteksi pasien lama (NIK) vs pasien baru.
 
-2.  **Install Dependencies:**
-    ```bash
-    composer install
-    npm install && npm run build
-    ```
+2.  **Dashboard Real-Time:**
+    - Statistik kunjungan harian.
+    - Monitor antrian aktif.
+    - Peringatan dini stok obat menipis.
 
-3.  **Konfigurasi Environment:**
-    ```bash
-    cp .env.example .env
-    # Edit .env sesuaikan database (DB_DATABASE, DB_USERNAME, DB_PASSWORD)
-    php artisan key:generate
-    ```
+3.  **Manajemen Pasien Lengkap:**
+    - CRUD Data Pasien dengan validasi NIK.
+    - Riwayat kunjungan (persiapan).
+    - Status BPJS vs Umum.
 
-4.  **Migrasi & Seeding Data (Wajib):**
-    ```bash
-    php artisan migrate:fresh --seed
-    ```
-    *Perintah ini akan membuat tabel dan mengisi data awal (Admin, Poli, Obat, dll).*
-
-5.  **Jalankan Server:**
-    ```bash
-    php artisan serve
-    ```
-
-## 4. Akun Demo (Default)
-
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Admin** | `admin@puskesmas.id` | `admin123` |
-| **Dokter** | `dokter@puskesmas.id` | `dokter123` |
-| **Apoteker** | `farmasi@puskesmas.id` | `farmasi123` |
-
----
-**Hak Cipta & Pengembang**
-Dikembangkan oleh Tim IT Puskesmas Jagakarsa (AI Assisted).
+## 4. Konvensi Penamaan (Wajib)
+- **Model:** Singular, PascalCase (contoh: `Pasien`, `RekamMedis`)
+- **Tabel:** Plural/Singular, snake_case (contoh: `pasien`, `rekam_medis`)
+- **Controller/Livewire:** Deskriptif (contoh: `DaftarPasien`, `InputHasilLab`)
+- **Route:** Kebab-case, Bahasa Indonesia (contoh: `/pendaftaran/antrian-baru`)

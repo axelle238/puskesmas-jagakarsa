@@ -2,112 +2,169 @@
 
 namespace App\Livewire\Publik;
 
-use Livewire\Component;
+use App\Models\Antrian;
+use App\Models\JadwalDokter;
 use App\Models\Pasien;
 use App\Models\Poli;
-use App\Models\JadwalDokter;
-use App\Models\Antrian;
 use Carbon\Carbon;
+use Livewire\Component;
 
 class AmbilAntrian extends Component
 {
-    // State Langkah
-    public $langkah = 1; // 1: Cek Data, 2: Pilih Poli, 3: Tiket
+    // State Steps: 1=Cek/Regis, 2=Pilih Poli, 3=Konfirmasi, 4=Sukses
+    public $tahap = 1;
 
-    // Form Data
+    // Data Input Pasien
     public $nik;
-    public $no_rekam_medis;
+    public $nama_lengkap;
+    public $no_hp;
+    public $pasien_ditemukan = null;
+    public $mode_registrasi_baru = false;
+
+    // Data Input Antrian
+    public $id_poli_dipilih;
+    public $id_jadwal_dipilih;
+    public $tanggal_kunjungan;
     
-    // Data Pasien Terpilih
-    public $pasien;
-    
-    // Pilihan Layanan
-    public $poli_id;
-    public $jadwal_id;
-    
-    // Data Pendukung
-    public $daftarPoli = [];
-    public $daftarJadwal = [];
-    
-    // Hasil Tiket
-    public $tiketAntrian;
+    // Data Output
+    public $tiket_antrian;
 
     public function mount()
     {
-        // Inisialisasi daftar poli
-        $this->daftarPoli = Poli::all();
+        $this->tanggal_kunjungan = date('Y-m-d');
     }
 
-    // Langkah 1: Cari Data Pasien
-    public function cariPasien()
+    // --- TAHAP 1: IDENTIFIKASI PASIEN ---
+
+    public function cekNik()
     {
         $this->validate([
-            'nik' => 'required|numeric|digits:16',
+            'nik' => 'required|numeric|digits:16'
         ], [
             'nik.required' => 'NIK wajib diisi.',
             'nik.digits' => 'NIK harus 16 digit.',
         ]);
 
-        $this->pasien = Pasien::where('nik', $this->nik)->first();
+        $pasien = Pasien::where('nik', $this->nik)->first();
 
-        if ($this->pasien) {
-            $this->langkah = 2; // Lanjut pilih poli
+        if ($pasien) {
+            $this->pasien_ditemukan = $pasien;
+            $this->tahap = 2; // Lanjut pilih poli
         } else {
-            // TODO: Arahkan ke form pendaftaran pasien baru jika belum ada
-            session()->flash('error', 'Data pasien tidak ditemukan. Silakan daftar baru di loket atau hubungi petugas.');
+            $this->pasien_ditemukan = null;
+            $this->mode_registrasi_baru = true; // Buka form regis baru
         }
     }
 
-    // Langkah 2: Update Pilihan Poli dan Load Jadwal
-    public function updatedPoliId($value)
-    {
-        $hariIni = Carbon::now()->isoFormat('dddd'); // Senin, Selasa, dst
-        
-        $this->daftarJadwal = JadwalDokter::where('id_poli', $value)
-                                ->where('hari', $hariIni)
-                                ->where('aktif', true)
-                                ->with('dokter.pengguna')
-                                ->get();
-    }
-
-    // Langkah 2: Proses Ambil Antrian
-    public function ambilAntrian()
+    public function daftarBaru()
     {
         $this->validate([
-            'poli_id' => 'required',
-            'jadwal_id' => 'required'
+            'nik' => 'required|numeric|digits:16|unique:pasien,nik',
+            'nama_lengkap' => 'required|string|max:255',
+            'no_hp' => 'required|numeric',
+        ], [
+            'nik.unique' => 'NIK sudah terdaftar.',
+            'nama_lengkap.required' => 'Nama lengkap wajib diisi.'
         ]);
 
-        // Cek kuota / double booking (opsional, skip dulu untuk MVP)
+        // Simpan Pasien Baru (Sederhana)
+        $pasien = Pasien::create([
+            'nik' => $this->nik,
+            'nama_lengkap' => $this->nama_lengkap,
+            'no_telepon' => $this->no_hp,
+            'no_rekam_medis' => $this->generateNoRM(),
+            'alamat_lengkap' => '-', // Default, dilengkapi di loket
+            'tanggal_lahir' => '2000-01-01', // Default
+            'jenis_kelamin' => 'L', // Default
+        ]);
 
-        // Generate Nomor Antrian (Contoh: A-001)
-        // Logika sederhana: Hitung antrian di poli tersebut hari ini + 1
-        $jumlahAntrian = Antrian::where('id_poli', $this->poli_id)
-                            ->whereDate('tanggal_antrian', Carbon::today())
-                            ->count();
+        $this->pasien_ditemukan = $pasien;
+        $this->mode_registrasi_baru = false;
+        $this->tahap = 2;
+    }
+
+    private function generateNoRM()
+    {
+        // Format: RM-YYYYMM-XXXX
+        $prefix = 'RM-' . date('Ym') . '-';
+        $last = Pasien::where('no_rekam_medis', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
+        $number = $last ? intval(substr($last->no_rekam_medis, -4)) + 1 : 1;
+        return $prefix . str_pad($number, 4, '0', STR_PAD_LEFT);
+    }
+
+    // --- TAHAP 2: PILIH LAYANAN ---
+
+    public function pilihJadwal($idJadwal)
+    {
+        $this->id_jadwal_dipilih = $idJadwal;
+        $jadwal = JadwalDokter::find($idJadwal);
+        $this->id_poli_dipilih = $jadwal->id_poli;
         
-        $kodePoli = substr(Poli::find($this->poli_id)->nama_poli, 0, 1); // U untuk Umum, G untuk Gigi
-        $nomorUrut = str_pad($jumlahAntrian + 1, 3, '0', STR_PAD_LEFT);
-        $nomorAntrian = $kodePoli . '-' . $nomorUrut;
+        $this->tahap = 3; // Lanjut konfirmasi
+    }
 
-        // Simpan
+    public function kembali()
+    {
+        if ($this->tahap > 1) {
+            $this->tahap--;
+        }
+    }
+
+    // --- TAHAP 3: PROSES ANTRIAN ---
+
+    public function prosesAntrian()
+    {
+        // Validasi double booking hari ini
+        $cek = Antrian::where('id_pasien', $this->pasien_ditemukan->id)
+            ->where('tanggal_antrian', $this->tanggal_kunjungan)
+            ->where('status', '!=', 'batal')
+            ->exists();
+
+        if ($cek) {
+            session()->flash('error', 'Anda sudah memiliki antrian untuk hari ini.');
+            return;
+        }
+
+        $jadwal = JadwalDokter::with('poli')->find($this->id_jadwal_dipilih);
+
+        // Generate Nomor Antrian
+        $count = Antrian::where('id_poli', $this->id_poli_dipilih)
+            ->where('tanggal_antrian', $this->tanggal_kunjungan)
+            ->count();
+        
+        $nomorUrut = $count + 1;
+        $prefix = $jadwal->poli->kode_poli ?? 'A';
+        $nomorAntrian = $prefix . '-' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT);
+
         $antrian = Antrian::create([
-            'id_pasien' => $this->pasien->id,
-            'id_poli' => $this->poli_id,
-            'id_jadwal' => $this->jadwal_id,
+            'id_pasien' => $this->pasien_ditemukan->id,
+            'id_poli' => $this->id_poli_dipilih,
+            'id_jadwal' => $this->id_jadwal_dipilih,
             'nomor_antrian' => $nomorAntrian,
-            'tanggal_antrian' => Carbon::today(),
+            'tanggal_antrian' => $this->tanggal_kunjungan,
             'status' => 'menunggu',
-            'waktu_checkin' => now()
+            'waktu_checkin' => now(), // Auto checkin
         ]);
 
-        $this->tiketAntrian = $antrian;
-        $this->langkah = 3; // Selesai
+        $this->tiket_antrian = $antrian;
+        $this->tahap = 4; // Sukses
     }
 
     public function render()
     {
-        return view('livewire.publik.ambil-antrian')
-            ->layout('components.layouts.public', ['title' => 'Ambil Antrian']);
+        $jadwalTersedia = [];
+        if ($this->tahap == 2) {
+            // Set locale ID untuk Carbon agar nama hari sesuai (Senin, Selasa...)
+            Carbon::setLocale('id');
+            $hariIni = Carbon::now()->isoFormat('dddd');
+            
+            $jadwalTersedia = JadwalDokter::with(['dokter.pengguna', 'poli'])
+                ->where('hari', $hariIni)
+                ->get();
+        }
+
+        return view('livewire.publik.ambil-antrian', [
+            'jadwalTersedia' => $jadwalTersedia
+        ]);
     }
 }

@@ -2,55 +2,50 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Antrian;
+use App\Models\Obat;
 use App\Models\Pasien;
-use App\Models\Pegawai;
-use App\Models\Poli;
+use App\Models\Tagihan; // Asumsi ada model Tagihan
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class Dasbor extends Component
 {
     public function render()
     {
-        // Statistik Hari Ini
-        $today = Carbon::today();
-        $totalAntrianHariIni = Antrian::whereDate('tanggal_antrian', $today)->count();
-        $antrianMenunggu = Antrian::whereDate('tanggal_antrian', $today)
-                            ->where('status', 'menunggu')
-                            ->count();
-        
-        $totalPasien = Pasien::count();
-        $dokterAktif = Pegawai::whereNotNull('sip')->count();
+        $hariIni = Carbon::today();
 
-        // Antrian Terbaru
-        $antrianTerbaru = Antrian::with(['pasien', 'poli'])
-                            ->whereDate('tanggal_antrian', $today)
-                            ->latest()
-                            ->take(5)
-                            ->get();
-
-        // Data Chart Kunjungan Mingguan (7 Hari Terakhir)
-        $chartData = [];
-        $chartLabels = [];
+        // Statistik Utama
+        $totalPasienHariIni = Antrian::whereDate('tanggal_antrian', $hariIni)->count();
+        $sedangDilayani = Antrian::whereDate('tanggal_antrian', $hariIni)
+            ->whereIn('status', ['dipanggil', 'diperiksa']) // Status aktif
+            ->count();
         
-        for ($i = 6; $i >= 0; $i--) {
-            $date = Carbon::today()->subDays($i);
-            $count = Antrian::whereDate('tanggal_antrian', $date)->count();
-            
-            $chartLabels[] = $date->isoFormat('dddd'); // Senin, Selasa...
-            $chartData[] = $count;
+        // Asumsi logic pendapatan: Sum tagihan yang lunas hari ini
+        // Jika tabel tagihan belum ada/siap, kita pakai placeholder 0
+        $pendapatanHariIni = 0; 
+        if (class_exists(Tagihan::class)) {
+            // $pendapatanHariIni = Tagihan::whereDate('created_at', $hariIni)->where('status', 'lunas')->sum('total_biaya');
         }
 
+        // Stok Obat Menipis (Warning)
+        $obatMenipis = Obat::whereColumn('stok_saat_ini', '<=', 'stok_minimum')
+            ->limit(5)
+            ->get();
+
+        // Antrian Terakhir (Tabel Ringkas)
+        $antrianTerbaru = Antrian::with(['pasien', 'poli'])
+            ->whereDate('tanggal_antrian', $hariIni)
+            ->orderBy('id', 'desc') // Yang baru daftar di atas
+            ->limit(5)
+            ->get();
+
         return view('livewire.dasbor', [
-            'totalAntrianHariIni' => $totalAntrianHariIni,
-            'antrianMenunggu' => $antrianMenunggu,
-            'totalPasien' => $totalPasien,
-            'dokterAktif' => $dokterAktif,
-            'antrianTerbaru' => $antrianTerbaru,
-            'chartLabels' => $chartLabels,
-            'chartData' => $chartData
+            'totalPasienHariIni' => $totalPasienHariIni,
+            'sedangDilayani' => $sedangDilayani,
+            'pendapatanHariIni' => $pendapatanHariIni,
+            'obatMenipis' => $obatMenipis,
+            'antrianTerbaru' => $antrianTerbaru
         ])->layout('components.layouts.admin', ['title' => 'Dasbor Utama']);
     }
 }
