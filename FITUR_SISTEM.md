@@ -1,64 +1,60 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
-Status Dokumen: **FINAL ENTERPRISE RELEASE v1.6 (ADMINISTRATION & SECURITY)**
+Status Dokumen: **FINAL ENTERPRISE SUITE v2.0 (FULL HOSPITAL FLOW)**
 Terakhir Diupdate: 29 January 2026
 
 ## 1. Ikhtisar Sistem
-Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berbasis web yang dirancang untuk mendukung operasional Puskesmas modern dengan standar **Integrasi Layanan Primer (ILP)**. Sistem ini menghubungkan pelayanan front-office (pasien) dengan back-office (medis/admin) secara real-time.
+Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berbasis web yang dirancang untuk mendukung operasional Puskesmas modern dengan standar **Integrasi Layanan Primer (ILP)**. Sistem ini menghubungkan seluruh unit kerja mulai dari pendaftaran, pelayanan medis, penunjang, hingga keuangan secara real-time.
 
-## 2. Fitur Unggulan (Advanced & Enterprise)
-- **Administrasi Medis Digital:** Penerbitan Surat Keterangan Sakit, Sehat, dan Rujukan secara otomatis dengan format cetak standar.
-- **Audit Log Keamanan:** Perekaman aktivitas pengguna (Siapa, Kapan, Apa) untuk transparansi dan keamanan data.
-- **Layar Antrian TV (Digital Signage):** Tampilan full-screen untuk ruang tunggu dengan pemanggilan suara otomatis (Text-to-Speech).
-- **Rekam Medis Komprehensif:** Dokter dapat melihat riwayat kunjungan pasien sebelumnya (diagnosis & obat) saat melakukan pemeriksaan.
-- **Visual Analytics Dashboard:** Grafik tren kunjungan mingguan real-time.
-- **Epidemiology Report:** Analisis otomatis 10 Besar Penyakit (Morbiditas) berdasarkan kode ICD-10.
+## 2. Fitur Unggulan (Enterprise Grade)
+- **Full Patient Cycle:** Alur pasien lengkap mulai dari Daftar -> Poli -> Lab -> Farmasi -> Kasir -> Pulang.
+- **Laboratorium Terintegrasi:** Input hasil pemeriksaan lab yang langsung terhubung ke rekam medis pasien.
+- **Billing System (Kasir):** Perhitungan biaya otomatis (Jasa Medis + Obat + Lab + Admin) dan cetak kuitansi.
+- **Administrasi Medis:** Penerbitan Surat Keterangan Sakit, Sehat, dan Rujukan.
+- **Keamanan Audit:** Perekaman aktivitas pengguna (Audit Trail) untuk akuntabilitas.
+- **Layar Antrian TV:** Digital signage dengan panggilan suara otomatis.
 
 ## 3. Modul Utama
 
 ### A. Halaman Publik (Front Office)
 *Akses: Masyarakat Umum*
 - **Layar Antrian TV:** Menampilkan nomor yang dipanggil dan status per poli secara real-time.
-- **Beranda Interaktif:** Menampilkan informasi layanan, jadwal dokter, dan statistik.
-- **CMS Edukasi Kesehatan:** Portal artikel/berita kesehatan yang dikelola admin/dokter.
-- **Info Fasilitas:** Direktori fasilitas puskesmas lengkap dengan deskripsi.
+- **Beranda Interaktif:** Informasi layanan, jadwal dokter, dan statistik.
+- **CMS Edukasi Kesehatan:** Portal berita kesehatan.
 - **Ambil Antrian Online:** Wizard pendaftaran antrian mandiri + Cetak Tiket.
-- **Informasi Jadwal:** Jadwal praktik dokter real-time.
 
 ### B. Layanan Medis (Doctor's Desk)
 *Akses: Dokter, Perawat*
-- **Antrian Poli Real-time:** Dashboard khusus dokter untuk melihat pasien yang menunggu di polinya.
-- **Administrasi Surat:** Penerbitan surat keterangan medis dan rujukan.
-- **Pemeriksaan Medis (SOAP):**
-  - **Riwayat Medis Pasien:** Tab khusus untuk melihat history diagnosis dan resep terdahulu.
-  - **Subjektif:** Input keluhan utama & riwayat penyakit.
-  - **Objektif:** Input tanda vital (Tensi, Suhu, Nadi, RR, BB, TB).
-  - **Asesmen:** Input Diagnosis (ICD-10) dan diagnosis klinis.
-  - **Plan:** Perencanaan terapi dan edukasi.
-- **Resep Elektronik:** Input resep obat dinamis yang terintegrasi langsung dengan stok farmasi.
-- **Tindakan Medis:** Input tindakan/jasa medis yang dilakukan.
+- **Pemeriksaan Medis (SOAP):** Anamnesa, Fisik, Diagnosa (ICD-10), Plan.
+- **Riwayat Medis Pasien:** Akses histori kunjungan sebelumnya.
+- **Order Lab:** Dokter dapat membuat permintaan pemeriksaan laboratorium.
+- **Administrasi Surat:** Pembuatan surat sakit/rujukan.
 
-### C. Farmasi (Apotek)
+### C. Penunjang Medis (Laboratorium)
+*Akses: Petugas Lab*
+- **Antrian Lab:** Menerima permintaan dari dokter.
+- **Input Hasil:** Memasukkan parameter hasil lab (Hb, Leukosit, dll).
+
+### D. Farmasi (Apotek)
 *Akses: Apoteker*
-- **Antrian Resep Digital:** Menerima resep langsung dari meja dokter.
-- **Workflow Status:** Kelola status obat (Menunggu -> Disiapkan -> Selesai).
-- **Cetak Resep:** Fitur cetak salinan resep untuk pasien.
-- **Manajemen Stok:** CRUD data obat, pantau stok minimum & kedaluwarsa.
+- **E-Prescribing:** Menerima resep elektronik dari dokter.
+- **Manajemen Stok:** Integrasi stok obat real-time (FIFO).
 
-### D. Manajemen Admin (Back Office)
+### E. Keuangan (Kasir)
+*Akses: Kasir*
+- **Billing Otomatis:** Agregasi biaya dari Poli, Lab, dan Farmasi.
+- **Pembayaran:** Tunai/Non-Tunai & Cetak Struk/Kuitansi.
+
+### F. Manajemen Admin (Back Office)
 *Akses: Admin, Kepala Puskesmas*
-- **Dasbor Operasional:** Statistik real-time & Visual Charts.
-- **Manajemen SDM:** Pendaftaran pegawai & akun login.
-- **Manajemen Konten (CMS):** Kelola Artikel Edukasi & Fasilitas untuk web publik.
-- **Manajemen Poli & Klaster:** Pengaturan unit layanan yang terstruktur berdasarkan Klaster ILP.
+- **Dashboard Visual:** Grafik kunjungan mingguan & status antrian.
+- **Manajemen SDM & Poli:** Pengaturan pegawai dan unit layanan ILP.
 - **Laporan:**
-    - Laporan Kunjungan Harian/Bulanan.
-    - Laporan 10 Besar Penyakit (Grafik + Tabel).
-- **Keamanan & Audit:**
-    - Log Aktivitas Pengguna (Audit Trail).
-    - Pengaturan Profil & Kata Sandi Mandiri.
+    - Laporan Kunjungan & Pendapatan.
+    - Laporan 10 Besar Penyakit (Morbiditas).
+- **Audit Log:** Memantau aktivitas sistem.
 
 ## 4. Keamanan & Performa
-- **Transaction Handling:** Penyimpanan data kritis menggunakan Database Transaction.
+- **Transaction Handling:** Database Transaction (ACID) untuk integritas data medis & keuangan.
 - **Role-Based Access Control:** Validasi akses ketat per modul.
 - **Real-Time UI:** Livewire untuk interaksi tanpa reload (SPA).

@@ -43,12 +43,16 @@
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Layanan Medis</div>
             <x-nav-link href="/pemeriksaan" icon="🩺" :active="request()->is('pemeriksaan*')">Pemeriksaan</x-nav-link>
             <x-nav-link href="/surat-keterangan" icon="📝" :active="request()->is('surat-keterangan*')">Surat & Rujukan</x-nav-link>
-            <x-nav-link href="/farmasi/resep" icon="💊" :active="request()->is('farmasi/resep*')">Resep Masuk</x-nav-link>
-            <x-nav-link href="/pasien" icon="👥" :active="request()->is('pasien*')">Data Pasien</x-nav-link>
             
+            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Penunjang</div>
+            <x-nav-link href="/laboratorium" icon="🔬" :active="request()->is('laboratorium*')">Laboratorium</x-nav-link>
+            <x-nav-link href="/farmasi/resep" icon="💊" :active="request()->is('farmasi/resep*')">Farmasi</x-nav-link>
+            <x-nav-link href="/kasir" icon="💳" :active="request()->is('kasir*')">Kasir & Billing</x-nav-link>
+
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Manajemen</div>
-            <x-nav-link href="/farmasi/stok" icon="📦" :active="request()->is('farmasi/stok*')">Stok Obat</x-nav-link>
+            <x-nav-link href="/pasien" icon="👥" :active="request()->is('pasien*')">Data Pasien</x-nav-link>
             <x-nav-link href="/pegawai" icon="id-card" :active="request()->is('pegawai*')">Data Pegawai</x-nav-link>
+            <x-nav-link href="/farmasi/stok" icon="📦" :active="request()->is('farmasi/stok*')">Stok Obat</x-nav-link>
             <x-nav-link href="/publikasi/artikel" icon="📰" :active="request()->is('publikasi/artikel*')">Artikel Edukasi</x-nav-link>
             <x-nav-link href="/publikasi/fasilitas" icon="🏥" :active="request()->is('publikasi/fasilitas*')">Data Fasilitas</x-nav-link>
             
