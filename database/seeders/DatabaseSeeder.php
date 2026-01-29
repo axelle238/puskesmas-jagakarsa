@@ -58,25 +58,39 @@ class DatabaseSeeder extends Seeder
         $polis = [$poliKia, $poliGigi, $poliUmum, $poliLansia, $poliIgd];
 
         // 2. Pengguna & Pegawai
-        $createUser = function ($nama, $role, $nip, $jabatan) {
+        $createUser = function ($nama, $role, $nip, $jabatan, $nik, $status = 'PNS') {
             $user = Pengguna::create([
                 'nama_lengkap' => $nama,
                 'email' => strtolower(str_replace([' ', '.', 'dr.'], '', $nama)) . '@puskesmas.id',
-                'sandi' => Hash::make('password'),
+                'sandi' => Hash::make('12345678'),
                 'peran' => $role,
                 'no_telepon' => '0812' . rand(10000000, 99999999),
-                'alamat' => 'Jakarta'
+                'alamat' => 'Jagakarsa, Jakarta Selatan'
             ]);
-            $peg = Pegawai::create(['id_pengguna' => $user->id, 'nip' => $nip, 'jabatan' => $jabatan]);
+            
+            $peg = Pegawai::create([
+                'id_pengguna' => $user->id, 
+                'nip' => $nip, 
+                'nik' => $nik,
+                'jabatan' => $jabatan,
+                'status_kepegawaian' => $status,
+                'tempat_lahir' => 'Jakarta',
+                'tanggal_lahir' => '1985-05-20',
+                'jenis_kelamin' => rand(0,1) ? 'L' : 'P',
+                'pendidikan_terakhir' => 'S1',
+                'tanggal_masuk' => now()
+            ]);
             return $peg;
         };
 
-        $admin = $createUser('Admin Sistem', 'admin', '19900101', 'IT Staff');
-        $drBudi = $createUser('dr. Budi', 'dokter', '19850101', 'Dokter Umum');
-        $drSiti = $createUser('drg. Siti', 'dokter', '19860101', 'Dokter Gigi');
-        $drRina = $createUser('dr. Rina', 'dokter', '19870101', 'Dokter Umum');
-        $bidan = $createUser('Bidan Ani', 'perawat', '19950101', 'Bidan');
-        $kasir = $createUser('Joko Kasir', 'kasir', '19980101', 'Kasir');
+        $admin = $createUser('Admin Sistem', 'admin', '19900101001', 'IT Staff', '3174010101900001');
+        $drBudi = $createUser('dr. Budi Santoso', 'dokter', '19850101002', 'Dokter Umum', '3174010101850002');
+        $drSiti = $createUser('drg. Siti Aminah', 'dokter', '19860101003', 'Dokter Gigi', '3174010101860003');
+        $drRina = $createUser('dr. Rina Wijaya', 'dokter', '19870101004', 'Dokter Umum', '3174010101870004');
+        $bidan = $createUser('Bidan Ani', 'perawat', '19950101005', 'Bidan Pelaksana', '3174010101950005', 'Honorer');
+        $kasir = $createUser('Joko Kasir', 'kasir', '19980101006', 'Staf Keuangan', '3174010101980006', 'Kontrak');
+        $analis = $createUser('Analis Lab', 'analis', '19920101007', 'Laboran', '3174010101920007');
+        $kapus = $createUser('dr. Pratama (Kapus)', 'kapus', '19750101008', 'Kepala Puskesmas', '3174010101750008');
         
         $dokters = [$drBudi, $drSiti, $drRina];
 
