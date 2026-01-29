@@ -38,6 +38,8 @@ use App\Livewire\Publikasi\KelolaArtikel;
 use App\Livewire\Publikasi\KelolaFasilitas;
 use App\Livewire\Perencanaan\DaftarKegiatan; // Import Perencanaan
 use App\Livewire\Kesekretariatan\SuratMasuk; // Import Surat Masuk
+use App\Livewire\Kesekretariatan\SuratKeluar; // Import Surat Keluar
+use App\Livewire\Keuangan\BukuKasUmum; // Import Keuangan
 use App\Livewire\Promkes\JadwalPenyuluhan; // Import Promkes
 
 // -----------------------------------------------------------------------------
@@ -128,6 +130,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // -------------------------------------------------------------------------
+    // MANAJEMEN KEUANGAN (Admin & Kepala Puskesmas)
+    // -------------------------------------------------------------------------
+    Route::middleware('peran:admin,kapus')->prefix('keuangan')->group(function () {
+        Route::get('/buku-kas-umum', BukuKasUmum::class)->name('keuangan.bku');
+    });
+
+    // -------------------------------------------------------------------------
     // CMS PUBLIKASI (Admin & Dokter)
     // -------------------------------------------------------------------------
     Route::middleware('peran:admin,dokter')->prefix('publikasi')->group(function () {
@@ -147,6 +156,7 @@ Route::middleware(['auth'])->group(function () {
     // -------------------------------------------------------------------------
     Route::middleware('peran:admin,kapus')->prefix('surat')->group(function () {
         Route::get('/masuk', SuratMasuk::class)->name('surat.masuk');
+        Route::get('/keluar', SuratKeluar::class)->name('surat.keluar');
     });
 
     // -------------------------------------------------------------------------

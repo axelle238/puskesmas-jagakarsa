@@ -1,7 +1,7 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
 Status Dokumen: **TERGENERASI OTOMATIS**
-Terakhir Diupdate: 30 January 2026 01:55:56
+Terakhir Diupdate: 30 January 2026 01:59:52
 
 ## 1. Statistik Sistem
 - **Total Model Database:** 34
@@ -71,10 +71,12 @@ Terakhir Diupdate: 30 January 2026 01:55:56
 - **GET|HEAD** `/pengaturan/instansi` -> `App\Livewire\Pengaturan\ProfilInstansiController`
 - **GET|HEAD** `/pengaturan/keamanan` -> `App\Livewire\Pengaturan\ManajemenIT`
 - **GET|HEAD** `/pengaturan/log` -> `App\Livewire\Pengaturan\LogAktivitas`
+- **GET|HEAD** `/keuangan/buku-kas-umum` -> `App\Livewire\Keuangan\BukuKasUmum`
 - **GET|HEAD** `/publikasi/artikel` -> `App\Livewire\Publikasi\KelolaArtikel`
 - **GET|HEAD** `/publikasi/fasilitas` -> `App\Livewire\Publikasi\KelolaFasilitas`
 - **GET|HEAD** `/perencanaan/kegiatan` -> `App\Livewire\Perencanaan\DaftarKegiatan`
 - **GET|HEAD** `/surat/masuk` -> `App\Livewire\Kesekretariatan\SuratMasuk`
+- **GET|HEAD** `/surat/keluar` -> `App\Livewire\Kesekretariatan\SuratKeluar`
 - **GET|HEAD** `/promkes/jadwal` -> `App\Livewire\Promkes\JadwalPenyuluhan`
 - **GET|HEAD** `/laporan/kunjungan` -> `App\Livewire\Laporan\LaporanKunjungan`
 - **GET|HEAD** `/laporan/penyakit` -> `App\Livewire\Laporan\LaporanPenyakit`
