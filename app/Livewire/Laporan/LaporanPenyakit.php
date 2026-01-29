@@ -3,12 +3,10 @@
 namespace App\Livewire\Laporan;
 
 use App\Models\RekamMedis;
-use Livewire\Component;
-use Livewire\Attributes\Title;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
-#[Title('Laporan 10 Besar Penyakit')]
 class LaporanPenyakit extends Component
 {
     public $bulan;
@@ -16,16 +14,17 @@ class LaporanPenyakit extends Component
 
     public function mount()
     {
-        $this->bulan = Carbon::now()->month;
-        $this->tahun = Carbon::now()->year;
+        $this->bulan = date('m');
+        $this->tahun = date('Y');
     }
 
     public function render()
     {
-        // Query Agregat untuk menghitung frekuensi diagnosa
-        $penyakits = RekamMedis::select('diagnosis_kode', 'asesmen', DB::raw('count(*) as total'))
-            ->whereYear('created_at', $this->tahun)
+        // Top 10 Penyakit Terbanyak
+        // Group by diagnosis_kode
+        $laporan = RekamMedis::select('diagnosis_kode', 'asesmen', DB::raw('count(*) as total'))
             ->whereMonth('created_at', $this->bulan)
+            ->whereYear('created_at', $this->tahun)
             ->whereNotNull('diagnosis_kode')
             ->groupBy('diagnosis_kode', 'asesmen')
             ->orderByDesc('total')
@@ -33,7 +32,7 @@ class LaporanPenyakit extends Component
             ->get();
 
         return view('livewire.laporan.laporan-penyakit', [
-            'penyakits' => $penyakits
-        ])->layout('components.layouts.admin');
+            'laporan' => $laporan
+        ])->layout('components.layouts.admin', ['title' => 'Laporan Penyakit (LB1)']);
     }
 }

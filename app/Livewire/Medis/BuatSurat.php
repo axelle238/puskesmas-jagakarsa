@@ -2,106 +2,78 @@
 
 namespace App\Livewire\Medis;
 
-use App\Models\SuratKeterangan;
 use App\Models\Pasien;
-use App\Models\Pegawai;
-use App\Models\ActivityLog;
-use Illuminate\Support\Facades\Auth;
+use App\Models\SuratKeterangan;
 use Livewire\Component;
-use Livewire\Attributes\Title;
-use Carbon\Carbon;
 
-#[Title('Buat Surat Keterangan')]
 class BuatSurat extends Component
 {
-    // Search Pasien
-    public $cari_pasien = '';
-    public $hasil_pencarian = [];
-    public $pasien_terpilih = null;
-
-    // Form Surat
-    public $jenis_surat = 'Surat Keterangan Sakit';
+    public $nik;
+    public $pasien;
+    public $jenis_surat = 'sakit';
+    
+    // Form Sakit
+    public $lama_istirahat = 3;
     public $tanggal_mulai;
-    public $lama_istirahat = 1;
-    public $keterangan_tambahan;
-    public $tujuan_rujukan;
+
+    // Form Sehat
+    public $bb;
+    public $tb;
+    public $tensi;
+    public $buta_warna = 'Tidak';
+    public $keperluan;
+
+    public $suratBaru;
 
     public function mount()
     {
         $this->tanggal_mulai = date('Y-m-d');
     }
 
-    public function updatedCariPasien()
+    public function cariPasien()
     {
-        if (strlen($this->cari_pasien) > 2) {
-            $this->hasil_pencarian = Pasien::where('nama_lengkap', 'like', '%' . $this->cari_pasien . '%')
-                ->orWhere('no_rekam_medis', 'like', '%' . $this->cari_pasien . '%')
-                ->limit(5)
-                ->get();
-        } else {
-            $this->hasil_pencarian = [];
+        $this->validate(['nik' => 'required']);
+        $this->pasien = Pasien::where('nik', $this->nik)->first();
+        if (!$this->pasien) {
+            session()->flash('error', 'Pasien tidak ditemukan.');
         }
-    }
-
-    public function pilihPasien($id)
-    {
-        $this->pasien_terpilih = Pasien::find($id);
-        $this->cari_pasien = ''; // Reset search
-        $this->hasil_pencarian = [];
     }
 
     public function simpanSurat()
     {
         $this->validate([
-            'pasien_terpilih' => 'required',
-            'jenis_surat' => 'required',
-            'tanggal_mulai' => 'required|date',
+            'pasien' => 'required',
+            'jenis_surat' => 'required'
         ]);
 
-        $dokter = Pegawai::where('id_pengguna', Auth::id())->first();
+        $noSurat = 'SRT-' . date('Ymd') . '-' . rand(100,999);
         
-        if (!$dokter) {
-            session()->flash('error', 'Akun Anda tidak terdaftar sebagai tenaga medis.');
-            return;
+        $data = [
+            'no_surat' => $noSurat,
+            'jenis_surat' => $this->jenis_surat,
+            'id_pasien' => $this->pasien->id,
+            'id_dokter' => auth()->user()->pegawai->id ?? 1,
+        ];
+
+        if ($this->jenis_surat == 'sakit') {
+            $data['tanggal_mulai'] = $this->tanggal_mulai;
+            $data['lama_istirahat'] = $this->lama_istirahat;
+        } else {
+            $data['keperluan'] = $this->keperluan;
+            $data['catatan_fisik'] = [
+                'bb' => $this->bb,
+                'tb' => $this->tb,
+                'tensi' => $this->tensi,
+                'buta_warna' => $this->buta_warna
+            ];
         }
 
-        // Generate No Surat: SK/Tahun/Bulan/Urut
-        $count = SuratKeterangan::whereYear('created_at', Carbon::now()->year)->count() + 1;
-        $noSurat = 'SK/' . date('Y') . '/' . date('m') . '/' . str_pad($count, 4, '0', STR_PAD_LEFT);
-
-        SuratKeterangan::create([
-            'no_surat' => $noSurat,
-            'id_pasien' => $this->pasien_terpilih->id,
-            'id_dokter' => $dokter->id,
-            'jenis_surat' => $this->jenis_surat,
-            'tanggal_mulai' => $this->tanggal_mulai,
-            'lama_istirahat' => ($this->jenis_surat == 'Surat Keterangan Sakit') ? $this->lama_istirahat : null,
-            'keterangan_tambahan' => $this->keterangan_tambahan,
-            'tujuan_rujukan' => ($this->jenis_surat == 'Rujukan') ? $this->tujuan_rujukan : null,
-        ]);
-
-        // Catat Audit Log
-        ActivityLog::catat('CREATE', 'Surat', "Membuat $this->jenis_surat untuk pasien " . $this->pasien_terpilih->nama_lengkap);
-
-        session()->flash('pesan', 'Surat berhasil dibuat: ' . $noSurat);
-        $this->reset(['pasien_terpilih', 'keterangan_tambahan', 'tujuan_rujukan']);
+        $this->suratBaru = SuratKeterangan::create($data);
+        session()->flash('sukses', 'Surat berhasil dibuat.');
     }
 
     public function render()
     {
-        // List Surat Terakhir yang dibuat user ini
-        $riwayatSurat = [];
-        $dokter = Pegawai::where('id_pengguna', Auth::id())->first();
-        if ($dokter) {
-            $riwayatSurat = SuratKeterangan::where('id_dokter', $dokter->id)
-                ->with('pasien')
-                ->latest()
-                ->take(5)
-                ->get();
-        }
-
-        return view('livewire.medis.buat-surat', [
-            'riwayatSurat' => $riwayatSurat
-        ])->layout('components.layouts.admin');
+        return view('livewire.medis.buat-surat')->layout('components.layouts.admin', ['title' => 'Buat Surat Keterangan']);
     }
 }

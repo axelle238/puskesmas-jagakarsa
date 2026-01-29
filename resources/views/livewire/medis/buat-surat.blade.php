@@ -1,175 +1,148 @@
-<div>
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Administrasi Surat Medis</h1>
-    </div>
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold text-slate-900 mb-6">Pembuatan Surat Keterangan Dokter</h1>
 
-    @if (session()->has('pesan'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-            {{ session('pesan') }}
-        </div>
-    @endif
-    @if (session()->has('error'))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-            {{ session('error') }}
+    @if(session('sukses'))
+        <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg flex justify-between items-center">
+            <span>{{ session('sukses') }}</span>
+            <button onclick="window.print()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold">Cetak Surat</button>
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <!-- Kolom Kiri: Form -->
-        <div class="lg:col-span-2 space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Cari Pasien -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 h-fit">
+            <h3 class="font-bold mb-4">1. Cari Pasien</h3>
+            <div class="flex gap-2 mb-4">
+                <input type="text" wire:model="nik" class="w-full rounded-lg border-slate-300" placeholder="Masukkan NIK">
+                <button wire:click="cariPasien" class="bg-blue-600 text-white px-3 py-2 rounded-lg">Cari</button>
+            </div>
+            @if($pasien)
+                <div class="bg-blue-50 p-3 rounded-lg text-sm">
+                    <p class="font-bold">{{ $pasien->nama_lengkap }}</p>
+                    <p>{{ $pasien->nik }}</p>
+                    <p>{{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->age }} Tahun</p>
+                </div>
+            @endif
+            @if(session('error')) <p class="text-red-500 text-sm mt-2">{{ session('error') }}</p> @endif
+        </div>
+
+        <!-- Form Surat -->
+        <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+            <h3 class="font-bold mb-4">2. Detail Surat</h3>
             
-            <!-- Pencarian Pasien -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative">
-                <h3 class="font-bold text-gray-700 mb-4">1. Pilih Pasien</h3>
-                
-                @if(!$pasien_terpilih)
-                    <div class="relative">
-                        <input type="text" wire:model.live.debounce.300ms="cari_pasien" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500" placeholder="Ketik Nama atau No. RM Pasien...">
-                        @if(!empty($hasil_pencarian))
-                            <div class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
-                                @foreach($hasil_pencarian as $p)
-                                    <div wire:click="pilihPasien({{ $p->id }})" class="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-50 last:border-0">
-                                        <div class="font-bold text-gray-800">{{ $p->nama_lengkap }}</div>
-                                        <div class="text-xs text-gray-500">{{ $p->no_rekam_medis }} - {{ \Carbon\Carbon::parse($p->tanggal_lahir)->age }} Thn</div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
+            @if($pasien)
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2">Jenis Surat</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 border p-3 rounded-lg cursor-pointer {{ $jenis_surat == 'sakit' ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200' }}">
+                            <input type="radio" wire:model.live="jenis_surat" value="sakit" class="text-emerald-600">
+                            <span>Surat Sakit (Sick Leave)</span>
+                        </label>
+                        <label class="flex items-center gap-2 border p-3 rounded-lg cursor-pointer {{ $jenis_surat == 'sehat' ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200' }}">
+                            <input type="radio" wire:model.live="jenis_surat" value="sehat" class="text-emerald-600">
+                            <span>Surat Sehat (Health Cert)</span>
+                        </label>
+                    </div>
+                </div>
+
+                @if($jenis_surat == 'sakit')
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1">Mulai Tanggal</label>
+                            <input type="date" wire:model="tanggal_mulai" class="w-full rounded-lg border-slate-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1">Lama Istirahat (Hari)</label>
+                            <input type="number" wire:model="lama_istirahat" class="w-full rounded-lg border-slate-300">
+                        </div>
                     </div>
                 @else
-                    <div class="flex items-center justify-between bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <div class="font-bold text-blue-800 text-lg">{{ $pasien_terpilih->nama_lengkap }}</div>
-                            <div class="text-sm text-blue-600">{{ $pasien_terpilih->no_rekam_medis }} | {{ $pasien_terpilih->alamat_lengkap }}</div>
+                            <label class="block text-sm text-slate-600 mb-1">Berat Badan (Kg)</label>
+                            <input type="number" wire:model="bb" class="w-full rounded-lg border-slate-300">
                         </div>
-                        <button wire:click="$set('pasien_terpilih', null)" class="text-red-500 hover:text-red-700 font-bold text-sm">Ganti</button>
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1">Tinggi Badan (cm)</label>
+                            <input type="number" wire:model="tb" class="w-full rounded-lg border-slate-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1">Tekanan Darah</label>
+                            <input type="text" wire:model="tensi" class="w-full rounded-lg border-slate-300" placeholder="120/80">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1">Buta Warna</label>
+                            <select wire:model="buta_warna" class="w-full rounded-lg border-slate-300">
+                                <option value="Tidak">Tidak</option>
+                                <option value="Ya">Ya</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm text-slate-600 mb-1">Keperluan</label>
+                            <textarea wire:model="keperluan" class="w-full rounded-lg border-slate-300" placeholder="Contoh: Melamar Pekerjaan"></textarea>
+                        </div>
                     </div>
                 @endif
-            </div>
 
-            <!-- Detail Surat -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="font-bold text-gray-700 mb-4">2. Detail Surat</h3>
-                
-                <form wire:submit="simpanSurat" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Surat</label>
-                        <select wire:model.live="jenis_surat" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                            <option value="Surat Keterangan Sakit">Surat Keterangan Sakit</option>
-                            <option value="Surat Keterangan Sehat">Surat Keterangan Sehat</option>
-                            <option value="Rujukan">Surat Rujukan RS</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Pemeriksaan</label>
-                        <input type="date" wire:model="tanggal_mulai" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                    </div>
-
-                    <!-- Input Kondisional -->
-                    @if($jenis_surat == 'Surat Keterangan Sakit')
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Lama Istirahat (Hari)</label>
-                            <input type="number" wire:model="lama_istirahat" min="1" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                        </div>
-                    @endif
-
-                    @if($jenis_surat == 'Surat Keterangan Sehat')
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Catatan Fisik (TB/BB/Buta Warna)</label>
-                            <textarea wire:model="keterangan_tambahan" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Contoh: TB: 170cm, BB: 65kg, Tidak Buta Warna"></textarea>
-                        </div>
-                    @endif
-
-                    @if($jenis_surat == 'Rujukan')
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">RS Tujuan Rujukan</label>
-                            <input type="text" wire:model="tujuan_rujukan" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Nama Rumah Sakit...">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Diagnosa Sementara</label>
-                            <textarea wire:model="keterangan_tambahan" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500"></textarea>
-                        </div>
-                    @endif
-
-                    <div class="pt-4">
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow transition disabled:opacity-50" {{ !$pasien_terpilih ? 'disabled' : '' }}>
-                            📝 Terbitkan Surat
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Kolom Kanan: Riwayat -->
-        <div class="space-y-6">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 class="font-bold text-gray-700 mb-4">Riwayat Surat Terakhir</h3>
-                <div class="space-y-4">
-                    @forelse($riwayatSurat as $surat)
-                        <div class="border-b border-gray-100 pb-3 last:border-0">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <div class="font-bold text-sm text-gray-800">{{ $surat->jenis_surat }}</div>
-                                    <div class="text-xs text-gray-500">{{ $surat->pasien->nama_lengkap }}</div>
-                                </div>
-                                <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded font-mono">{{ $surat->no_surat }}</span>
-                            </div>
-                            <div class="mt-2 text-right">
-                                <button onclick="printSurat('surat-{{ $surat->id }}')" class="text-blue-600 text-xs hover:underline font-bold">🖨️ Cetak Ulang</button>
-                            </div>
-
-                            <!-- Layout Cetak Hidden -->
-                            <div id="surat-{{ $surat->id }}" class="hidden print:block print:visible p-12 bg-white text-black font-serif leading-relaxed">
-                                <div class="text-center border-b-4 border-double border-black pb-4 mb-8">
-                                    <h2 class="text-2xl font-bold uppercase">Puskesmas Jagakarsa</h2>
-                                    <p>Jl. Moh. Kahfi 1, Jagakarsa, Jakarta Selatan</p>
-                                </div>
-                                
-                                <h3 class="text-center font-bold text-xl uppercase underline mb-8">{{ $surat->jenis_surat }}</h3>
-                                
-                                <p>Yang bertanda tangan di bawah ini menerangkan bahwa:</p>
-                                <table class="w-full my-4">
-                                    <tr><td class="w-32 py-1">Nama</td><td>: <strong>{{ $surat->pasien->nama_lengkap }}</strong></td></tr>
-                                    <tr><td class="w-32 py-1">Umur</td><td>: {{ \Carbon\Carbon::parse($surat->pasien->tanggal_lahir)->age }} Tahun</td></tr>
-                                    <tr><td class="w-32 py-1">Alamat</td><td>: {{ $surat->pasien->alamat_lengkap }}</td></tr>
-                                </table>
-
-                                @if($surat->jenis_surat == 'Surat Keterangan Sakit')
-                                    <p>Perlu beristirahat karena sakit selama <strong>{{ $surat->lama_istirahat }} hari</strong>, terhitung mulai tanggal {{ \Carbon\Carbon::parse($surat->tanggal_mulai)->isoFormat('D MMMM Y') }}.</p>
-                                @elseif($surat->jenis_surat == 'Surat Keterangan Sehat')
-                                    <p>Telah diperiksa kesehatannya dan dinyatakan <strong>SEHAT</strong>.</p>
-                                    <p class="mt-2 text-sm">{{ $surat->keterangan_tambahan }}</p>
-                                @elseif($surat->jenis_surat == 'Rujukan')
-                                    <p>Dirujuk ke <strong>{{ $surat->tujuan_rujukan }}</strong>.</p>
-                                    <p class="mt-2">Diagnosa: {{ $surat->keterangan_tambahan }}</p>
-                                @endif
-
-                                <div class="mt-16 text-right">
-                                    <p>Jakarta, {{ \Carbon\Carbon::parse($surat->created_at)->isoFormat('D MMMM Y') }}</p>
-                                    <p class="mb-20">Dokter Pemeriksa,</p>
-                                    <p class="font-bold underline">{{ Auth::user()->nama_lengkap }}</p>
-                                    <p class="text-sm">SIP: {{ \App\Models\Pegawai::where('id_pengguna', Auth::id())->first()->sip ?? '-' }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-center text-gray-400 text-sm">Belum ada surat dibuat.</p>
-                    @endforelse
+                <button wire:click="simpanSurat" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg">
+                    Simpan & Generate Surat
+                </button>
+            @else
+                <div class="text-center py-12 text-slate-400 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+                    Silakan cari pasien terlebih dahulu.
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 
-    <script>
-        function printSurat(elementId) {
-            const printContent = document.getElementById(elementId).innerHTML;
-            const originalContents = document.body.innerHTML;
-            document.body.innerHTML = printContent;
-            window.print();
-            document.body.innerHTML = originalContents;
-            window.location.reload(); 
-        }
-    </script>
+    <!-- PREVIEW CETAK (Hidden on screen, Visible on print) -->
+    @if($suratBaru)
+    <div class="hidden print:block fixed inset-0 bg-white z-[100] p-12">
+        <div class="text-center border-b-2 border-black pb-4 mb-6">
+            <h1 class="text-2xl font-bold uppercase">Puskesmas Jagakarsa</h1>
+            <p>Jl. Moh. Kahfi 1, Jagakarsa, Jakarta Selatan</p>
+            <p class="text-sm">Telp: (021) 786-xxxx | Email: info@puskesmas-jagakarsa.go.id</p>
+        </div>
+
+        <div class="text-center mb-8">
+            <h2 class="text-xl font-bold underline mb-1">SURAT KETERANGAN {{ $suratBaru->jenis_surat == 'sakit' ? 'SAKIT' : 'SEHAT' }}</h2>
+            <p>Nomor: {{ $suratBaru->no_surat }}</p>
+        </div>
+
+        <p class="mb-4">Yang bertanda tangan di bawah ini, Dokter Puskesmas Jagakarsa menerangkan bahwa:</p>
+
+        <table class="w-full mb-6">
+            <tr><td class="w-40 py-1">Nama</td><td>: {{ $pasien->nama_lengkap }}</td></tr>
+            <tr><td class="w-40 py-1">Umur</td><td>: {{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->age }} Tahun</td></tr>
+            <tr><td class="w-40 py-1">Jenis Kelamin</td><td>: {{ $pasien->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</td></tr>
+            <tr><td class="w-40 py-1">Alamat</td><td>: {{ $pasien->alamat_lengkap }}</td></tr>
+        </table>
+
+        @if($suratBaru->jenis_surat == 'sakit')
+            <p class="mb-4 text-justify">
+                Berdasarkan hasil pemeriksaan medis, pasien tersebut sedang dalam keadaan sakit dan perlu beristirahat selama 
+                <strong>{{ $suratBaru->lama_istirahat }} hari</strong> terhitung mulai tanggal 
+                <strong>{{ \Carbon\Carbon::parse($suratBaru->tanggal_mulai)->format('d M Y') }}</strong>.
+            </p>
+        @else
+            <p class="mb-4">Berdasarkan pemeriksaan fisik dengan hasil:</p>
+            <ul class="list-disc pl-8 mb-4">
+                <li>Berat Badan: {{ $suratBaru->catatan_fisik['bb'] ?? '-' }} Kg</li>
+                <li>Tinggi Badan: {{ $suratBaru->catatan_fisik['tb'] ?? '-' }} cm</li>
+                <li>Tekanan Darah: {{ $suratBaru->catatan_fisik['tensi'] ?? '-' }} mmHg</li>
+                <li>Buta Warna: {{ $suratBaru->catatan_fisik['buta_warna'] ?? '-' }}</li>
+            </ul>
+            <p class="mb-4">Dinyatakan <strong>SEHAT</strong> untuk keperluan: {{ $suratBaru->keperluan }}</p>
+        @endif
+
+        <div class="flex justify-end mt-12">
+            <div class="text-center">
+                <p>Jakarta, {{ date('d F Y') }}</p>
+                <p class="mb-20">Dokter Pemeriksa,</p>
+                <p class="font-bold underline">{{ auth()->user()->nama_lengkap }}</p>
+                <p>SIP. {{ auth()->user()->pegawai->sip ?? '-' }}</p>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>

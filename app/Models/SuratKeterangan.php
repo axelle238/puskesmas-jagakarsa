@@ -3,29 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SuratKeterangan extends Model
 {
     protected $table = 'surat_keterangan';
+    protected $guarded = [];
 
-    protected $fillable = [
-        'no_surat',
-        'id_pasien',
-        'id_dokter',
-        'jenis_surat',
-        'tanggal_mulai',
-        'lama_istirahat',
-        'keterangan_tambahan',
-        'tujuan_rujukan'
+    protected $casts = [
+        'tanggal_mulai' => 'date',
+        'catatan_fisik' => 'array', // Simpan BB/TB/Tensi sebagai JSON
     ];
 
-    public function pasien(): BelongsTo
+    public function pasien()
     {
         return $this->belongsTo(Pasien::class, 'id_pasien');
     }
 
-    public function dokter(): BelongsTo
+    public function dokter()
     {
         return $this->belongsTo(Pegawai::class, 'id_dokter');
     }
