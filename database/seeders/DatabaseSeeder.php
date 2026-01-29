@@ -19,30 +19,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Buat Klaster ILP (Standar Kemenkes)
-        $klaster = [
-            ['nama_klaster' => 'Klaster 1: Manajemen', 'deskripsi_layanan' => 'Ketatausahaan dan Manajemen Puskesmas'],
-            ['nama_klaster' => 'Klaster 2: Ibu dan Anak', 'deskripsi_layanan' => 'Kesehatan Ibu, Anak, dan Remaja'],
-            ['nama_klaster' => 'Klaster 3: Dewasa dan Lansia', 'deskripsi_layanan' => 'Kesehatan Usia Produktif dan Lanjut Usia'],
-            ['nama_klaster' => 'Klaster 4: Penanggulangan Penyakit', 'deskripsi_layanan' => 'Penyakit Menular dan KLB'],
-            ['nama_klaster' => 'Lintas Klaster', 'deskripsi_layanan' => 'Laboratorium, Farmasi, dan Gawat Darurat'],
-        ];
+        $klaster1 = KlasterIlp::create(['nama_klaster' => 'Klaster 1: Manajemen', 'deskripsi_layanan' => 'Ketatausahaan dan Manajemen Puskesmas']);
+        $klaster2 = KlasterIlp::create(['nama_klaster' => 'Klaster 2: Ibu dan Anak', 'deskripsi_layanan' => 'Kesehatan Ibu, Anak, dan Remaja']);
+        $klaster3 = KlasterIlp::create(['nama_klaster' => 'Klaster 3: Dewasa dan Lansia', 'deskripsi_layanan' => 'Kesehatan Usia Produktif dan Lanjut Usia']);
+        $klaster4 = KlasterIlp::create(['nama_klaster' => 'Klaster 4: Penanggulangan Penyakit', 'deskripsi_layanan' => 'Penyakit Menular dan KLB']);
+        $klaster5 = KlasterIlp::create(['nama_klaster' => 'Lintas Klaster', 'deskripsi_layanan' => 'Laboratorium, Farmasi, dan Gawat Darurat']);
 
-        foreach ($klaster as $k) {
-            KlasterIlp::create($k);
-        }
-
-        // 2. Buat Poli / Unit Layanan
-        $polis = [
-            ['nama_poli' => 'Poli Umum', 'deskripsi' => 'Pelayanan kesehatan umum dasar', 'lokasi_ruangan' => 'Lantai 1 - R.101'],
-            ['nama_poli' => 'Poli Gigi & Mulut', 'deskripsi' => 'Kesehatan gigi dasar dan tindakan', 'lokasi_ruangan' => 'Lantai 1 - R.102'],
-            ['nama_poli' => 'Poli KIA (Ibu & Anak)', 'deskripsi' => 'Pemeriksaan hamil dan balita', 'lokasi_ruangan' => 'Lantai 1 - R.103'],
-            ['nama_poli' => 'Poli Lansia', 'deskripsi' => 'Pelayanan prioritas lansia', 'lokasi_ruangan' => 'Lantai 1 - R.104'],
-            ['nama_poli' => 'IGD 24 Jam', 'deskripsi' => 'Penanganan gawat darurat', 'lokasi_ruangan' => 'Lantai Dasar'],
-        ];
-
-        foreach ($polis as $p) {
-            Poli::create($p);
-        }
+        // 2. Buat Poli / Unit Layanan Terhubung dengan Klaster
+        Poli::create(['id_klaster' => $klaster3->id, 'nama_poli' => 'Poli Umum', 'deskripsi' => 'Pelayanan kesehatan umum dasar', 'lokasi_ruangan' => 'Lantai 1 - R.101']);
+        Poli::create(['id_klaster' => $klaster3->id, 'nama_poli' => 'Poli Gigi & Mulut', 'deskripsi' => 'Kesehatan gigi dasar dan tindakan', 'lokasi_ruangan' => 'Lantai 1 - R.102']);
+        Poli::create(['id_klaster' => $klaster2->id, 'nama_poli' => 'Poli KIA (Ibu & Anak)', 'deskripsi' => 'Pemeriksaan hamil dan balita', 'lokasi_ruangan' => 'Lantai 1 - R.103']);
+        Poli::create(['id_klaster' => $klaster3->id, 'nama_poli' => 'Poli Lansia', 'deskripsi' => 'Pelayanan prioritas lansia', 'lokasi_ruangan' => 'Lantai 1 - R.104']);
+        Poli::create(['id_klaster' => $klaster5->id, 'nama_poli' => 'IGD 24 Jam', 'deskripsi' => 'Penanganan gawat darurat', 'lokasi_ruangan' => 'Lantai Dasar']);
+        
+        // Poli Tambahan untuk ILP
+        Poli::create(['id_klaster' => $klaster2->id, 'nama_poli' => 'MTBS / MTBM', 'deskripsi' => 'Manajemen Terpadu Balita Sakit', 'lokasi_ruangan' => 'Lantai 1 - R.105']);
+        Poli::create(['id_klaster' => $klaster4->id, 'nama_poli' => 'Poli TB / Paru', 'deskripsi' => 'Penanganan Tuberkulosis', 'lokasi_ruangan' => 'Lantai 2 - R.201']);
 
         // 3. Buat Tindakan Medis Dasar
         $poliUmum = Poli::where('nama_poli', 'Poli Umum')->first();
@@ -68,6 +60,11 @@ class DatabaseSeeder extends Seeder
             'kode_obat' => 'OBT-003', 'nama_obat' => 'Vitamin C 50mg', 'kategori' => 'Obat Bebas', 
             'satuan' => 'Tablet', 'stok_saat_ini' => 2000, 'stok_minimum' => 200, 
             'harga_satuan' => 200, 'tanggal_kedaluwarsa' => '2028-01-01'
+        ]);
+        Obat::create([
+            'kode_obat' => 'OBT-004', 'nama_obat' => 'OAT (Paket Obat TB)', 'kategori' => 'Obat Keras', 
+            'satuan' => 'Paket', 'stok_saat_ini' => 50, 'stok_minimum' => 10, 
+            'harga_satuan' => 0, 'tanggal_kedaluwarsa' => '2026-12-31'
         ]);
 
         // 5. Buat Akun Admin

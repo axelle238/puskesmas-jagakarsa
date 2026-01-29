@@ -3,6 +3,7 @@
 namespace App\Livewire\Master;
 
 use App\Models\Poli;
+use App\Models\KlasterIlp;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
@@ -13,23 +14,25 @@ class DaftarPoli extends Component
     public $modeEdit = false;
     public $idPoli;
 
-    public $nama_poli, $deskripsi, $lokasi_ruangan;
+    public $id_klaster, $nama_poli, $deskripsi, $lokasi_ruangan;
 
     protected $rules = [
         'nama_poli' => 'required|string|max:255',
+        'id_klaster' => 'required|exists:klaster_ilp,id',
         'lokasi_ruangan' => 'nullable|string',
     ];
 
     public function render()
     {
         return view('livewire.master.daftar-poli', [
-            'polis' => Poli::withCount('rekamMedis')->get()
+            'polis' => Poli::with('klaster')->withCount('rekamMedis')->get(),
+            'klasters' => KlasterIlp::all()
         ])->layout('components.layouts.admin');
     }
 
     public function tambah()
     {
-        $this->reset(['nama_poli', 'deskripsi', 'lokasi_ruangan', 'idPoli']);
+        $this->reset(['id_klaster', 'nama_poli', 'deskripsi', 'lokasi_ruangan', 'idPoli']);
         $this->modeEdit = false;
         $this->tampilkanModal = true;
     }
@@ -38,6 +41,7 @@ class DaftarPoli extends Component
     {
         $poli = Poli::find($id);
         $this->idPoli = $id;
+        $this->id_klaster = $poli->id_klaster;
         $this->nama_poli = $poli->nama_poli;
         $this->deskripsi = $poli->deskripsi;
         $this->lokasi_ruangan = $poli->lokasi_ruangan;
@@ -50,19 +54,18 @@ class DaftarPoli extends Component
     {
         $this->validate();
 
+        $data = [
+            'id_klaster' => $this->id_klaster,
+            'nama_poli' => $this->nama_poli,
+            'deskripsi' => $this->deskripsi,
+            'lokasi_ruangan' => $this->lokasi_ruangan,
+        ];
+
         if ($this->modeEdit) {
-            Poli::find($this->idPoli)->update([
-                'nama_poli' => $this->nama_poli,
-                'deskripsi' => $this->deskripsi,
-                'lokasi_ruangan' => $this->lokasi_ruangan,
-            ]);
+            Poli::find($this->idPoli)->update($data);
             session()->flash('pesan', 'Poli berhasil diperbarui.');
         } else {
-            Poli::create([
-                'nama_poli' => $this->nama_poli,
-                'deskripsi' => $this->deskripsi,
-                'lokasi_ruangan' => $this->lokasi_ruangan,
-            ]);
+            Poli::create($data);
             session()->flash('pesan', 'Poli baru berhasil ditambahkan.');
         }
 

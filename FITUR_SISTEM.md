@@ -1,6 +1,6 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
-Status Dokumen: **FINAL RELEASE**
+Status Dokumen: **FINAL RELEASE v1.1 (ILP INTEGRATED)**
 Terakhir Diupdate: 29 January 2026
 
 ## 1. Ikhtisar Sistem
@@ -12,7 +12,17 @@ Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berba
 - **Database:** MySQL (Relational)
 - **Bahasa:** 100% Bahasa Indonesia
 
-## 3. Modul Utama & Fitur Lengkap
+## 3. Integrasi Layanan Primer (ILP)
+Sistem ini tidak hanya mencatat data, tetapi menerapkan struktur ILP Kemenkes secara native dalam database:
+- **Klaster 1 (Manajemen):** Dashboard Admin & Laporan.
+- **Klaster 2 (Ibu & Anak):** Poli KIA, MTBS.
+- **Klaster 3 (Dewasa & Lansia):** Poli Umum, Gigi, Lansia.
+- **Klaster 4 (Penyakit Menular):** Poli TB/Paru.
+- **Lintas Klaster:** Farmasi, Laboratorium, IGD.
+
+Setiap Poli/Unit Layanan wajib terhubung dengan salah satu Klaster di atas, memastikan pelaporan yang akurat sesuai standar baru.
+
+## 4. Modul Utama & Fitur Lengkap
 
 ### A. Halaman Publik (Front Office)
 *Akses: Masyarakat Umum*
@@ -41,10 +51,10 @@ Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berba
 *Akses: Admin, Kepala Puskesmas*
 - **Dasbor Operasional:** Statistik real-time.
 - **Manajemen SDM:** Pendaftaran pegawai & akun login.
-- **Manajemen Master:** Pengaturan Poli & Jadwal Praktik.
+- **Manajemen Poli & Klaster:** Pengaturan unit layanan yang terstruktur berdasarkan Klaster ILP.
 - **Laporan Kunjungan:** Rekapitulasi pasien dan estimasi pendapatan jasa medis.
 
-## 4. Keamanan & Performa
+## 5. Keamanan & Performa
 - **Transaction Handling:** Penyimpanan data kritis menggunakan Database Transaction.
 - **Role-Based Access Control:** Validasi akses ketat per modul.
 - **Real-Time UI:** Livewire untuk interaksi tanpa reload.

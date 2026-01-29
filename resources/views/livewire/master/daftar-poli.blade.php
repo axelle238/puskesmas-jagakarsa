@@ -25,7 +25,14 @@
                         <button wire:click="hapus({{ $poli->id }})" wire:confirm="Hapus poli ini?" class="text-gray-400 hover:text-red-600">🗑️</button>
                     </div>
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $poli->nama_poli }}</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $poli->nama_poli }}</h3>
+                
+                @if($poli->klaster)
+                    <span class="inline-block bg-purple-50 text-purple-700 text-xs px-2 py-0.5 rounded mb-2 font-medium border border-purple-100">
+                        {{ $poli->klaster->nama_klaster }}
+                    </span>
+                @endif
+
                 <p class="text-gray-500 text-sm mb-4">{{ $poli->deskripsi ?? 'Tidak ada deskripsi' }}</p>
                 <div class="flex items-center text-xs text-gray-400 gap-2 mb-4">
                     <span>📍 {{ $poli->lokasi_ruangan ?? '-' }}</span>
@@ -50,7 +57,20 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nama Poli</label>
                     <input type="text" wire:model="nama_poli" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
+                    @error('nama_poli') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Klaster ILP</label>
+                    <select wire:model="id_klaster" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
+                        <option value="">-- Pilih Klaster --</option>
+                        @foreach($klasters as $klaster)
+                            <option value="{{ $klaster->id }}">{{ $klaster->nama_klaster }}</option>
+                        @endforeach
+                    </select>
+                    @error('id_klaster') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi Ruangan</label>
                     <input type="text" wire:model="lokasi_ruangan" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">

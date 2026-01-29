@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Model Poli
@@ -14,10 +15,16 @@ class Poli extends Model
     protected $table = 'poli';
 
     protected $fillable = [
+        'id_klaster',
         'nama_poli',
         'deskripsi',
         'lokasi_ruangan'
     ];
+
+    public function klaster(): BelongsTo
+    {
+        return $this->belongsTo(KlasterIlp::class, 'id_klaster');
+    }
 
     public function rekamMedis(): HasMany
     {
