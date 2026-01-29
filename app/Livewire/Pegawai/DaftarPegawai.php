@@ -49,7 +49,7 @@ class DaftarPegawai extends Component
         'nip' => 'required|string|unique:pegawai,nip',
         'nik' => 'required|numeric|digits:16', // Sekarang NIK wajib dan ada di DB
         'jabatan' => 'required|string',
-        'peran' => 'required|in:admin,dokter,perawat,apoteker,pendaftaran,kasir,analis,kapus,superadmin',
+        'peran' => 'required|in:admin,dokter,perawat,apoteker,pendaftaran,kasir,analis,kapus',
         'status_kepegawaian' => 'required',
     ];
 

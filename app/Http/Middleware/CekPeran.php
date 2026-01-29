@@ -21,8 +21,8 @@ class CekPeran
             return redirect('/masuk');
         }
 
-        // Admin & Superadmin selalu punya akses penuh (Superuser)
-        if (in_array($user->peran, ['admin', 'superadmin'])) {
+        // Admin selalu punya akses penuh (Superuser)
+        if ($user->peran === 'admin') {
             return $next($request);
         }
 

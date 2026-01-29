@@ -210,7 +210,6 @@
                                         <option value="kasir">Kasir</option>
                                         <option value="analis">Analis Lab</option>
                                         <option value="kapus">Kepala Puskesmas</option>
-                                        <option value="superadmin">Super Administrator</option>
                                     </select>
                                     @error('peran') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 </div>

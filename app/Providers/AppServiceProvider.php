@@ -49,34 +49,32 @@ class AppServiceProvider extends ServiceProvider
 
     protected function defineGates(): void
     {
-        // Definisi Gate Eksplisit dengan Superadmin Check
-        
         Gate::define('akses-admin', function ($user) {
-            return $user->peran === 'superadmin' || $user->peran === 'admin';
+            return $user->peran === 'admin';
         });
 
         Gate::define('akses-pendaftaran', function ($user) {
-            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'pendaftaran']);
+            return in_array($user->peran, ['admin', 'pendaftaran']);
         });
 
         Gate::define('akses-medis', function ($user) {
-            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'dokter', 'perawat']);
+            return in_array($user->peran, ['admin', 'dokter', 'perawat']);
         });
 
         Gate::define('akses-farmasi', function ($user) {
-            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'apoteker']);
+            return in_array($user->peran, ['admin', 'apoteker']);
         });
 
         Gate::define('akses-lab', function ($user) {
-            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'analis']);
+            return in_array($user->peran, ['admin', 'analis']);
         });
 
         Gate::define('akses-kasir', function ($user) {
-            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'kasir']);
+            return in_array($user->peran, ['admin', 'kasir']);
         });
         
         Gate::define('akses-manajemen', function ($user) {
-            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'kapus']);
+            return in_array($user->peran, ['admin', 'kapus']);
         });
     }
 }
