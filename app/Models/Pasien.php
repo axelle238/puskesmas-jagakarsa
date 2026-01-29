@@ -6,27 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\MencatatAktivitas; // Import Trait
 
 class Pasien extends Model
 {
-    use HasFactory;
+    use HasFactory, MencatatAktivitas; // Gunakan Trait
 
     protected $table = 'pasien';
 
-    protected $fillable = [
-        'id_pengguna',
-        'no_rekam_medis',
-        'nik',
-        'nama_lengkap',
-        'tempat_lahir',
-        'tanggal_lahir',
-        'jenis_kelamin',
-        'alamat_lengkap',
-        'golongan_darah',
-        'no_bpjs',
-        'no_telepon_darurat',
-        'nama_kontak_darurat',
-    ];
+    protected $guarded = []; // Ubah ke guarded biar fleksibel
 
     protected $casts = [
         'tanggal_lahir' => 'date',
