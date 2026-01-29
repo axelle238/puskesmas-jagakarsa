@@ -99,6 +99,10 @@ class Pemeriksaan extends Component
         $this->resepList = array_values($this->resepList); // Re-index
     }
 
+use App\Models\Tagihan; // Import Model
+
+    // ... (kode sebelumnya)
+
     public function simpanPemeriksaan(BpjsService $bpjsService)
     {
         if ($this->antrian->status == 'selesai') {
@@ -131,8 +135,10 @@ class Pemeriksaan extends Component
             ]
         );
 
-        // 2. Simpan Detail Resep
+        // 2. Simpan Detail Resep & Hitung Total Biaya Obat
         DetailResep::where('id_rekam_medis', $rm->id)->delete();
+        
+        $totalBiayaObat = 0;
 
         foreach ($this->resepList as $resep) {
             DetailResep::create([
@@ -143,10 +149,27 @@ class Pemeriksaan extends Component
                 'catatan' => $resep['catatan'],
                 'harga_satuan_saat_ini' => $resep['harga']
             ]);
+            $totalBiayaObat += ($resep['harga'] * $resep['jumlah']);
         }
 
-        // 3. Bridging BPJS (Simulasi)
-        // Jika pasien BPJS, kirim data ke P-Care
+        // 3. Generate Tagihan Otomatis
+        // Biaya Jasa Medis (Default/Flat dulu untuk MVP, idealnya dari tabel Tindakan)
+        $biayaJasa = 15000; 
+        // Jika pasien BPJS, total tagihan 0 (ditanggung)
+        $totalTagihan = $this->pasien->no_bpjs ? 0 : ($biayaJasa + $totalBiayaObat);
+
+        Tagihan::updateOrCreate(
+            ['id_rekam_medis' => $rm->id],
+            [
+                'no_tagihan' => 'INV-' . date('YmdHis') . '-' . $rm->id,
+                'total_biaya' => $totalTagihan,
+                'jumlah_bayar' => 0,
+                'status_bayar' => $totalTagihan == 0 ? 'lunas' : 'belum_bayar', // BPJS langsung lunas
+                'metode_bayar' => $totalTagihan == 0 ? 'bpjs' : null,
+            ]
+        );
+
+        // 4. Bridging BPJS (Simulasi)
         if ($this->pasien->no_bpjs) {
             $bpjsService->inputTindakan($this->pasien->no_bpjs, [
                 'kdDiagnosa' => $this->diagnosis_kode,
@@ -155,12 +178,12 @@ class Pemeriksaan extends Component
             ]);
         }
 
-        // 4. Update Status Antrian
+        // 5. Update Status Antrian
         $this->antrian->status = 'selesai'; 
         $this->antrian->waktu_selesai = now();
         $this->antrian->save();
 
-        session()->flash('sukses', 'Pemeriksaan selesai. Data rekam medis tersimpan & sinkronisasi BPJS berhasil.');
+        session()->flash('sukses', 'Pemeriksaan selesai. Data rekam medis & tagihan berhasil dibuat.');
         return redirect()->route('medis.antrian');
     }
 
