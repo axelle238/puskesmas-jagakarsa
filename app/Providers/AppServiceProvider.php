@@ -49,6 +49,14 @@ class AppServiceProvider extends ServiceProvider
 
     protected function defineGates(): void
     {
+        // Superadmin Bypass (God Mode)
+        // Mengizinkan akses ke semua Gate check (can) secara otomatis
+        Gate::before(function ($user, $ability) {
+            if ($user->peran === 'superadmin') {
+                return true;
+            }
+        });
+
         Gate::define('akses-admin', function ($user) {
             return $user->peran === 'admin';
         });
