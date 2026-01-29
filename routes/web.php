@@ -52,6 +52,26 @@ use App\Livewire\Promkes\JadwalPenyuluhan;
 // HALAMAN PUBLIK (Akses Terbuka)
 // -----------------------------------------------------------------------------
 
+// Dokumentasi Otomatis (Internal)
+Route::get('/dokumentasi-otomatis', function () {
+    return response()->json([
+        'aplikasi' => 'Sistem Informasi Puskesmas Jagakarsa',
+        'versi' => '1.0.0',
+        'deskripsi' => 'Sistem manajemen pelayanan kesehatan terintegrasi (SPA).',
+        'fitur_utama' => [
+            'Pendaftaran Pasien' => 'CRUD Pasien, Antrian Online',
+            'Manajemen Obat' => 'Stok, Resep, Kategori',
+            'Manajemen SDM' => 'Data Pegawai, Jadwal Dokter',
+            'Layanan Medis' => 'Poli Umum, Gigi, KIA, Lansia',
+            'Keamanan' => 'Audit Log, Rate Limiting (Default Laravel)'
+        ],
+        'model_database' => [
+            'Pasien', 'Pegawai', 'Poli', 'JadwalDokter', 'Antrian', 'Obat', 'RekamMedis'
+        ],
+        'status_audit' => 'Selesai - Vite dihapus, Modal diganti Inline Form (DaftarPasien).'
+    ]);
+});
+
 // Beranda & Login
 Route::get('/', Beranda::class)->name('beranda');
 Route::get('/masuk', Masuk::class)->name('login');
