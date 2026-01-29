@@ -3,7 +3,7 @@
 Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 
 ## 1. Status Sistem
-- **Versi:** 1.0.0-beta
+- **Versi:** 1.1.0-beta
 - **Framework:** Laravel 12 / Livewire 3
 - **Basis Data:** MySQL / MariaDB
 - **Bahasa Kode:** 100% Bahasa Indonesia
@@ -14,14 +14,15 @@ Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 - [x] Tabel `pengguna` (Migrasi)
 - [x] Model `App\Models\Pengguna` (Autentikasi Kustom)
 - [x] Halaman Login (`Livewire\Auth\Masuk`)
-- [x] Middleware Peran (Admin, Dokter, dll) - *Menggunakan Auth default*
+- [x] Middleware Peran (Admin, Dokter, dll)
 
 ### B. Manajemen Master Data
 - [x] Tabel `poli` (Klaster ILP)
-- [x] Tabel `pegawai`
+- [x] Tabel `pegawai` (Data SDM)
 - [x] Tabel `jadwal_praktik`
-- [ ] CRUD Data Poli
-- [ ] CRUD Data Pegawai
+- [x] CRUD Data Pegawai (Auto-create User)
+- [x] CRUD Master Poli
+- [x] CRUD Jadwal Praktik Dokter
 
 ### C. Layanan Medis (ILP)
 - [x] Tabel `pasien`
@@ -29,6 +30,7 @@ Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 - [x] Tabel `rekam_medis`
 - [x] Modul Pendaftaran Pasien (CRUD)
 - [x] Modul Antrian Online (Frontend Publik)
+- [x] Modul Antrian Poli (Dokter/Perawat View - Realtime)
 - [x] Dashboard Admin (Statistik Realtime)
 
 ### D. Penunjang Medis
@@ -47,12 +49,17 @@ Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
     - Otomatisasi nomor antrian berdasarkan poli.
     - Deteksi pasien lama (NIK) vs pasien baru.
 
-2.  **Dashboard Real-Time:**
+2.  **Manajemen SDM & Operasional:**
+    - Input pegawai otomatis membuat akun login.
+    - Jadwal praktik terhubung langsung dengan sistem antrian.
+    - Dokter dapat melihat antrian masuk secara real-time di poli masing-masing.
+
+3.  **Dashboard Real-Time:**
     - Statistik kunjungan harian.
     - Monitor antrian aktif.
     - Peringatan dini stok obat menipis.
 
-3.  **Manajemen Pasien Lengkap:**
+4.  **Manajemen Pasien Lengkap:**
     - CRUD Data Pasien dengan validasi NIK.
     - Riwayat kunjungan (persiapan).
     - Status BPJS vs Umum.
