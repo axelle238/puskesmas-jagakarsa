@@ -13,11 +13,12 @@ use App\Livewire\Medis\Pemeriksaan;
 use App\Livewire\Farmasi\DaftarResep;
 use App\Livewire\Farmasi\StokObat;
 use App\Livewire\Laporan\LaporanKunjungan;
-use App\Livewire\Laporan\LaporanPenyakit; // Import Baru
+use App\Livewire\Laporan\LaporanPenyakit;
 use App\Livewire\Publik\AmbilAntrian;
 use App\Livewire\Publik\EdukasiKesehatan;
 use App\Livewire\Publik\BacaArtikel;
 use App\Livewire\Publik\FasilitasPublik;
+use App\Livewire\Publik\LayarAntrian; // Import Baru
 use App\Livewire\Publikasi\KelolaArtikel;
 use App\Livewire\Publikasi\KelolaFasilitas;
 
@@ -25,6 +26,7 @@ use App\Livewire\Publikasi\KelolaFasilitas;
 Route::get('/', Beranda::class)->name('beranda');
 Route::get('/login', Masuk::class)->name('login');
 Route::get('/antrian', AmbilAntrian::class)->name('antrian.ambil');
+Route::get('/layar-antrian', LayarAntrian::class)->name('layar.antrian'); // Route Baru
 Route::get('/edukasi', EdukasiKesehatan::class)->name('edukasi');
 Route::get('/edukasi/{slug}', BacaArtikel::class)->name('artikel.baca');
 Route::get('/fasilitas', FasilitasPublik::class)->name('fasilitas.publik');
@@ -55,5 +57,5 @@ Route::middleware(['auth'])->group(function () {
 
     // Laporan
     Route::get('/laporan/kunjungan', LaporanKunjungan::class)->name('laporan.kunjungan');
-    Route::get('/laporan/penyakit', LaporanPenyakit::class)->name('laporan.penyakit'); // Route Baru
+    Route::get('/laporan/penyakit', LaporanPenyakit::class)->name('laporan.penyakit');
 });

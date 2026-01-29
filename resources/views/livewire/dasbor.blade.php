@@ -5,8 +5,11 @@
             <h1 class="text-2xl font-bold text-gray-800">Ringkasan Operasional</h1>
             <p class="text-gray-500">Pantau aktivitas Puskesmas secara real-time</p>
         </div>
-        <div>
-            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded border border-blue-400">
+        <div class="flex gap-2">
+            <a href="{{ route('layar.antrian') }}" target="_blank" class="bg-gray-800 text-white text-xs font-semibold px-4 py-2 rounded-lg border border-gray-700 hover:bg-gray-700 transition flex items-center gap-2">
+                📺 Buka Layar Antrian
+            </a>
+            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-2 rounded border border-blue-400">
                 Live Update
             </span>
         </div>

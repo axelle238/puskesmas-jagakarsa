@@ -1,12 +1,13 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
-Status Dokumen: **FINAL RELEASE v1.3 (FULL FEATURES)**
+Status Dokumen: **FINAL RELEASE v1.4 (COMPLETE SUITE)**
 Terakhir Diupdate: 29 January 2026
 
 ## 1. Ikhtisar Sistem
 Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berbasis web yang dirancang untuk mendukung operasional Puskesmas modern dengan standar **Integrasi Layanan Primer (ILP)**. Sistem ini menghubungkan pelayanan front-office (pasien) dengan back-office (medis/admin) secara real-time.
 
 ## 2. Fitur Unggulan (Advanced)
+- **Layar Antrian TV (Digital Signage):** Tampilan full-screen untuk ruang tunggu dengan pemanggilan suara otomatis (Text-to-Speech).
 - **Visual Analytics Dashboard:** Grafik tren kunjungan mingguan real-time.
 - **Epidemiology Report:** Analisis otomatis 10 Besar Penyakit (Morbiditas) berdasarkan kode ICD-10.
 - **Smart Printing:** Cetak Tiket Antrian (Thermal) dan Copy Resep Dokter otomatis.
@@ -16,6 +17,7 @@ Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berba
 
 ### A. Halaman Publik (Front Office)
 *Akses: Masyarakat Umum*
+- **Layar Antrian TV:** Menampilkan nomor yang dipanggil dan status per poli secara real-time.
 - **Beranda Interaktif:** Menampilkan informasi layanan, jadwal dokter, dan statistik.
 - **CMS Edukasi Kesehatan:** Portal artikel/berita kesehatan yang dikelola admin/dokter.
 - **Info Fasilitas:** Direktori fasilitas puskesmas lengkap dengan deskripsi.
