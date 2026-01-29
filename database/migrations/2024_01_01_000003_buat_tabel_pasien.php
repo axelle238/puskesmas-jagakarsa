@@ -18,6 +18,7 @@ return new class extends Migration
             $tabel->date('tanggal_lahir');
             $tabel->enum('jenis_kelamin', ['L', 'P']);
             $tabel->text('alamat_lengkap');
+            $tabel->string('no_telepon')->nullable(); // Ditambahkan
             $tabel->string('golongan_darah', 5)->nullable();
             $tabel->string('no_bpjs')->nullable();
             $tabel->string('no_telepon_darurat')->nullable();

@@ -17,12 +17,21 @@ return new class extends Migration
             $tabel->string('email')->unique();
             $tabel->timestamp('email_terverifikasi_pada')->nullable();
             $tabel->string('sandi');
-            $tabel->enum('peran', ['admin', 'dokter', 'perawat', 'apoteker', 'pendaftaran', 'pasien'])->default('pasien');
+            // Update enum peran agar mencakup semua role yang digunakan di Seeder
+            $tabel->enum('peran', [
+                'admin', 
+                'dokter', 
+                'perawat', 
+                'apoteker', 
+                'pendaftaran', 
+                'pasien',
+                'kasir',   // Ditambahkan
+                'analis',  // Ditambahkan
+                'kapus'    // Ditambahkan
+            ])->default('pasien');
             $tabel->string('no_telepon')->nullable();
             $tabel->text('alamat')->nullable();
             $tabel->string('foto_profil')->nullable();
-            $tabel->rememberToken()->map('ingat_saya_token'); // Ubah nama kolom token jika memungkinkan, tapi helper ini fix. Kita pakai alias manual jika perlu raw. Tapi default remember_token lebih aman untuk auth laravel. Saya akan biarkan default remember_token untuk kompatibilitas Auth, tapi di model kita mapping. 
-            // Koreksi: Helper rememberToken() membuat kolom 'remember_token'. Agar 100% indo, kita buat manual string.
             $tabel->string('ingat_saya_token', 100)->nullable();
             $tabel->timestamps();
         });
@@ -30,7 +39,7 @@ return new class extends Migration
         // Tabel sesi untuk driver database
         Schema::create('sesi', function (Blueprint $tabel) {
             $tabel->string('id')->primary();
-            $tabel->foreignId('user_id')->nullable()->index(); // Laravel default auth uses user_id
+            $tabel->foreignId('user_id')->nullable()->index(); 
             $tabel->string('ip_address', 45)->nullable();
             $tabel->text('user_agent')->nullable();
             $tabel->longText('payload');
@@ -56,8 +65,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pengguna');
-        Schema::dropIfExists('sesi');
+        Schema::dropIfExists('cache_locks');
         Schema::dropIfExists('cache');
+        Schema::dropIfExists('sesi');
+        Schema::dropIfExists('pengguna');
     }
 };
