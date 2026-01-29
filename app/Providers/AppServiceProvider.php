@@ -49,40 +49,34 @@ class AppServiceProvider extends ServiceProvider
 
     protected function defineGates(): void
     {
-        // Superadmin Bypass (God Mode)
-        // Mengizinkan akses ke semua Gate check (can) secara otomatis
-        Gate::before(function ($user, $ability) {
-            if ($user->peran === 'superadmin') {
-                return true;
-            }
-        });
-
+        // Definisi Gate Eksplisit dengan Superadmin Check
+        
         Gate::define('akses-admin', function ($user) {
-            return $user->peran === 'admin';
+            return $user->peran === 'superadmin' || $user->peran === 'admin';
         });
 
         Gate::define('akses-pendaftaran', function ($user) {
-            return in_array($user->peran, ['admin', 'pendaftaran']);
+            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'pendaftaran']);
         });
 
         Gate::define('akses-medis', function ($user) {
-            return in_array($user->peran, ['admin', 'dokter', 'perawat']);
+            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'dokter', 'perawat']);
         });
 
         Gate::define('akses-farmasi', function ($user) {
-            return in_array($user->peran, ['admin', 'apoteker']);
+            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'apoteker']);
         });
 
         Gate::define('akses-lab', function ($user) {
-            return in_array($user->peran, ['admin', 'analis']);
+            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'analis']);
         });
 
         Gate::define('akses-kasir', function ($user) {
-            return in_array($user->peran, ['admin', 'kasir']);
+            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'kasir']);
         });
         
         Gate::define('akses-manajemen', function ($user) {
-            return in_array($user->peran, ['admin', 'kapus']);
+            return $user->peran === 'superadmin' || in_array($user->peran, ['admin', 'kapus']);
         });
     }
 }
