@@ -3,7 +3,7 @@
 Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 
 ## 1. Status Sistem
-- **Versi:** 1.2.0-beta
+- **Versi:** 1.3.0-RC (Release Candidate)
 - **Framework:** Laravel 12 / Livewire 3
 - **Basis Data:** MySQL / MariaDB
 - **Bahasa Kode:** 100% Bahasa Indonesia
@@ -40,23 +40,29 @@ Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 - [x] Tabel `hasil_lab` (Laboratorium)
 - [x] **Manajemen Stok Obat (CRUD & Monitoring)**
 - [x] **Proses Resep Apoteker (Potong Stok Otomatis)**
-- [ ] Input Hasil Lab
+- [x] **Permintaan & Input Hasil Laboratorium**
 
-### E. Keuangan
-- [x] Tabel `tagihan`
-- [ ] Kasir & Pembayaran
+### E. Keuangan & Laporan
+- [x] Tabel `tagihan` & `detail_tagihan`
+- [x] **Kasir & Billing System (Integrasi Poli + Obat + Lab)**
+- [x] **Laporan Kunjungan Pasien**
 
 ## 3. Fitur Unggulan Terselesaikan
-1.  **Siklus Medis Terintegrasi:**
-    - Dokter input SOAP -> Resep otomatis masuk ke Farmasi -> Stok terpotong saat Apoteker proses.
-    - Riwayat medis pasien tersimpan dan mudah diakses dokter saat pemeriksaan.
+1.  **Siklus Medis End-to-End:**
+    - Alur: Pendaftaran -> Antrian Poli -> Pemeriksaan Dokter -> Resep/Lab -> Kasir -> Selesai.
+    - Semua modul terintegrasi dalam satu database.
 
-2.  **Antrian Online & Poli:**
-    - Pasien daftar online -> Masuk antrian poli -> Status berubah real-time (Menunggu -> Dipanggil -> Diperiksa -> Selesai).
+2.  **Keuangan Terpusat:**
+    - Tagihan otomatis menarik data biaya dari tindakan dokter, obat farmasi, dan pemeriksaan lab.
+    - Mendukung metode pembayaran Tunai, QRIS, dan BPJS (Gratis).
 
-3.  **Manajemen Stok Cerdas:**
-    - Indikator stok menipis dan tanggal kedaluwarsa.
-    - Validasi stok saat dokter meresepkan obat.
+3.  **Laboratorium Digital:**
+    - Input hasil lab terstruktur dengan nilai rujukan.
+    - Riwayat lab tersimpan digital.
+
+4.  **Pelaporan Manajemen:**
+    - Dashboard real-time.
+    - Laporan rekapitulasi kunjungan harian/bulanan.
 
 ## 4. Konvensi Penamaan (Wajib)
 - **Model:** Singular, PascalCase (contoh: `Pasien`, `RekamMedis`)

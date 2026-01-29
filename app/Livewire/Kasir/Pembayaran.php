@@ -2,154 +2,156 @@
 
 namespace App\Livewire\Kasir;
 
+use App\Models\DetailResep;
+use App\Models\DetailTagihan;
+use App\Models\PermintaanLab;
 use App\Models\RekamMedis;
 use App\Models\Tagihan;
-use App\Models\DetailTagihan;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
-use Livewire\Attributes\Title;
 
-#[Title('Kasir & Billing')]
+/**
+ * Class Pembayaran
+ * Modul Kasir untuk generate invoice dan proses pembayaran.
+ */
 class Pembayaran extends Component
 {
-    public $rekam_medis_id;
-    public $tagihan_aktif;
-    public $metode_bayar = 'tunai';
+    public $tampilkanModal = false;
+    public $rmTerpilih;
+    public $detailTagihanList = [];
+    public $totalTagihan = 0;
+    
+    // Form Bayar
     public $jumlah_bayar = 0;
+    public $metode_bayar = 'tunai';
+    public $kembalian = 0;
 
-    public function mount()
+    public function updatedJumlahBayar()
     {
-        //
+        $this->kembalian = (float)$this->jumlah_bayar - (float)$this->totalTagihan;
     }
 
-    public function pilihPasien($idRM)
+    public function buatTagihan($idRm)
     {
-        $this->rekam_medis_id = $idRM;
-        $this->generateTagihan($idRM);
-    }
+        $this->rmTerpilih = RekamMedis::with(['pasien', 'poli', 'dokter.pengguna'])->find($idRm);
+        $this->detailTagihanList = [];
+        $this->totalTagihan = 0;
 
-    public function generateTagihan($idRM)
-    {
-        // Load rekam medis dengan relasi tindakan, resep, dan lab
-        $rm = RekamMedis::with(['tindakanDetail', 'resepDetail', 'permintaanLab'])->find($idRM);
-        
-        // Cek jika sudah ada tagihan
-        $existing = Tagihan::where('id_rekam_medis', $idRM)->first();
-        if ($existing) {
-            $this->tagihan_aktif = $existing;
-            return;
+        // 1. Biaya Pendaftaran / Jasa Dokter
+        $biayaDokter = 15000; // Flat rate contoh
+        $this->detailTagihanList[] = [
+            'item' => 'Jasa Dokter & Administrasi',
+            'kategori' => 'Tindakan',
+            'jumlah' => 1,
+            'harga' => $biayaDokter,
+            'subtotal' => $biayaDokter
+        ];
+
+        // 2. Biaya Obat (Farmasi)
+        $detailResep = DetailResep::where('id_rekam_medis', $idRm)->get();
+        foreach ($detailResep as $obat) {
+            $subtotal = $obat->jumlah * $obat->harga_satuan_saat_ini;
+            $this->detailTagihanList[] = [
+                'item' => $obat->obat->nama_obat ?? 'Obat',
+                'kategori' => 'Obat',
+                'jumlah' => $obat->jumlah,
+                'harga' => $obat->harga_satuan_saat_ini,
+                'subtotal' => $subtotal
+            ];
+        }
+
+        // 3. Biaya Lab
+        $lab = PermintaanLab::where('id_rekam_medis', $idRm)->get();
+        foreach ($lab as $l) {
+            $this->detailTagihanList[] = [
+                'item' => 'Pemeriksaan Lab: ' . $l->no_permintaan,
+                'kategori' => 'Laboratorium',
+                'jumlah' => 1,
+                'harga' => $l->biaya_lab,
+                'subtotal' => $l->biaya_lab
+            ];
         }
 
         // Hitung Total
-        $total = 0;
-        $details = [];
-
-        // 1. Biaya Tindakan
-        foreach ($rm->tindakanDetail as $tindakan) {
-            $details[] = [
-                'item' => $tindakan->nama_tindakan,
-                'kategori' => 'Tindakan Medis',
-                'harga' => $tindakan->pivot->biaya_saat_ini,
-                'jumlah' => 1,
-                'subtotal' => $tindakan->pivot->biaya_saat_ini
-            ];
-            $total += $tindakan->pivot->biaya_saat_ini;
-        }
-
-        // 2. Biaya Obat
-        foreach ($rm->resepDetail as $obat) {
-            $biayaObat = $obat->harga_satuan * $obat->pivot->jumlah;
-            $details[] = [
-                'item' => $obat->nama_obat,
-                'kategori' => 'Farmasi',
-                'harga' => $obat->harga_satuan,
-                'jumlah' => $obat->pivot->jumlah,
-                'subtotal' => $biayaObat
-            ];
-            $total += $biayaObat;
-        }
-
-        // 3. Biaya Laboratorium
-        foreach ($rm->permintaanLab as $lab) {
-            if ($lab->biaya_lab > 0) {
-                $details[] = [
-                    'item' => 'Pemeriksaan Lab (' . $lab->no_permintaan . ')',
-                    'kategori' => 'Laboratorium',
-                    'harga' => $lab->biaya_lab,
-                    'jumlah' => 1,
-                    'subtotal' => $lab->biaya_lab
-                ];
-                $total += $lab->biaya_lab;
-            }
-        }
-
-        // 4. Biaya Admin (Flat)
-        $details[] = [
-            'item' => 'Biaya Administrasi',
-            'kategori' => 'Administrasi',
-            'harga' => 5000,
-            'jumlah' => 1,
-            'subtotal' => 5000
-        ];
-        $total += 5000;
-
-        DB::transaction(function () use ($rm, $total, $details) {
-            $tagihan = Tagihan::create([
-                'no_tagihan' => 'INV-' . date('Ymd') . '-' . $rm->id,
-                'id_rekam_medis' => $rm->id,
-                'total_biaya' => $total,
-                'status_bayar' => 'belum_lunas'
-            ]);
-
-            foreach ($details as $d) {
-                DetailTagihan::create([
-                    'id_tagihan' => $tagihan->id,
-                    'item' => $d['item'],
-                    'kategori' => $d['kategori'],
-                    'jumlah' => $d['jumlah'],
-                    'harga_satuan' => $d['harga'],
-                    'subtotal' => $d['subtotal']
-                ]);
-            }
-            
-            $this->tagihan_aktif = $tagihan;
-        });
+        $this->totalTagihan = array_sum(array_column($this->detailTagihanList, 'subtotal'));
+        $this->jumlah_bayar = 0;
+        $this->kembalian = 0;
         
-        // Refresh data
-        $this->tagihan_aktif = Tagihan::where('id_rekam_medis', $idRM)->first();
+        // Cek BPJS (Jika pasien punya no BPJS, mungkin gratis)
+        if ($this->rmTerpilih->pasien->no_bpjs) {
+            $this->metode_bayar = 'bpjs';
+            // Logic diskon BPJS bisa ditambahkan disini
+        } else {
+            $this->metode_bayar = 'tunai';
+        }
+
+        $this->tampilkanModal = true;
     }
 
     public function prosesBayar()
     {
-        $this->validate([
-            'jumlah_bayar' => 'required|numeric|min:' . $this->tagihan_aktif->total_biaya
-        ]);
+        if ($this->metode_bayar != 'bpjs' && $this->jumlah_bayar < $this->totalTagihan) {
+            session()->flash('error', 'Jumlah pembayaran kurang.');
+            return;
+        }
 
-        $kembalian = $this->jumlah_bayar - $this->tagihan_aktif->total_biaya;
-
-        $this->tagihan_aktif->update([
+        // 1. Buat Header Tagihan
+        $tagihan = Tagihan::create([
+            'no_tagihan' => 'INV-' . date('Ymd') . '-' . rand(1000, 9999),
+            'id_rekam_medis' => $this->rmTerpilih->id,
+            'id_kasir' => auth()->user()->pegawai->id ?? null,
+            'total_biaya' => $this->totalTagihan,
             'jumlah_bayar' => $this->jumlah_bayar,
-            'kembalian' => $kembalian,
-            'metode_bayar' => $this->metode_bayar,
-            'status_bayar' => 'lunas'
+            'kembalian' => $this->kembalian,
+            'status_bayar' => $this->metode_bayar == 'bpjs' ? 'gratis' : 'lunas',
+            'metode_bayar' => $this->metode_bayar
         ]);
 
-        session()->flash('pesan', 'Pembayaran berhasil. Kembalian: Rp ' . number_format($kembalian));
+        // 2. Simpan Detail
+        foreach ($this->detailTagihanList as $d) {
+            DetailTagihan::create([
+                'id_tagihan' => $tagihan->id,
+                'item' => $d['item'],
+                'kategori' => $d['kategori'],
+                'jumlah' => $d['jumlah'],
+                'harga_satuan' => $d['harga'],
+                'subtotal' => $d['subtotal']
+            ]);
+        }
+
+        // 3. Update Status Antrian Akhir
+        if ($this->rmTerpilih->antrian) {
+            $this->rmTerpilih->antrian->status = 'selesai'; 
+            // Benar-benar selesai siklusnya
+            $this->rmTerpilih->antrian->save();
+        }
+
+        session()->flash('sukses', 'Pembayaran berhasil diproses. Invoice #' . $tagihan->no_tagihan);
+        $this->tutupModal();
+    }
+
+    public function tutupModal()
+    {
+        $this->tampilkanModal = false;
+        $this->rmTerpilih = null;
+        $this->detailTagihanList = [];
     }
 
     public function render()
     {
-        // Cari pasien yang status antriannya "selesai" (medis & farmasi beres) tapi belum bayar lunas
-        // Simplifikasi: Ambil rekam medis hari ini
-        $antrian_kasir = RekamMedis::whereDate('created_at', today())
-            ->whereDoesntHave('tagihan', function($q) {
-                $q->where('status_bayar', 'lunas');
+        // Cari pasien yang belum bayar
+        // Logic: Antrian hari ini, status 'selesai' (dari poli/farmasi), tapi belum ada tagihan
+        $antrianBayar = RekamMedis::whereDate('created_at', today())
+            ->whereDoesntHave('tagihan') // Belum ada tagihan
+            ->whereHas('antrian', function($q) {
+                // Yang sudah dilayani dokter
+                $q->whereIn('status', ['selesai', 'diperiksa']); 
             })
-            ->with('pasien')
+            ->with(['pasien', 'poli'])
+            ->latest()
             ->get();
 
         return view('livewire.kasir.pembayaran', [
-            'antrian_kasir' => $antrian_kasir
-        ])->layout('components.layouts.admin');
+            'antrianBayar' => $antrianBayar
+        ])->layout('components.layouts.admin', ['title' => 'Kasir & Pembayaran']);
     }
 }

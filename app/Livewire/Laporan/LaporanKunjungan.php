@@ -2,12 +2,11 @@
 
 namespace App\Livewire\Laporan;
 
-use App\Models\RekamMedis;
-use Livewire\Component;
-use Livewire\Attributes\Title;
+use App\Models\Antrian;
+use App\Models\Poli;
 use Carbon\Carbon;
+use Livewire\Component;
 
-#[Title('Laporan Kunjungan')]
 class LaporanKunjungan extends Component
 {
     public $tanggal_mulai;
@@ -15,37 +14,35 @@ class LaporanKunjungan extends Component
 
     public function mount()
     {
-        $this->tanggal_mulai = Carbon::now()->startOfMonth()->format('Y-m-d');
-        $this->tanggal_selesai = Carbon::now()->endOfMonth()->format('Y-m-d');
+        $this->tanggal_mulai = Carbon::today()->format('Y-m-d');
+        $this->tanggal_selesai = Carbon::today()->format('Y-m-d');
     }
 
     public function render()
     {
-        $kunjungans = RekamMedis::with(['pasien', 'poli', 'dokter.pengguna', 'tindakanDetail'])
-            ->whereBetween('created_at', [
-                Carbon::parse($this->tanggal_mulai)->startOfDay(),
-                Carbon::parse($this->tanggal_selesai)->endOfDay()
-            ])
-            ->latest()
+        // Rekap per Poli
+        $laporanPoli = Poli::withCount(['antrian as jumlah_kunjungan' => function($q) {
+            $q->whereBetween('tanggal_antrian', [$this->tanggal_mulai, $this->tanggal_selesai])
+              ->where('status', '!=', 'batal');
+        }])->get();
+
+        // Total Kunjungan
+        $totalKunjungan = Antrian::whereBetween('tanggal_antrian', [$this->tanggal_mulai, $this->tanggal_selesai])
+            ->where('status', '!=', 'batal')
+            ->count();
+
+        // Rekap Harian (Grafik sederhana)
+        $rekapHarian = Antrian::selectRaw('DATE(tanggal_antrian) as tanggal, count(*) as total')
+            ->whereBetween('tanggal_antrian', [$this->tanggal_mulai, $this->tanggal_selesai])
+            ->where('status', '!=', 'batal')
+            ->groupBy('tanggal')
+            ->orderBy('tanggal')
             ->get();
 
-        // Hitung Ringkasan
-        $totalPasien = $kunjungans->count();
-        $totalPoli = $kunjungans->groupBy('poli.nama_poli')->map->count();
-        
-        // Hitung Estimasi Pendapatan (dari tindakan)
-        $totalPendapatan = 0;
-        foreach ($kunjungans as $k) {
-            foreach ($k->tindakanDetail as $t) {
-                $totalPendapatan += $t->pivot->biaya_saat_ini;
-            }
-        }
-
         return view('livewire.laporan.laporan-kunjungan', [
-            'kunjungans' => $kunjungans,
-            'totalPasien' => $totalPasien,
-            'totalPoli' => $totalPoli,
-            'totalPendapatan' => $totalPendapatan
-        ])->layout('components.layouts.admin');
+            'laporanPoli' => $laporanPoli,
+            'totalKunjungan' => $totalKunjungan,
+            'rekapHarian' => $rekapHarian
+        ])->layout('components.layouts.admin', ['title' => 'Laporan Kunjungan']);
     }
 }

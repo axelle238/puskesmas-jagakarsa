@@ -1,96 +1,87 @@
 <div>
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-slate-900">Laporan Kunjungan Pasien</h1>
+        <p class="text-slate-500">Rekapitulasi statistik kunjungan per periode.</p>
+    </div>
+
+    <!-- Filter -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6 flex flex-col md:flex-row gap-4 items-end">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Laporan Kunjungan Pasien</h1>
-            <p class="text-gray-500">Rekapitulasi data pelayanan medis</p>
+            <label class="block text-xs font-bold text-slate-500 mb-1">Dari Tanggal</label>
+            <input type="date" wire:model.live="tanggal_mulai" class="rounded-lg border-slate-300 text-sm">
         </div>
-        
-        <!-- Filter Tanggal -->
-        <div class="bg-white p-2 rounded-lg border border-gray-200 shadow-sm flex items-center gap-2">
-            <input type="date" wire:model.live="tanggal_mulai" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
-            <span class="text-gray-400">-</span>
-            <input type="date" wire:model.live="tanggal_selesai" class="border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
+        <div>
+            <label class="block text-xs font-bold text-slate-500 mb-1">Sampai Tanggal</label>
+            <input type="date" wire:model.live="tanggal_selesai" class="rounded-lg border-slate-300 text-sm">
         </div>
-    </div>
-
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-100">
-            <div class="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Total Kunjungan</div>
-            <div class="text-3xl font-black text-gray-800">{{ number_format($totalPasien) }}</div>
-            <div class="text-sm text-gray-400 mt-2">Pasien diperiksa</div>
-        </div>
-        
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-green-100">
-            <div class="text-xs font-bold text-green-500 uppercase tracking-wider mb-1">Estimasi Pendapatan Jasa</div>
-            <div class="text-3xl font-black text-gray-800">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</div>
-            <div class="text-sm text-gray-400 mt-2">Dari tindakan medis</div>
-        </div>
-
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-purple-100">
-            <div class="text-xs font-bold text-purple-500 uppercase tracking-wider mb-1">Poli Teramai</div>
-            @if($totalPoli->isNotEmpty())
-                @php $topPoli = $totalPoli->sortDesc()->keys()->first(); $count = $totalPoli->sortDesc()->first(); @endphp
-                <div class="text-2xl font-black text-gray-800 truncate">{{ $topPoli }}</div>
-                <div class="text-sm text-gray-400 mt-2">{{ $count }} Kunjungan</div>
-            @else
-                <div class="text-2xl font-black text-gray-800">-</div>
-            @endif
+        <div class="ml-auto">
+            <button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                Cetak Laporan
+            </button>
         </div>
     </div>
 
-    <!-- Tabel Data Detail -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 font-bold text-gray-800">
-            Rincian Data
+    <!-- Statistik Utama -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-emerald-600 text-white p-6 rounded-xl shadow-lg shadow-emerald-200">
+            <h3 class="text-lg font-medium opacity-80">Total Kunjungan</h3>
+            <p class="text-4xl font-black mt-2">{{ $totalKunjungan }}</p>
+            <p class="text-sm mt-2 opacity-80">Periode terpilih</p>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-                <thead class="bg-gray-50 text-gray-500 border-b border-gray-200">
-                    <tr>
-                        <th class="px-6 py-3">Tanggal</th>
-                        <th class="px-6 py-3">No. RM & Pasien</th>
-                        <th class="px-6 py-3">Poli & Dokter</th>
-                        <th class="px-6 py-3">Diagnosis</th>
-                        <th class="px-6 py-3 text-right">Biaya Tindakan</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50">
-                    @forelse($kunjungans as $kunjungan)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-600">
-                            {{ $kunjungan->created_at->format('d/m/Y H:i') }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="font-bold text-gray-800">{{ $kunjungan->pasien->nama_lengkap }}</div>
-                            <div class="text-xs text-blue-600 font-mono">{{ $kunjungan->pasien->no_rekam_medis }}</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="font-medium text-gray-800">{{ $kunjungan->poli->nama_poli }}</div>
-                            <div class="text-xs text-gray-500">{{ $kunjungan->dokter->pengguna->nama_lengkap }}</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            @if($kunjungan->diagnosis_kode)
-                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded font-bold mr-1">{{ $kunjungan->diagnosis_kode }}</span>
-                            @endif
-                            <span class="text-gray-600 truncate block max-w-xs">{{ Str::limit($kunjungan->asesmen, 50) }}</span>
-                        </td>
-                        <td class="px-6 py-4 text-right font-mono text-gray-700">
-                            @php
-                                $subtotal = $kunjungan->tindakanDetail->sum('pivot.biaya_saat_ini');
-                            @endphp
-                            {{ $subtotal > 0 ? 'Rp '.number_format($subtotal, 0, ',', '.') : '-' }}
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-400">
-                            Tidak ada data kunjungan pada periode ini.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    </div>
+
+    <!-- Tabel Rekap Poli -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden mb-6">
+        <div class="p-4 border-b border-slate-100">
+            <h3 class="font-bold text-slate-800">Kunjungan per Poli / Layanan</h3>
         </div>
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Nama Poli</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Klaster</th>
+                    <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase">Jumlah Pasien</th>
+                    <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase">Persentase</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+                @foreach($laporanPoli as $lp)
+                <tr>
+                    <td class="px-6 py-4 text-sm font-medium text-slate-900">{{ $lp->nama_poli }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-500">{{ $lp->klaster->nama_klaster ?? '-' }}</td>
+                    <td class="px-6 py-4 text-right text-sm font-bold text-slate-900">{{ $lp->jumlah_kunjungan }}</td>
+                    <td class="px-6 py-4 text-right text-sm text-slate-600">
+                        {{ $totalKunjungan > 0 ? round(($lp->jumlah_kunjungan / $totalKunjungan) * 100, 1) : 0 }}%
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabel Detail Harian -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="p-4 border-b border-slate-100">
+            <h3 class="font-bold text-slate-800">Detail Kunjungan Harian</h3>
+        </div>
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase">Tanggal</th>
+                    <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase">Jumlah Pasien</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+                @foreach($rekapHarian as $rh)
+                <tr>
+                    <td class="px-6 py-4 text-sm text-slate-900">
+                        {{ \Carbon\Carbon::parse($rh->tanggal)->isoFormat('dddd, D MMMM Y') }}
+                    </td>
+                    <td class="px-6 py-4 text-right text-sm font-bold text-slate-900">{{ $rh->total }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
