@@ -13,6 +13,6 @@ class FasilitasPublik extends Component
         
         return view('livewire.publik.fasilitas-publik', [
             'fasilitas' => $fasilitas
-        ])->layout('components.layouts.app', ['title' => 'Fasilitas Puskesmas']);
+        ])->layout('components.layouts.publik', ['title' => 'Fasilitas Puskesmas']);
     }
 }
