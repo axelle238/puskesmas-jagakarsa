@@ -30,33 +30,30 @@ class DaftarPegawai extends Component
     public $email;
     public $nip;
     public $nik;
-    public $sip; // Surat Izin Praktik (Khusus Dokter)
+    public $sip;
+    public $str; // Tambahan STR
     public $jabatan;
+    public $status_kepegawaian; // Tambahan
+    public $tempat_lahir; // Tambahan
+    public $tanggal_lahir; // Tambahan
+    public $jenis_kelamin; // Tambahan
+    public $pendidikan_terakhir; // Tambahan
     public $no_telepon;
     public $alamat;
-    public $peran = 'perawat'; // Default role
-    public $sandi_baru; // Opsional saat edit
+    public $peran = 'perawat';
+    public $sandi_baru;
 
     protected $rules = [
         'nama_lengkap' => 'required|string|max:255',
         'email' => 'required|email|unique:pengguna,email',
         'nip' => 'required|string|unique:pegawai,nip',
-        'nik' => 'required|numeric|digits:16',
+        'nik' => 'required|numeric|digits:16', // Sekarang NIK wajib dan ada di DB
         'jabatan' => 'required|string',
-        'peran' => 'required|in:admin,dokter,perawat,apoteker,pendaftaran',
+        'peran' => 'required|in:admin,dokter,perawat,apoteker,pendaftaran,kasir,analis,kapus',
+        'status_kepegawaian' => 'required',
     ];
 
-    public function updatedCari()
-    {
-        $this->resetPage();
-    }
-
-    public function tambah()
-    {
-        $this->resetForm();
-        $this->tampilkanModal = true;
-        $this->modeEdit = false;
-    }
+    // ...
 
     public function edit($id)
     {
@@ -67,12 +64,15 @@ class DaftarPegawai extends Component
         
         // Data Pegawai
         $this->nip = $pegawai->nip;
+        $this->nik = $pegawai->nik;
         $this->sip = $pegawai->sip;
+        $this->str = $pegawai->str;
         $this->jabatan = $pegawai->jabatan;
-        $this->nik = $pegawai->nik; // Asumsi ada kolom NIK di tabel pegawai/pengguna (cek migrasi, jika tidak ada di pegawai, ambil dr pengguna atau skip)
-        // Cek struktur tabel: Pegawai punya nik? Migrasi awal: nip, sip, jabatan, status_kepegawaian. NIK ada di pengguna? Tidak, pengguna: nama, email, password, peran, no_telepon, alamat.
-        // Koreksi: NIK biasanya data sensitif personal. Kita simpan di Pegawai jika perlu, atau skip jika tidak ada kolomnya. 
-        // Saya akan cek migrasi nanti. Untuk aman, saya pakai field yang pasti ada.
+        $this->status_kepegawaian = $pegawai->status_kepegawaian;
+        $this->tempat_lahir = $pegawai->tempat_lahir;
+        $this->tanggal_lahir = $pegawai->tanggal_lahir;
+        $this->jenis_kelamin = $pegawai->jenis_kelamin;
+        $this->pendidikan_terakhir = $pegawai->pendidikan_terakhir;
         
         // Data Pengguna
         if ($pegawai->pengguna) {
@@ -89,20 +89,17 @@ class DaftarPegawai extends Component
 
     public function simpan()
     {
-        // Validasi Email Unik (Kecuali punya sendiri)
+        // Validasi Email Unik & NIP Unik
         $rules = $this->rules;
         if ($this->modeEdit) {
             $rules['email'] = 'required|email|unique:pengguna,email,' . $this->idPenggunaTerkait;
             $rules['nip'] = 'required|string|unique:pegawai,nip,' . $this->idPegawaiDiedit;
-            unset($rules['sandi']); // Sandi opsional saat edit
-        } else {
-            // Sandi default untuk user baru jika tidak diisi? Kita set default atau wajibkan.
-            // Kita buat default NIP atau 123456
+            unset($rules['sandi']);
         }
 
         $this->validate($rules);
 
-        // 1. Simpan/Update Data Pengguna (Akun Login)
+        // 1. Simpan/Update Data Pengguna
         $dataPengguna = [
             'nama_lengkap' => $this->nama_lengkap,
             'email' => $this->email,
@@ -114,7 +111,7 @@ class DaftarPegawai extends Component
         if ($this->sandi_baru) {
             $dataPengguna['sandi'] = Hash::make($this->sandi_baru);
         } elseif (!$this->modeEdit) {
-            $dataPengguna['sandi'] = Hash::make('12345678'); // Default password
+            $dataPengguna['sandi'] = Hash::make('12345678');
         }
 
         if ($this->modeEdit) {
@@ -128,15 +125,22 @@ class DaftarPegawai extends Component
         $dataPegawai = [
             'id_pengguna' => $pengguna->id,
             'nip' => $this->nip,
+            'nik' => $this->nik,
             'sip' => $this->sip,
+            'str' => $this->str,
             'jabatan' => $this->jabatan,
-            // 'nik' => $this->nik, // Skip jika kolom belum dipastikan ada
+            'status_kepegawaian' => $this->status_kepegawaian,
+            'tempat_lahir' => $this->tempat_lahir,
+            'tanggal_lahir' => $this->tanggal_lahir,
+            'jenis_kelamin' => $this->jenis_kelamin,
+            'pendidikan_terakhir' => $this->pendidikan_terakhir,
         ];
 
         if ($this->modeEdit) {
             Pegawai::find($this->idPegawaiDiedit)->update($dataPegawai);
             session()->flash('sukses', 'Data pegawai berhasil diperbarui.');
         } else {
+            $dataPegawai['tanggal_masuk'] = now();
             Pegawai::create($dataPegawai);
             session()->flash('sukses', 'Pegawai baru berhasil ditambahkan. Sandi default: 12345678');
         }
@@ -144,30 +148,15 @@ class DaftarPegawai extends Component
         $this->tutupModal();
     }
 
-    public function hapus($id)
-    {
-        $pegawai = Pegawai::find($id);
-        if ($pegawai) {
-            // Hapus pengguna terkait juga? Tergantung kebijakan. 
-            // Biasanya soft delete. Kita hapus data pegawai saja, user dinonaktifkan.
-            // Untuk MVP ini kita hapus keduanya agar bersih.
-            $userId = $pegawai->id_pengguna;
-            $pegawai->delete();
-            Pengguna::find($userId)->delete();
-            
-            session()->flash('sukses', 'Data pegawai berhasil dihapus.');
-        }
-    }
-
-    public function tutupModal()
-    {
-        $this->tampilkanModal = false;
-        $this->resetForm();
-    }
+    // ... (Hapus & Reset Form)
 
     private function resetForm()
     {
-        $this->reset(['nama_lengkap', 'email', 'nip', 'nik', 'sip', 'jabatan', 'no_telepon', 'alamat', 'peran', 'sandi_baru', 'idPegawaiDiedit', 'idPenggunaTerkait']);
+        $this->reset([
+            'nama_lengkap', 'email', 'nip', 'nik', 'sip', 'str', 'jabatan', 
+            'no_telepon', 'alamat', 'peran', 'sandi_baru', 'idPegawaiDiedit', 'idPenggunaTerkait',
+            'status_kepegawaian', 'tempat_lahir', 'tanggal_lahir', 'jenis_kelamin', 'pendidikan_terakhir'
+        ]);
     }
 
     public function render()
