@@ -36,6 +36,7 @@ use App\Livewire\Pengaturan\ProfilInstansiController;
 use App\Livewire\Pengaturan\ManajemenIT;
 use App\Livewire\Publikasi\KelolaArtikel;
 use App\Livewire\Publikasi\KelolaFasilitas;
+use App\Livewire\Perencanaan\DaftarKegiatan; // Import Perencanaan
 
 // -----------------------------------------------------------------------------
 // HALAMAN PUBLIK (Akses Terbuka)
@@ -130,6 +131,13 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('peran:admin,dokter')->prefix('publikasi')->group(function () {
         Route::get('/artikel', KelolaArtikel::class)->name('cms.artikel');
         Route::get('/fasilitas', KelolaFasilitas::class)->name('cms.fasilitas');
+    });
+
+    // -------------------------------------------------------------------------
+    // MANAJEMEN PERENCANAAN (Admin & Kepala Puskesmas)
+    // -------------------------------------------------------------------------
+    Route::middleware('peran:admin,kapus')->prefix('perencanaan')->group(function () {
+        Route::get('/kegiatan', DaftarKegiatan::class)->name('perencanaan.kegiatan');
     });
 
     // -------------------------------------------------------------------------
