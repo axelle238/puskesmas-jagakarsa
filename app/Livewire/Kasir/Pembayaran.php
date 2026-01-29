@@ -30,7 +30,8 @@ class Pembayaran extends Component
 
     public function generateTagihan($idRM)
     {
-        $rm = RekamMedis::with(['tindakanDetail', 'resepDetail'])->find($idRM);
+        // Load rekam medis dengan relasi tindakan, resep, dan lab
+        $rm = RekamMedis::with(['tindakanDetail', 'resepDetail', 'permintaanLab'])->find($idRM);
         
         // Cek jika sudah ada tagihan
         $existing = Tagihan::where('id_rekam_medis', $idRM)->first();
@@ -68,7 +69,21 @@ class Pembayaran extends Component
             $total += $biayaObat;
         }
 
-        // 3. Biaya Admin (Flat)
+        // 3. Biaya Laboratorium
+        foreach ($rm->permintaanLab as $lab) {
+            if ($lab->biaya_lab > 0) {
+                $details[] = [
+                    'item' => 'Pemeriksaan Lab (' . $lab->no_permintaan . ')',
+                    'kategori' => 'Laboratorium',
+                    'harga' => $lab->biaya_lab,
+                    'jumlah' => 1,
+                    'subtotal' => $lab->biaya_lab
+                ];
+                $total += $lab->biaya_lab;
+            }
+        }
+
+        // 4. Biaya Admin (Flat)
         $details[] = [
             'item' => 'Biaya Administrasi',
             'kategori' => 'Administrasi',

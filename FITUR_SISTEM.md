@@ -1,6 +1,6 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
-Status Dokumen: **FINAL ENTERPRISE SUITE v2.0 (FULL HOSPITAL FLOW)**
+Status Dokumen: **FINAL ENTERPRISE SUITE v2.1 (INTEGRATED & SIMULATED)**
 Terakhir Diupdate: 29 January 2026
 
 ## 1. Ikhtisar Sistem
@@ -8,6 +8,7 @@ Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berba
 
 ## 2. Fitur Unggulan (Enterprise Grade)
 - **Full Patient Cycle:** Alur pasien lengkap mulai dari Daftar -> Poli -> Lab -> Farmasi -> Kasir -> Pulang.
+- **BPJS Bridging Simulation:** Simulasi pengecekan status kepesertaan BPJS saat pendaftaran pasien.
 - **Laboratorium Terintegrasi:** Input hasil pemeriksaan lab yang langsung terhubung ke rekam medis pasien.
 - **Billing System (Kasir):** Perhitungan biaya otomatis (Jasa Medis + Obat + Lab + Admin) dan cetak kuitansi.
 - **Administrasi Medis:** Penerbitan Surat Keterangan Sakit, Sehat, dan Rujukan.
@@ -23,8 +24,9 @@ Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berba
 - **CMS Edukasi Kesehatan:** Portal berita kesehatan.
 - **Ambil Antrian Online:** Wizard pendaftaran antrian mandiri + Cetak Tiket.
 
-### B. Layanan Medis (Doctor's Desk)
-*Akses: Dokter, Perawat*
+### B. Pendaftaran & Rekam Medis (Front Desk)
+*Akses: Pendaftaran, Dokter*
+- **Manajemen Pasien:** CRUD data pasien dengan cek otomatis status BPJS (Simulasi).
 - **Pemeriksaan Medis (SOAP):** Anamnesa, Fisik, Diagnosa (ICD-10), Plan.
 - **Riwayat Medis Pasien:** Akses histori kunjungan sebelumnya.
 - **Order Lab:** Dokter dapat membuat permintaan pemeriksaan laboratorium.

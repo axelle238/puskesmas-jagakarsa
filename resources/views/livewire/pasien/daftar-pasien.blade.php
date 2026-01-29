@@ -79,6 +79,21 @@
             <form wire:submit="simpan" class="p-6 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nomor BPJS (Opsional)</label>
+                        <div class="flex gap-2">
+                            <input type="text" wire:model="no_bpjs" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Cek status...">
+                            <button type="button" wire:click="cekBpjs" class="bg-green-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-700 transition" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="cekBpjs">Cek</span>
+                                <span wire:loading wire:target="cekBpjs">...</span>
+                            </button>
+                        </div>
+                        @if($bpjs_message)
+                            <div class="mt-1 text-xs {{ $bpjs_status == 'success' ? 'text-green-600 font-bold' : 'text-red-500' }}">
+                                {{ $bpjs_message }}
+                            </div>
+                        @endif
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">NIK (16 Digit)</label>
                         <input type="text" wire:model="nik" maxlength="16" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
                         @error('nik') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
@@ -114,10 +129,6 @@
                             <option value="AB">AB</option>
                             <option value="O">O</option>
                         </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nomor BPJS (Opsional)</label>
-                        <input type="text" wire:model="no_bpjs" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">No. Kontak Darurat</label>

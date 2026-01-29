@@ -75,4 +75,12 @@ class RekamMedis extends Model
                     ->withPivot(['biaya_saat_ini', 'catatan_tindakan'])
                     ->withTimestamps();
     }
+
+    /**
+     * Daftar permintaan laboratorium
+     */
+    public function permintaanLab(): HasMany
+    {
+        return $this->hasMany(PermintaanLab::class, 'id_rekam_medis');
+    }
 }
