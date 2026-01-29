@@ -1,12 +1,12 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
 Status Dokumen: **TERGENERASI OTOMATIS**
-Terakhir Diupdate: 30 January 2026 01:46:47
+Terakhir Diupdate: 30 January 2026 01:55:56
 
 ## 1. Statistik Sistem
-- **Total Model Database:** 27
+- **Total Model Database:** 34
 - **Total Komponen Livewire:** 2
-- **Total Migrasi Database:** 20
+- **Total Migrasi Database:** 23
 
 ## 2. Struktur Database (Tabel)
 - Buat Tabel Pengguna (`2024_01_01_000001_buat_tabel_pengguna`)
@@ -29,6 +29,9 @@ Terakhir Diupdate: 30 January 2026 01:46:47
 - Update Profil Instansi Untuk Cms (`2026_01_30_000001_update_profil_instansi_untuk_cms`)
 - Buat Tabel Manajemen Barang (`2026_01_30_000002_buat_tabel_manajemen_barang`)
 - Buat Tabel Manajemen It Security (`2026_01_30_000003_buat_tabel_manajemen_it_security`)
+- Buat Tabel Manajemen Perencanaan (`2026_01_30_000004_buat_tabel_manajemen_perencanaan`)
+- Buat Tabel Manajemen Kesekretariatan (`2026_01_30_000005_buat_tabel_manajemen_kesekretariatan`)
+- Buat Tabel Promkes (`2026_01_30_000006_buat_tabel_promkes`)
 
 ## 3. Peta Rute & Halaman
 - **POST** `/_boost/browser-logs` -> `Fungsi Langsung`
@@ -70,6 +73,9 @@ Terakhir Diupdate: 30 January 2026 01:46:47
 - **GET|HEAD** `/pengaturan/log` -> `App\Livewire\Pengaturan\LogAktivitas`
 - **GET|HEAD** `/publikasi/artikel` -> `App\Livewire\Publikasi\KelolaArtikel`
 - **GET|HEAD** `/publikasi/fasilitas` -> `App\Livewire\Publikasi\KelolaFasilitas`
+- **GET|HEAD** `/perencanaan/kegiatan` -> `App\Livewire\Perencanaan\DaftarKegiatan`
+- **GET|HEAD** `/surat/masuk` -> `App\Livewire\Kesekretariatan\SuratMasuk`
+- **GET|HEAD** `/promkes/jadwal` -> `App\Livewire\Promkes\JadwalPenyuluhan`
 - **GET|HEAD** `/laporan/kunjungan` -> `App\Livewire\Laporan\LaporanKunjungan`
 - **GET|HEAD** `/laporan/penyakit` -> `App\Livewire\Laporan\LaporanPenyakit`
 - **POST** `/keluar` -> `Fungsi Langsung`
