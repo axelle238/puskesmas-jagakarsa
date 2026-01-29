@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\MencatatAktivitas; // Import Trait
 
 /**
  * Model RekamMedis
@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class RekamMedis extends Model
 {
+    use MencatatAktivitas; // Aktifkan Audit Trail
+
     protected $table = 'rekam_medis';
 
     protected $fillable = [
@@ -27,58 +29,38 @@ class RekamMedis extends Model
         'asesmen',
         'plan',
         'diagnosis_kode',
-        'tindakan',      // Legacy/Summary field
-        'resep_obat',    // Legacy/Summary field
+        'tindakan',      // Summary field
+        'resep_obat',    // Summary field
         'catatan_tambahan'
     ];
 
-    /**
-     * Pasien yang diperiksa
-     */
     public function pasien(): BelongsTo
     {
         return $this->belongsTo(Pasien::class, 'id_pasien');
     }
 
-    /**
-     * Dokter yang memeriksa
-     */
     public function dokter(): BelongsTo
     {
         return $this->belongsTo(Pegawai::class, 'id_dokter');
     }
 
-    /**
-     * Poli tempat pemeriksaan
-     */
     public function poli(): BelongsTo
     {
         return $this->belongsTo(Poli::class, 'id_poli');
     }
 
-    /**
-     * Daftar obat yang diresepkan (Pivot Table)
-     */
-    public function resepDetail(): BelongsToMany
+    public function antrian(): BelongsTo
     {
-        return $this->belongsToMany(Obat::class, 'resep_obat', 'id_rekam_medis', 'id_obat')
-                    ->withPivot(['jumlah', 'aturan_pakai', 'status_pengambilan', 'catatan_apoteker'])
-                    ->withTimestamps();
+        return $this->belongsTo(Antrian::class, 'id_antrian');
     }
 
-    /**
-     * Daftar tindakan yang dilakukan (Pivot Table)
-     */
-    public function tindakanDetail(): BelongsToMany
+    // Relasi ke Detail Resep (HasMany)
+    public function detailResep(): HasMany
     {
-        return $this->belongsToMany(TindakanMedis::class, 'detail_tindakan_medis', 'id_rekam_medis', 'id_tindakan_medis')
-                    ->withPivot(['biaya_saat_ini', 'catatan_tindakan'])
-                    ->withTimestamps();
+        return $this->hasMany(DetailResep::class, 'id_rekam_medis');
     }
 
-    /**
-     * Daftar permintaan laboratorium
-     */
+    // Relasi ke Permintaan Lab
     public function permintaanLab(): HasMany
     {
         return $this->hasMany(PermintaanLab::class, 'id_rekam_medis');
