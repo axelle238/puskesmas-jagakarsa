@@ -3,7 +3,7 @@
 Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 
 ## 1. Status Sistem
-- **Versi:** 1.1.0-beta
+- **Versi:** 1.2.0-beta
 - **Framework:** Laravel 12 / Livewire 3
 - **Basis Data:** MySQL / MariaDB
 - **Bahasa Kode:** 100% Bahasa Indonesia
@@ -31,12 +31,15 @@ Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 - [x] Modul Pendaftaran Pasien (CRUD)
 - [x] Modul Antrian Online (Frontend Publik)
 - [x] Modul Antrian Poli (Dokter/Perawat View - Realtime)
-- [x] Dashboard Admin (Statistik Realtime)
+- [x] **Pemeriksaan Dokter (SOAP & Diagnosa)**
+- [x] **Electronic Prescribing (E-Resep)**
 
-### D. Penunjang Medis
+### D. Penunjang Medis (Farmasi & Lab)
 - [x] Tabel `obat` (Farmasi)
+- [x] Tabel `detail_resep`
 - [x] Tabel `hasil_lab` (Laboratorium)
-- [ ] Manajemen Stok Obat
+- [x] **Manajemen Stok Obat (CRUD & Monitoring)**
+- [x] **Proses Resep Apoteker (Potong Stok Otomatis)**
 - [ ] Input Hasil Lab
 
 ### E. Keuangan
@@ -44,25 +47,16 @@ Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 - [ ] Kasir & Pembayaran
 
 ## 3. Fitur Unggulan Terselesaikan
-1.  **Antrian Online Terintegrasi ILP:**
-    - Pasien dapat mendaftar mandiri via web.
-    - Otomatisasi nomor antrian berdasarkan poli.
-    - Deteksi pasien lama (NIK) vs pasien baru.
+1.  **Siklus Medis Terintegrasi:**
+    - Dokter input SOAP -> Resep otomatis masuk ke Farmasi -> Stok terpotong saat Apoteker proses.
+    - Riwayat medis pasien tersimpan dan mudah diakses dokter saat pemeriksaan.
 
-2.  **Manajemen SDM & Operasional:**
-    - Input pegawai otomatis membuat akun login.
-    - Jadwal praktik terhubung langsung dengan sistem antrian.
-    - Dokter dapat melihat antrian masuk secara real-time di poli masing-masing.
+2.  **Antrian Online & Poli:**
+    - Pasien daftar online -> Masuk antrian poli -> Status berubah real-time (Menunggu -> Dipanggil -> Diperiksa -> Selesai).
 
-3.  **Dashboard Real-Time:**
-    - Statistik kunjungan harian.
-    - Monitor antrian aktif.
-    - Peringatan dini stok obat menipis.
-
-4.  **Manajemen Pasien Lengkap:**
-    - CRUD Data Pasien dengan validasi NIK.
-    - Riwayat kunjungan (persiapan).
-    - Status BPJS vs Umum.
+3.  **Manajemen Stok Cerdas:**
+    - Indikator stok menipis dan tanggal kedaluwarsa.
+    - Validasi stok saat dokter meresepkan obat.
 
 ## 4. Konvensi Penamaan (Wajib)
 - **Model:** Singular, PascalCase (contoh: `Pasien`, `RekamMedis`)

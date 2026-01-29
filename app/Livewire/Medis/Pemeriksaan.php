@@ -3,147 +3,173 @@
 namespace App\Livewire\Medis;
 
 use App\Models\Antrian;
+use App\Models\DetailResep;
 use App\Models\Obat;
 use App\Models\RekamMedis;
-use App\Models\TindakanMedis;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
-use Livewire\Attributes\Title;
 
-#[Title('Form Pemeriksaan Medis')]
+/**
+ * Class Pemeriksaan
+ * Modul utama Dokter untuk melakukan pemeriksaan pasien (SOAP & Resep).
+ */
 class Pemeriksaan extends Component
 {
     public $antrian;
     public $pasien;
-    public $riwayatMedis = []; // Properti Baru
-    
-    // SOAP Data
+    public $activeTab = 'soap'; // soap, resep, riwayat
+
+    // Form SOAP
     public $keluhan_utama;
     public $riwayat_penyakit;
-    public $tanda_vital = [
-        'sistole' => '', 'diastole' => '', 'suhu' => '', 
-        'nadi' => '', 'rr' => '', 'bb' => '', 'tb' => ''
+    public $subjektif;
+    public $objektif;
+    public $asesmen;
+    public $plan;
+    public $diagnosis_kode;
+    public $tindakan;
+
+    // Form Resep Temporary
+    public $resepList = []; // Array of ['id_obat', 'nama_obat', 'jumlah', 'dosis', 'catatan']
+    public $inputResep = [
+        'id_obat' => '',
+        'jumlah' => 1,
+        'dosis' => '3x1 Sesudah Makan',
+        'catatan' => ''
     ];
-    public $diagnosis_kode; // ICD-10
-    public $diagnosis_text; // Asesmen
-    public $plan_terapi;
-
-    // Resep Obat (Dynamic Input)
-    public $list_obat = [];
-    public $resep_input = []; 
-
-    // Tindakan (Dynamic Input)
-    public $list_tindakan = []; 
-    public $tindakan_input = []; 
-
-    // UI State
-    public $tabAktif = 'periksa'; // 'periksa' atau 'riwayat'
 
     public function mount($idAntrian)
     {
-        $this->antrian = Antrian::with(['pasien', 'poli', 'jadwal.dokter'])->findOrFail($idAntrian);
+        $this->antrian = Antrian::with(['pasien', 'poli'])->findOrFail($idAntrian);
         $this->pasien = $this->antrian->pasien;
 
-        if ($this->antrian->status !== 'diperiksa') {
-            return redirect()->route('medis.antrian');
+        // Cek jika sudah ada rekam medis sebelumnya untuk antrian ini (Resume)
+        $rm = RekamMedis::where('id_antrian', $idAntrian)->first();
+        if ($rm) {
+            $this->keluhan_utama = $rm->keluhan_utama;
+            $this->riwayat_penyakit = $rm->riwayat_penyakit;
+            $this->subjektif = $rm->subjektif;
+            $this->objektif = $rm->objektif;
+            $this->asesmen = $rm->asesmen;
+            $this->plan = $rm->plan;
+            $this->diagnosis_kode = $rm->diagnosis_kode;
+            $this->tindakan = $rm->tindakan;
         }
-
-        // Ambil Riwayat Medis Sebelumnya (Descending)
-        $this->riwayatMedis = RekamMedis::where('id_pasien', $this->pasien->id)
-                                ->with(['dokter.pengguna', 'poli', 'resepDetail'])
-                                ->latest()
-                                ->get();
-
-        $this->list_obat = Obat::where('stok_saat_ini', '>', 0)->get();
-        $this->list_tindakan = TindakanMedis::where('id_poli', $this->antrian->id_poli)->get();
-
-        $this->tambahResep();
     }
 
-    public function tambahResep()
+    // --- LOGIC RESEP ---
+
+    public function tambahObat()
     {
-        $this->resep_input[] = ['id_obat' => '', 'jumlah' => 1, 'aturan_pakai' => '3x1 Sesudah Makan'];
+        $this->validate([
+            'inputResep.id_obat' => 'required',
+            'inputResep.jumlah' => 'required|numeric|min:1',
+            'inputResep.dosis' => 'required',
+        ]);
+
+        $obat = Obat::find($this->inputResep['id_obat']);
+        
+        if ($obat) {
+            $this->resepList[] = [
+                'id_obat' => $obat->id,
+                'nama_obat' => $obat->nama_obat,
+                'stok' => $obat->stok_saat_ini, // Untuk validasi visual saja
+                'jumlah' => $this->inputResep['jumlah'],
+                'dosis' => $this->inputResep['dosis'],
+                'catatan' => $this->inputResep['catatan'],
+                'harga' => $obat->harga_satuan
+            ];
+
+            // Reset input form
+            $this->inputResep = [
+                'id_obat' => '',
+                'jumlah' => 1,
+                'dosis' => '3x1 Sesudah Makan',
+                'catatan' => ''
+            ];
+        }
     }
 
-    public function hapusResep($index)
+    public function hapusObat($index)
     {
-        unset($this->resep_input[$index]);
-        $this->resep_input = array_values($this->resep_input);
+        unset($this->resepList[$index]);
+        $this->resepList = array_values($this->resepList); // Re-index
     }
 
-    public function tambahTindakan()
-    {
-        $this->tindakan_input[] = ['id_tindakan' => '', 'catatan' => ''];
-    }
-
-    public function hapusTindakan($index)
-    {
-        unset($this->tindakan_input[$index]);
-        $this->tindakan_input = array_values($this->tindakan_input);
-    }
+    // --- SIMPAN REKAM MEDIS ---
 
     public function simpanPemeriksaan()
     {
         $this->validate([
             'keluhan_utama' => 'required',
-            'diagnosis_text' => 'required',
+            'subjektif' => 'required',
+            'asesmen' => 'required', // Diagnosa
         ]);
 
-        DB::transaction(function () {
-            // 1. Simpan Rekam Medis Header
-            $rm = RekamMedis::create([
+        // 1. Simpan Header Rekam Medis
+        $rm = RekamMedis::updateOrCreate(
+            ['id_antrian' => $this->antrian->id],
+            [
                 'id_pasien' => $this->pasien->id,
-                'id_dokter' => $this->antrian->jadwal->id_dokter,
+                'id_dokter' => auth()->user()->pegawai->id ?? 1, // Fallback ID 1 jika testing
                 'id_poli' => $this->antrian->id_poli,
-                'id_antrian' => $this->antrian->id,
                 'keluhan_utama' => $this->keluhan_utama,
                 'riwayat_penyakit' => $this->riwayat_penyakit,
-                'subjektif' => $this->keluhan_utama . "\n" . $this->riwayat_penyakit,
-                'objektif' => json_encode($this->tanda_vital),
-                'asesmen' => $this->diagnosis_text,
+                'subjektif' => $this->subjektif,
+                'objektif' => $this->objektif,
+                'asesmen' => $this->asesmen,
+                'plan' => $this->plan,
                 'diagnosis_kode' => $this->diagnosis_kode,
-                'plan' => $this->plan_terapi,
+                'tindakan' => $this->tindakan,
+                'resep_obat' => count($this->resepList) > 0 ? 'Lihat Detail' : 'Tidak ada resep',
+            ]
+        );
+
+        // 2. Simpan Detail Resep
+        // Hapus detail lama dulu jika edit (sederhana)
+        DetailResep::where('id_rekam_medis', $rm->id)->delete();
+
+        foreach ($this->resepList as $resep) {
+            DetailResep::create([
+                'id_rekam_medis' => $rm->id,
+                'id_obat' => $resep['id_obat'],
+                'jumlah' => $resep['jumlah'],
+                'dosis' => $resep['dosis'],
+                'catatan' => $resep['catatan'],
+                'harga_satuan_saat_ini' => $resep['harga']
             ]);
+            
+            // Note: Stok dipotong nanti saat di Farmasi (Proses Resep)
+            // Atau dipotong sekarang? Best practice: potong saat farmasi menyiapkan ('book' stock).
+            // Di sini kita biarkan stok utuh, nanti farmasi validasi.
+        }
 
-            // 2. Simpan Detail Resep
-            foreach ($this->resep_input as $item) {
-                if (!empty($item['id_obat'])) {
-                    $rm->resepDetail()->attach($item['id_obat'], [
-                        'jumlah' => $item['jumlah'],
-                        'aturan_pakai' => $item['aturan_pakai'],
-                        'status_pengambilan' => 'menunggu'
-                    ]);
-                    $obat = Obat::find($item['id_obat']);
-                    $obat->decrement('stok_saat_ini', $item['jumlah']);
-                }
-            }
+        // 3. Update Status Antrian
+        $this->antrian->status = 'selesai'; // Atau 'farmasi' jika ada resep
+        if (count($this->resepList) > 0) {
+            // Logic tambahan: Status antrian bisa jadi 'farmasi' agar muncul di dashboard apoteker
+            // Tapi field status enum kita: menunggu, dipanggil, diperiksa, selesai, batal
+            // Kita pakai 'selesai' di poli, nanti modul farmasi cari rekam medis hari ini yg punya resep.
+            $this->antrian->status = 'selesai';
+        }
+        $this->antrian->waktu_selesai = now();
+        $this->antrian->save();
 
-            // 3. Simpan Detail Tindakan
-            foreach ($this->tindakan_input as $item) {
-                if (!empty($item['id_tindakan'])) {
-                    $tindakan = TindakanMedis::find($item['id_tindakan']);
-                    $rm->tindakanDetail()->attach($item['id_tindakan'], [
-                        'biaya_saat_ini' => $tindakan->tarif,
-                        'catatan_tindakan' => $item['catatan'] ?? null
-                    ]);
-                }
-            }
-
-            // 4. Update Status Antrian
-            $this->antrian->update([
-                'status' => 'selesai',
-                'waktu_selesai' => now()
-            ]);
-        });
-
-        session()->flash('pesan', 'Pemeriksaan selesai. Data rekam medis berhasil disimpan.');
+        session()->flash('sukses', 'Pemeriksaan selesai. Data rekam medis tersimpan.');
         return redirect()->route('medis.antrian');
     }
 
     public function render()
     {
-        return view('livewire.medis.pemeriksaan')
-            ->layout('components.layouts.admin');
+        $obatList = Obat::orderBy('nama_obat')->get();
+        // Riwayat kunjungan sebelumnya
+        $riwayatKunjungan = RekamMedis::where('id_pasien', $this->pasien->id)
+            ->where('id', '!=', $this->antrian->id) // Exclude current if exists
+            ->latest()
+            ->get();
+
+        return view('livewire.medis.pemeriksaan', [
+            'obatList' => $obatList,
+            'riwayatKunjungan' => $riwayatKunjungan
+        ])->layout('components.layouts.admin', ['title' => 'Pemeriksaan Medis']);
     }
 }

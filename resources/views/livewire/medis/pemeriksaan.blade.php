@@ -1,234 +1,219 @@
-<div class="max-w-7xl mx-auto pb-12">
-    <!-- Header Pasien Sticky -->
-    <div class="sticky top-0 z-30 bg-white shadow-md rounded-b-xl border-t border-gray-100 -mx-6 px-6 py-4 mb-8">
-        <div class="flex justify-between items-center max-w-7xl mx-auto">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
-                    {{ substr($pasien->nama_lengkap, 0, 1) }}
-                </div>
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">{{ $pasien->nama_lengkap }}</h2>
-                    <div class="flex gap-4 text-sm text-gray-500">
-                        <span class="font-mono bg-gray-100 px-2 rounded">{{ $pasien->no_rekam_medis }}</span>
-                        <span>{{ $pasien->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</span>
-                        <span>{{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->age }} Tahun</span>
-                    </div>
+<div class="max-w-7xl mx-auto">
+    <!-- Header Pasien -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="flex items-center gap-4">
+            <div class="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-2xl font-bold">
+                {{ substr($pasien->nama_lengkap, 0, 1) }}
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-slate-900">{{ $pasien->nama_lengkap }}</h1>
+                <div class="flex flex-wrap gap-3 text-sm text-slate-500 mt-1">
+                    <span class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path></svg>
+                        {{ $pasien->no_rekam_medis }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        {{ $pasien->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        {{ \Carbon\Carbon::parse($pasien->tanggal_lahir)->age }} Tahun
+                    </span>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button wire:click="$set('tabAktif', 'periksa')" class="px-4 py-2 rounded-lg font-bold transition {{ $tabAktif == 'periksa' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                    🩺 Form Periksa
-                </button>
-                <button wire:click="$set('tabAktif', 'riwayat')" class="px-4 py-2 rounded-lg font-bold transition {{ $tabAktif == 'riwayat' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                    📂 Riwayat Medis
-                </button>
-            </div>
+        </div>
+        <div>
+            <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">
+                {{ $antrian->poli->nama_poli }}
+            </span>
         </div>
     </div>
 
-    <!-- Tampilan Form Pemeriksaan -->
-    <div class="{{ $tabAktif == 'periksa' ? 'block' : 'hidden' }}">
-        <form wire:submit="simpanPemeriksaan">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Workspace -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left Sidebar: Tabs & History -->
+        <div class="lg:col-span-1 space-y-6">
+            <!-- Navigation Tabs -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                <nav class="flex flex-col">
+                    <button wire:click="$set('activeTab', 'soap')" class="px-6 py-4 text-left font-medium text-sm flex items-center justify-between transition-colors {{ $activeTab === 'soap' ? 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <span>1. Pemeriksaan (SOAP)</span>
+                        @if($activeTab === 'soap')
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        @endif
+                    </button>
+                    <button wire:click="$set('activeTab', 'resep')" class="px-6 py-4 text-left font-medium text-sm flex items-center justify-between transition-colors border-t border-slate-100 {{ $activeTab === 'resep' ? 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <span>2. E-Resep & Obat</span>
+                        <span class="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-xs">{{ count($resepList) }}</span>
+                    </button>
+                    <button wire:click="$set('activeTab', 'riwayat')" class="px-6 py-4 text-left font-medium text-sm flex items-center justify-between transition-colors border-t border-slate-100 {{ $activeTab === 'riwayat' ? 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <span>3. Riwayat Medis</span>
+                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4">
+                <button wire:click="simpanPemeriksaan" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 mb-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                    Simpan & Selesai
+                </button>
+                <a href="{{ route('medis.antrian') }}" class="block text-center w-full bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-lg">
+                    Batal / Kembali
+                </a>
+            </div>
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="lg:col-span-2">
+            
+            <!-- TAB 1: SOAP -->
+            @if($activeTab === 'soap')
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                <h2 class="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-2">Catatan Pemeriksaan (SOAP)</h2>
                 
-                <!-- Kolom Kiri: SOAP -->
-                <div class="lg:col-span-2 space-y-6">
-                    
-                    <!-- Subjektif -->
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="bg-blue-100 text-blue-600 w-8 h-8 rounded flex items-center justify-center text-sm">S</span>
-                            Anamnesa (Subjektif)
-                        </h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Keluhan Utama</label>
-                                <textarea wire:model="keluhan_utama" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Apa yang dirasakan pasien?"></textarea>
-                                @error('keluhan_utama') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Riwayat Penyakit</label>
-                                <textarea wire:model="riwayat_penyakit" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Riwayat penyakit sekarang/dahulu..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Objektif -->
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="bg-green-100 text-green-600 w-8 h-8 rounded flex items-center justify-center text-sm">O</span>
-                            Pemeriksaan Fisik (Objektif)
-                        </h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Tekanan Darah</label>
-                                <div class="flex items-center gap-1">
-                                    <input type="number" wire:model="tanda_vital.sistole" class="w-full px-2 py-2 border rounded text-center" placeholder="120">
-                                    <span>/</span>
-                                    <input type="number" wire:model="tanda_vital.diastole" class="w-full px-2 py-2 border rounded text-center" placeholder="80">
-                                </div>
-                                <span class="text-xs text-gray-400">mmHg</span>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Suhu Tubuh</label>
-                                <input type="number" step="0.1" wire:model="tanda_vital.suhu" class="w-full px-2 py-2 border rounded text-center" placeholder="36.5">
-                                <span class="text-xs text-gray-400">°Celsius</span>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Nadi (HR)</label>
-                                <input type="number" wire:model="tanda_vital.nadi" class="w-full px-2 py-2 border rounded text-center" placeholder="80">
-                                <span class="text-xs text-gray-400">bpm</span>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Pernapasan (RR)</label>
-                                <input type="number" wire:model="tanda_vital.rr" class="w-full px-2 py-2 border rounded text-center" placeholder="20">
-                                <span class="text-xs text-gray-400">x/menit</span>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Berat Badan</label>
-                                <input type="number" step="0.1" wire:model="tanda_vital.bb" class="w-full px-2 py-2 border rounded text-center" placeholder="60">
-                                <span class="text-xs text-gray-400">kg</span>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 uppercase mb-1">Tinggi Badan</label>
-                                <input type="number" wire:model="tanda_vital.tb" class="w-full px-2 py-2 border rounded text-center" placeholder="170">
-                                <span class="text-xs text-gray-400">cm</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Asesmen -->
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="bg-yellow-100 text-yellow-600 w-8 h-8 rounded flex items-center justify-center text-sm">A</span>
-                            Diagnosis (Asesmen)
-                        </h3>
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-3 gap-4">
-                                <div class="col-span-1">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kode ICD-10</label>
-                                    <input type="text" wire:model="diagnosis_kode" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Contoh: A09">
-                                </div>
-                                <div class="col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Diagnosis Klinis</label>
-                                    <input type="text" wire:model="diagnosis_text" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Contoh: Gastroenteritis Akut">
-                                    @error('diagnosis_text') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Kolom Kanan: Plan & Resep -->
                 <div class="space-y-6">
-                    
-                    <!-- Plan & Terapi -->
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-lg text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
-                            <span class="bg-purple-100 text-purple-600 w-8 h-8 rounded flex items-center justify-center text-sm">P</span>
-                            Perencanaan (Plan)
-                        </h3>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Instruksi Medis / Edukasi</label>
-                            <textarea wire:model="plan_terapi" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Istirahat cukup, banyak minum air..."></textarea>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Subjektif (Keluhan Utama)</label>
+                        <textarea wire:model="keluhan_utama" rows="2" class="w-full rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Apa yang dikeluhkan pasien?"></textarea>
+                        @error('keluhan_utama') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
 
-                        <!-- Tindakan -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Tindakan Medis</label>
-                            @foreach($tindakan_input as $index => $tindakan)
-                            <div class="flex gap-2 mb-2">
-                                <select wire:model="tindakan_input.{{ $index }}.id_tindakan" class="flex-1 px-2 py-2 border rounded text-sm">
-                                    <option value="">Pilih Tindakan</option>
-                                    @foreach($list_tindakan as $lTindakan)
-                                        <option value="{{ $lTindakan->id }}">{{ $lTindakan->nama_tindakan }}</option>
-                                    @endforeach
-                                </select>
-                                <button type="button" wire:click="hapusTindakan({{ $index }})" class="text-red-500 hover:text-red-700">&times;</button>
-                            </div>
-                            @endforeach
-                            <button type="button" wire:click="tambahTindakan" class="text-xs text-blue-600 font-bold hover:underline">+ Tambah Tindakan</button>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Subjektif Tambahan (Anamnesis)</label>
+                        <textarea wire:model="subjektif" rows="3" class="w-full rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Detail keluhan, riwayat penyakit sekarang..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Objektif (Pemeriksaan Fisik)</label>
+                        <textarea wire:model="objektif" rows="3" class="w-full rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Tanda vital, hasil pemeriksaan fisik..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Asesmen (Diagnosa Kerja)</label>
+                            <input type="text" wire:model="asesmen" class="w-full rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Contoh: ISPA, Febris">
+                            @error('asesmen') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Kode Diagnosa (ICD-10)</label>
+                            <input type="text" wire:model="diagnosis_kode" class="w-full rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Contoh: J06.9">
                         </div>
                     </div>
 
-                    <!-- Resep Obat -->
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-red-500">
-                        <h3 class="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
-                            <span>💊</span> Resep Obat
-                        </h3>
-                        
-                        <div class="space-y-4">
-                            @foreach($resep_input as $index => $resep)
-                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 relative">
-                                <button type="button" wire:click="hapusResep({{ $index }})" class="absolute top-2 right-2 text-red-400 hover:text-red-600 font-bold text-lg leading-none">&times;</button>
-                                
-                                <div class="mb-2">
-                                    <label class="block text-xs font-bold text-gray-500 mb-1">Nama Obat</label>
-                                    <select wire:model="resep_input.{{ $index }}.id_obat" class="w-full px-2 py-1.5 border rounded text-sm bg-white">
-                                        <option value="">-- Pilih Obat --</option>
-                                        @foreach($list_obat as $obat)
-                                            <option value="{{ $obat->id }}">{{ $obat->nama_obat }} (Stok: {{ $obat->stok_saat_ini }})</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                
-                                <div class="flex gap-2">
-                                    <div class="w-1/3">
-                                        <label class="block text-xs font-bold text-gray-500 mb-1">Jumlah</label>
-                                        <input type="number" wire:model="resep_input.{{ $index }}.jumlah" class="w-full px-2 py-1.5 border rounded text-center text-sm" placeholder="10">
-                                    </div>
-                                    <div class="w-2/3">
-                                        <label class="block text-xs font-bold text-gray-500 mb-1">Aturan Pakai</label>
-                                        <input type="text" wire:model="resep_input.{{ $index }}.aturan_pakai" class="w-full px-2 py-1.5 border rounded text-sm" placeholder="3x1 Tablet">
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Planning (Rencana/Tindakan)</label>
+                        <textarea wire:model="plan" rows="2" class="w-full rounded-lg border-slate-300 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Edukasi, rencana tindak lanjut..."></textarea>
+                    </div>
+                </div>
+            </div>
+            @endif
 
-                            <button type="button" wire:click="tambahResep" class="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 font-bold hover:border-blue-500 hover:text-blue-500 transition">
-                                + Tambah Obat
+            <!-- TAB 2: RESEP -->
+            @if($activeTab === 'resep')
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                <h2 class="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-2">Input Resep Obat</h2>
+                
+                <!-- Form Tambah Obat -->
+                <div class="bg-slate-50 p-4 rounded-lg mb-6 border border-slate-200">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        <div class="md:col-span-4">
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Nama Obat</label>
+                            <select wire:model="inputResep.id_obat" class="w-full rounded-md border-slate-300 text-sm">
+                                <option value="">-- Pilih Obat --</option>
+                                @foreach($obatList as $o)
+                                    <option value="{{ $o->id }}">{{ $o->nama_obat }} (Stok: {{ $o->stok_saat_ini }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Jumlah</label>
+                            <input type="number" wire:model="inputResep.jumlah" class="w-full rounded-md border-slate-300 text-sm" min="1">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Aturan Pakai</label>
+                            <input type="text" wire:model="inputResep.dosis" class="w-full rounded-md border-slate-300 text-sm" placeholder="3x1">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Catatan</label>
+                            <input type="text" wire:model="inputResep.catatan" class="w-full rounded-md border-slate-300 text-sm" placeholder="Gerus/Lainnya">
+                        </div>
+                        <div class="md:col-span-1">
+                            <button wire:click="tambahObat" class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md p-2 flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                             </button>
                         </div>
                     </div>
+                </div>
 
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 text-lg">
-                        ✅ Selesai Pemeriksaan
-                    </button>
+                <!-- List Resep -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Nama Obat</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Jml</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Aturan</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Catatan</th>
+                                <th class="px-4 py-2 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            @forelse($resepList as $index => $resep)
+                            <tr>
+                                <td class="px-4 py-2 text-sm text-slate-900 font-medium">{{ $resep['nama_obat'] }}</td>
+                                <td class="px-4 py-2 text-sm text-slate-700">{{ $resep['jumlah'] }}</td>
+                                <td class="px-4 py-2 text-sm text-slate-700">{{ $resep['dosis'] }}</td>
+                                <td class="px-4 py-2 text-sm text-slate-500">{{ $resep['catatan'] ?? '-' }}</td>
+                                <td class="px-4 py-2 text-right">
+                                    <button wire:click="hapusObat({{ $index }})" class="text-red-500 hover:text-red-700 text-xs font-bold">Hapus</button>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="px-4 py-8 text-center text-slate-400 text-sm">Belum ada obat ditambahkan.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </form>
-    </div>
+            @endif
 
-    <!-- Tampilan Riwayat Medis -->
-    <div class="{{ $tabAktif == 'riwayat' ? 'block' : 'hidden' }} space-y-6">
-        @forelse($riwayatMedis as $riwayat)
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                <span class="font-bold text-gray-800">{{ $riwayat->created_at->format('d F Y - H:i') }}</span>
-                <span class="text-sm text-gray-500">{{ $riwayat->poli->nama_poli }} • dr. {{ $riwayat->dokter->pengguna->nama_lengkap }}</span>
-            </div>
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <h4 class="font-bold text-sm text-gray-500 uppercase mb-2">Diagnosa</h4>
-                    <p class="font-mono text-blue-600 font-bold">{{ $riwayat->diagnosis_kode ?? '-' }}</p>
-                    <p class="text-gray-800">{{ $riwayat->asesmen }}</p>
-                    <p class="text-sm text-gray-600 mt-2 italic">"{{ $riwayat->keluhan_utama }}"</p>
+            <!-- TAB 3: RIWAYAT -->
+            @if($activeTab === 'riwayat')
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                <h2 class="text-lg font-bold text-slate-900 mb-6 border-b border-slate-100 pb-2">Riwayat Kunjungan</h2>
+                
+                <div class="space-y-6">
+                    @forelse($riwayatKunjungan as $rw)
+                    <div class="border-l-4 border-slate-200 pl-4 py-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-bold text-slate-900">{{ $rw->created_at->isoFormat('D MMMM Y') }}</p>
+                                <p class="text-xs text-slate-500 mb-2">Poli Umum • dr. Budi Santoso</p>
+                            </div>
+                            <span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">Selesai</span>
+                        </div>
+                        <div class="bg-slate-50 rounded-lg p-3 text-sm text-slate-700 space-y-1">
+                            <p><span class="font-bold text-slate-500">S:</span> {{ $rw->keluhan_utama }}</p>
+                            <p><span class="font-bold text-slate-500">O:</span> {{ $rw->objektif ?? '-' }}</p>
+                            <p><span class="font-bold text-slate-500">A:</span> {{ $rw->asesmen }}</p>
+                            <p><span class="font-bold text-slate-500">P:</span> {{ $rw->plan ?? '-' }}</p>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-12 text-slate-400">
+                        <p>Belum ada riwayat kunjungan sebelumnya.</p>
+                    </div>
+                    @endforelse
                 </div>
-                <div>
-                    <h4 class="font-bold text-sm text-gray-500 uppercase mb-2">Resep Obat</h4>
-                    <ul class="list-disc list-inside text-sm text-gray-700">
-                        @foreach($riwayat->resepDetail as $obat)
-                            <li>{{ $obat->nama_obat }} ({{ $obat->pivot->jumlah }} {{ $obat->satuan }}) - {{ $obat->pivot->aturan_pakai }}</li>
-                        @endforeach
-                    </ul>
-                </div>
             </div>
+            @endif
+
         </div>
-        @empty
-        <div class="text-center py-12 text-gray-400 bg-white rounded-xl border border-dashed border-gray-300">
-            Belum ada riwayat medis sebelumnya.
-        </div>
-        @endforelse
     </div>
 </div>

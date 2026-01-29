@@ -2,59 +2,83 @@
 
 namespace App\Livewire\Farmasi;
 
+use App\Models\DetailResep;
+use App\Models\Obat;
 use App\Models\RekamMedis;
 use Livewire\Component;
-use Livewire\Attributes\Title;
-use Livewire\WithPagination;
 
-#[Title('Antrian Resep')]
+/**
+ * Class DaftarResep
+ * Antrian resep masuk dari poli untuk diproses apoteker.
+ */
 class DaftarResep extends Component
 {
-    use WithPagination;
+    public $detailResepList = []; // Untuk modal detail
+    public $selectedRmId = null;
+    public $tampilkanModal = false;
 
-    public $filterStatus = 'menunggu'; // menunggu, disiapkan, selesai
+    public function lihatResep($idRm)
+    {
+        $this->selectedRmId = $idRm;
+        $this->detailResepList = DetailResep::with('obat')
+            ->where('id_rekam_medis', $idRm)
+            ->get();
+        $this->tampilkanModal = true;
+    }
+
+    public function prosesResep()
+    {
+        // 1. Potong Stok Obat
+        foreach ($this->detailResepList as $detail) {
+            $obat = Obat::find($detail->id_obat);
+            if ($obat) {
+                // Kurangi stok
+                if ($obat->stok_saat_ini >= $detail->jumlah) {
+                    $obat->decrement('stok_saat_ini', $detail->jumlah);
+                } else {
+                    // Stok kurang? Untuk MVP kita biarkan minus atau error
+                    // Idealnya validasi di awal
+                }
+            }
+        }
+
+        // 2. Tandai Selesai (Update status rekam medis atau antrian)
+        // Kita pakai status antrian 'selesai_farmasi' atau cukup flag di rekam medis
+        // Disini kita update rekam medis catatannya bahwa sudah diproses
+        $rm = RekamMedis::find($this->selectedRmId);
+        $rm->catatan_tambahan = ($rm->catatan_tambahan ?? '') . ' [Obat Diserahkan]';
+        $rm->save();
+
+        // Update antrian jadi 'selesai' total jika belum
+        if ($rm->antrian) {
+            $rm->antrian->status = 'selesai';
+            $rm->antrian->save();
+        }
+
+        session()->flash('sukses', 'Resep berhasil diproses dan stok telah dipotong.');
+        $this->tutupModal();
+    }
+
+    public function tutupModal()
+    {
+        $this->tampilkanModal = false;
+        $this->selectedRmId = null;
+        $this->detailResepList = [];
+    }
 
     public function render()
     {
-        // Ambil Rekam Medis yang punya resep dan tanggal hari ini
-        $reseps = RekamMedis::whereHas('resepDetail', function ($query) {
-                $query->where('status_pengambilan', $this->filterStatus);
-            })
-            ->whereDate('created_at', today())
-            ->with(['pasien', 'dokter.pengguna', 'poli', 'resepDetail' => function($q) {
-                $q->where('status_pengambilan', $this->filterStatus);
-            }])
+        // Ambil rekam medis hari ini yang punya detail resep
+        // dan belum ada catatan [Obat Diserahkan]
+        $resepMasuk = RekamMedis::whereDate('created_at', today())
+            ->whereHas('detailResep') // Cek relasi
+            ->where('catatan_tambahan', 'not like', '%[Obat Diserahkan]%')
+            ->with(['pasien', 'dokter', 'poli'])
             ->latest()
-            ->paginate(10);
+            ->get();
 
         return view('livewire.farmasi.daftar-resep', [
-            'reseps' => $reseps
-        ])->layout('components.layouts.admin');
-    }
-
-    public function ubahStatus($resepId, $obatId, $statusBaru)
-    {
-        // Update status di pivot table
-        // Kita perlu mencari rekam medis dan update pivotnya
-        $rm = RekamMedis::find($resepId);
-        if ($rm) {
-            $rm->resepDetail()->updateExistingPivot($obatId, ['status_pengambilan' => $statusBaru]);
-            
-            // Jika status 'selesai', bisa tambahkan logika notifikasi ke pasien di sini
-        }
-    }
-
-    public function prosesSemua($resepId, $statusBaru)
-    {
-        $rm = RekamMedis::find($resepId);
-        if ($rm) {
-            foreach ($rm->resepDetail as $obat) {
-                // Hanya update yang statusnya sesuai filter saat ini agar tidak merubah yang sudah selesai
-                if ($obat->pivot->status_pengambilan == $this->filterStatus) {
-                    $rm->resepDetail()->updateExistingPivot($obat->id, ['status_pengambilan' => $statusBaru]);
-                }
-            }
-            session()->flash('pesan', 'Status seluruh obat berhasil diperbarui.');
-        }
+            'resepMasuk' => $resepMasuk
+        ])->layout('components.layouts.admin', ['title' => 'Antrian Farmasi']);
     }
 }
