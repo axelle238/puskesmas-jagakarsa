@@ -39,6 +39,6 @@ class EdukasiKesehatan extends Component
 
         return view('livewire.publik.edukasi-kesehatan', [
             'artikel' => $artikel
-        ])->layout('components.layouts.app', ['title' => 'Edukasi Kesehatan']);
+        ])->layout('components.layouts.publik', ['title' => 'Edukasi Kesehatan']);
     }
 }

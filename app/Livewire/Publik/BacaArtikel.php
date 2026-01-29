@@ -28,6 +28,6 @@ class BacaArtikel extends Component
 
         return view('livewire.publik.baca-artikel', [
             'terkait' => $terkait
-        ])->layout('components.layouts.app', ['title' => $this->artikel->judul]);
+        ])->layout('components.layouts.publik', ['title' => $this->artikel->judul]);
     }
 }
