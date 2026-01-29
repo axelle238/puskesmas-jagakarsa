@@ -39,7 +39,7 @@
     <!-- Info Bar (Jadwal/Lokasi) -->
     <div class="bg-white border-b border-slate-100 relative z-20 -mt-8 mx-4 md:mx-auto max-w-6xl rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
         <div class="p-6 flex items-start gap-4">
-            <div class="bg-blue-50 p-3 rounded-lg text-blue-600">
+            <div class="bg-blue-50 p-3 rounded-lg text-blue-600 flex-shrink-0">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
             <div>
@@ -48,16 +48,17 @@
             </div>
         </div>
         <div class="p-6 flex items-start gap-4">
-            <div class="bg-emerald-50 p-3 rounded-lg text-emerald-600">
+            <div class="bg-emerald-50 p-3 rounded-lg text-emerald-600 flex-shrink-0">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </div>
             <div>
                 <h3 class="font-bold text-slate-900">Lokasi Kami</h3>
-                <p class="text-sm text-slate-500 mt-1">{{ $profil->alamat }}</p>
+                <p class="text-sm text-slate-500 mt-1 break-words">{{ $profil->alamat }}</p>
+                <a href="https://maps.google.com/?q={{ urlencode($profil->alamat) }}" target="_blank" class="text-xs text-emerald-600 hover:underline mt-1 block">Lihat di Peta &rarr;</a>
             </div>
         </div>
         <div class="p-6 flex items-start gap-4">
-            <div class="bg-purple-50 p-3 rounded-lg text-purple-600">
+            <div class="bg-purple-50 p-3 rounded-lg text-purple-600 flex-shrink-0">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
             </div>
             <div>
@@ -139,7 +140,7 @@
                     <h2 class="text-3xl font-black text-slate-900 mb-2">Info & Edukasi</h2>
                     <p class="text-slate-600">Berita terbaru dan tips kesehatan untuk Anda.</p>
                 </div>
-                <a href="#" class="hidden md:inline-block text-emerald-600 font-bold hover:underline">Lihat Semua Artikel</a>
+                <a href="/artikel" wire:navigate class="hidden md:inline-block text-emerald-600 font-bold hover:underline">Lihat Semua Artikel</a>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">

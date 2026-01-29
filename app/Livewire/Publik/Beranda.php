@@ -15,14 +15,19 @@ class Beranda extends Component
     {
         // 1. Profil & Konten Statis
         $profil = ProfilInstansi::first();
+        
         if (!$profil) {
             // Fallback object jika database kosong
             $profil = new ProfilInstansi([
                 'nama_instansi' => 'Puskesmas Jagakarsa',
+                'alamat' => 'Jl. Moh. Kahfi 1, Jagakarsa, Jakarta Selatan',
+                'telepon' => '(021) 786-xxxx',
                 'hero_title' => 'Melayani dengan Hati, Menuju Jagakarsa Sehat',
                 'hero_subtitle' => 'Pelayanan kesehatan primer yang terintegrasi, modern, dan dapat diandalkan oleh seluruh keluarga.',
                 'sambutan_kepala' => 'Selamat datang di website resmi Puskesmas Jagakarsa. Kami berkomitmen untuk terus berinovasi dalam memberikan pelayanan kesehatan terbaik.',
-                'nama_kepala_puskesmas' => 'dr. Kepala Puskesmas',
+                'nama_kepala_puskesmas' => 'Kepala Puskesmas',
+                'foto_kepala' => null,
+                'hero_image' => null
             ]);
         }
 
