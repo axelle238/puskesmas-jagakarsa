@@ -37,7 +37,8 @@ use App\Livewire\Pengaturan\ManajemenIT;
 use App\Livewire\Publikasi\KelolaArtikel;
 use App\Livewire\Publikasi\KelolaFasilitas;
 use App\Livewire\Perencanaan\DaftarKegiatan; // Import Perencanaan
-use App\Livewire\Kesekretariatan\SuratMasuk;
+use App\Livewire\Kesekretariatan\SuratMasuk; // Import Surat Masuk
+use App\Livewire\Promkes\JadwalPenyuluhan; // Import Promkes
 
 // -----------------------------------------------------------------------------
 // HALAMAN PUBLIK (Akses Terbuka)
@@ -146,6 +147,13 @@ Route::middleware(['auth'])->group(function () {
     // -------------------------------------------------------------------------
     Route::middleware('peran:admin,kapus')->prefix('surat')->group(function () {
         Route::get('/masuk', SuratMasuk::class)->name('surat.masuk');
+    });
+
+    // -------------------------------------------------------------------------
+    // MANAJEMEN PROMOSI KESEHATAN (PROMKES)
+    // -------------------------------------------------------------------------
+    Route::middleware('peran:admin,dokter,perawat,kapus')->prefix('promkes')->group(function () {
+        Route::get('/jadwal', JadwalPenyuluhan::class)->name('promkes.jadwal');
     });
 
     // -------------------------------------------------------------------------
