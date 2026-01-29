@@ -15,7 +15,7 @@
         <div class="relative container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
             <div class="max-w-2xl">
                 <span class="inline-block py-1 px-3 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-sm font-bold tracking-wider mb-6">
-                    PUSKESMAS KECAMATAN JAGAKARSA
+                    {{ strtoupper($profil->nama_instansi) }}
                 </span>
                 <h1 class="text-4xl md:text-6xl font-black text-white leading-tight mb-6">
                     {{ $profil->hero_title }}
@@ -53,7 +53,7 @@
             </div>
             <div>
                 <h3 class="font-bold text-slate-900">Lokasi Kami</h3>
-                <p class="text-sm text-slate-500 mt-1">Jl. Moh. Kahfi 1 No.17<br>Jagakarsa, Jakarta Selatan</p>
+                <p class="text-sm text-slate-500 mt-1">{{ $profil->alamat }}</p>
             </div>
         </div>
         <div class="p-6 flex items-start gap-4">
@@ -62,7 +62,7 @@
             </div>
             <div>
                 <h3 class="font-bold text-slate-900">Kontak Darurat</h3>
-                <p class="text-sm text-slate-500 mt-1">(021) 786-xxxx<br>Siap melayani 24/7</p>
+                <p class="text-sm text-slate-500 mt-1">{{ $profil->telepon }}<br>Siap melayani 24/7</p>
             </div>
         </div>
     </div>
@@ -86,7 +86,7 @@
                 </div>
                 <div class="w-full md:w-1/2">
                     <h2 class="text-sm font-bold text-emerald-600 uppercase tracking-widest mb-2">Sambutan Kepala Puskesmas</h2>
-                    <h3 class="text-3xl font-black text-slate-900 mb-6 leading-tight">Mewujudkan Masyarakat Jagakarsa Sehat dan Mandiri</h3>
+                    <h3 class="text-3xl font-black text-slate-900 mb-6 leading-tight">Mewujudkan Masyarakat Sehat dan Mandiri</h3>
                     <div class="prose prose-slate text-slate-600 mb-6">
                         <p>{{ $profil->sambutan_kepala }}</p>
                     </div>
@@ -94,7 +94,7 @@
                         <div class="h-12 w-1 bg-emerald-500 rounded-full"></div>
                         <div>
                             <p class="font-bold text-slate-900 text-lg">{{ $profil->nama_kepala_puskesmas }}</p>
-                            <p class="text-slate-500 text-sm">Kepala Puskesmas Jagakarsa</p>
+                            <p class="text-slate-500 text-sm">Kepala Puskesmas</p>
                         </div>
                     </div>
                 </div>

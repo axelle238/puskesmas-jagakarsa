@@ -1,12 +1,12 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
 Status Dokumen: **TERGENERASI OTOMATIS**
-Terakhir Diupdate: 30 January 2026 02:22:02
+Terakhir Diupdate: 30 January 2026 03:17:11
 
 ## 1. Statistik Sistem
-- **Total Model Database:** 39
+- **Total Model Database:** 41
 - **Total Komponen Livewire:** 2
-- **Total Migrasi Database:** 25
+- **Total Migrasi Database:** 27
 
 ## 2. Struktur Database (Tabel)
 - Buat Tabel Pengguna (`2024_01_01_000001_buat_tabel_pengguna`)
@@ -34,6 +34,8 @@ Terakhir Diupdate: 30 January 2026 02:22:02
 - Buat Tabel Promkes (`2026_01_30_000006_buat_tabel_promkes`)
 - Buat Tabel Manajemen Mutu (`2026_01_30_000007_buat_tabel_manajemen_mutu`)
 - Buat Tabel Presensi (`2026_01_30_000008_buat_tabel_presensi`)
+- Upgrade Tabel Log (`2026_01_30_000009_upgrade_tabel_log`)
+- Buat Tabel Pengaduan Survei (`2026_01_30_000010_buat_tabel_pengaduan_survei`)
 
 ## 3. Peta Rute & Halaman
 - **POST** `/_boost/browser-logs` -> `Fungsi Langsung`
@@ -51,6 +53,8 @@ Terakhir Diupdate: 30 January 2026 02:22:02
 - **GET|HEAD** `/login` -> `Fungsi Langsung`
 - **GET|HEAD** `/antrian-online` -> `App\Livewire\Publik\AmbilAntrian`
 - **GET|HEAD** `/layar-antrian` -> `App\Livewire\Publik\LayarAntrian`
+- **GET|HEAD** `/jadwal-dokter` -> `App\Livewire\Publik\JadwalDokter`
+- **GET|HEAD** `/pengaduan` -> `App\Livewire\Publik\Pengaduan`
 - **GET|HEAD** `/artikel` -> `App\Livewire\Publik\EdukasiKesehatan`
 - **GET|HEAD** `/artikel/{slug}` -> `App\Livewire\Publik\BacaArtikel`
 - **GET|HEAD** `/fasilitas` -> `App\Livewire\Publik\FasilitasPublik`
