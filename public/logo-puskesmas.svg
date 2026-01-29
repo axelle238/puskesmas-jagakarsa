@@ -1,0 +1,13 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dasar: Lingkaran Luar -->
+  <g fill="#009B4C">
+    <!-- Palang Hijau (Cross) -->
+    <path d="M210 90h80v120h120v80h-120v120h-80v-120h-120v-80h120z"/>
+    <!-- Bentuk Hati/Daun di 4 Sudut (Stilisasi Bunga Wijaya Kusuma) -->
+    <path d="M370 130c20-20 50-20 70 0s20 50 0 70l-70 70-70-70c-20-20-20-50 0-70s50-20 70 0z" transform="rotate(45 370 130)"/> 
+    <!-- Sederhana: Lingkaran luar tebal -->
+    <circle cx="250" cy="250" r="230" stroke="#009B4C" stroke-width="40" fill="none"/>
+  </g>
+  <!-- Simbol Palang Putih di Tengah (Negative Space) -->
+  <path fill="#FFFFFF" d="M220 180h60v70h70v60h-70v70h-60v-70h-70v-60h70z"/>
+</svg>

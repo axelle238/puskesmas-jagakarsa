@@ -1,39 +1,74 @@
 <div class="flex flex-col gap-16 pb-16">
     
     <!-- Hero Section -->
-    <section class="relative bg-emerald-50 py-20 lg:py-28 overflow-hidden">
-        <div class="absolute inset-0 opacity-10 pattern-dots"></div> <!-- Placeholder pattern -->
+    <section class="relative bg-emerald-900 py-20 lg:py-32 overflow-hidden">
+        <!-- Background Image CMS -->
+        @if($profil && $profil->hero_image)
+            <div class="absolute inset-0 z-0">
+                <img src="{{ asset('storage/' . $profil->hero_image) }}" class="w-full h-full object-cover opacity-20">
+            </div>
+        @else
+            <div class="absolute inset-0 opacity-10 pattern-dots bg-emerald-50"></div>
+        @endif
+        
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="max-w-3xl">
-                <span class="inline-block py-1 px-3 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold mb-6">
-                    Selamat Datang di Puskesmas Jagakarsa
+                <span class="inline-block py-1 px-3 rounded-full bg-emerald-800 text-emerald-200 text-sm font-semibold mb-6 border border-emerald-700">
+                    {{ $profil->nama_instansi ?? 'Selamat Datang di Puskesmas' }}
                 </span>
-                <h1 class="text-4xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
-                    Layanan Kesehatan <span class="text-emerald-600">Modern & Terintegrasi</span> Untuk Keluarga Anda.
+                <h1 class="text-4xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                    {{ $profil->hero_title ?? 'Layanan Kesehatan Modern & Terintegrasi Untuk Keluarga Anda.' }}
                 </h1>
-                <p class="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl">
-                    Kami hadir dengan standar Integrasi Layanan Primer (ILP) untuk memberikan pelayanan kesehatan yang lebih komprehensif, mulai dari ibu hamil hingga lansia.
+                <p class="text-lg text-emerald-100 mb-8 leading-relaxed max-w-2xl">
+                    {{ $profil->hero_subtitle ?? 'Kami hadir dengan standar Integrasi Layanan Primer (ILP) untuk memberikan pelayanan kesehatan yang lebih komprehensif.' }}
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="/ambil-antrian" wire:navigate class="inline-flex justify-center items-center bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-emerald-200">
+                    <a href="/ambil-antrian" wire:navigate class="inline-flex justify-center items-center bg-white text-emerald-900 hover:bg-emerald-50 px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-xl">
                         Ambil Antrian Online
                         <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
-                    <a href="/jadwal-dokter" wire:navigate class="inline-flex justify-center items-center bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-4 rounded-xl font-semibold text-lg transition-all">
+                    <a href="/jadwal-dokter" wire:navigate class="inline-flex justify-center items-center bg-emerald-800/50 hover:bg-emerald-800 text-white border border-emerald-700 px-8 py-4 rounded-xl font-semibold text-lg transition-all backdrop-blur-sm">
                         Lihat Jadwal Dokter
                     </a>
                 </div>
             </div>
         </div>
-        
-        <!-- Decoration / Image Placeholder -->
-        <div class="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4 w-1/2 h-full">
-            <div class="bg-emerald-200/50 w-full h-full rounded-l-full blur-3xl opacity-50"></div>
-        </div>
     </section>
 
+    <!-- Sambutan Kepala Puskesmas (CMS) -->
+    @if($profil && $profil->sambutan_kepala)
+    <section class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div class="md:w-1/3 flex justify-center">
+                <div class="relative w-48 h-48 md:w-64 md:h-64">
+                    @if($profil->foto_kepala)
+                        <img src="{{ asset('storage/' . $profil->foto_kepala) }}" class="w-full h-full object-cover rounded-full border-4 border-emerald-100 shadow-lg">
+                    @else
+                        <div class="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-slate-400">
+                            <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </div>
+                    @endif
+                    <div class="absolute bottom-2 right-2 bg-emerald-600 text-white p-2 rounded-full shadow-md">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="md:w-2/3 text-center md:text-left">
+                <h2 class="text-2xl font-bold text-slate-900 mb-4">Sambutan Kepala Puskesmas</h2>
+                <p class="text-slate-600 leading-relaxed italic mb-6">
+                    "{{ $profil->sambutan_kepala }}"
+                </p>
+                <div>
+                    <p class="font-bold text-slate-900 text-lg">{{ $profil->nama_kepala_puskesmas }}</p>
+                    <p class="text-emerald-600 text-sm font-medium">Kepala Puskesmas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+
     <!-- Info Bar / Statistik -->
-    <section class="container mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20">
+    <section class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-2xl shadow-xl p-8 grid grid-cols-1 md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-slate-100">
             <div class="text-center md:text-left">
                 <p class="text-slate-500 text-sm font-medium uppercase tracking-wider mb-1">Total Kunjungan Hari Ini</p>
@@ -61,7 +96,6 @@
             @forelse($klaster as $k)
             <div class="bg-white rounded-xl p-6 border border-slate-100 hover:shadow-lg hover:border-emerald-100 transition-all group">
                 <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                    <!-- Icon Placeholder based on ID usually, or simple generic icon -->
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-2">{{ $k->nama_klaster }}</h3>
@@ -100,10 +134,13 @@
                 @forelse($artikel as $a)
                 <article class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                     <div class="aspect-video bg-slate-200">
-                        <!-- Image placeholder -->
-                        <div class="w-full h-full flex items-center justify-center text-slate-400">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </div>
+                        @if($a->gambar_sampul)
+                            <img src="{{ asset('storage/' . $a->gambar_sampul) }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center text-slate-400">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                        @endif
                     </div>
                     <div class="p-6">
                         <span class="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold mb-3">{{ $a->kategori }}</span>

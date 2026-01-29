@@ -20,6 +20,7 @@ use App\Livewire\Laporan\LaporanKunjungan;
 use App\Livewire\Laporan\LaporanPenyakit;
 use App\Livewire\Pengaturan\Profil;
 use App\Livewire\Pengaturan\LogAktivitas;
+use App\Livewire\Pengaturan\ProfilInstansiController;
 use App\Livewire\Publik\AmbilAntrian;
 use App\Livewire\Publik\EdukasiKesehatan;
 use App\Livewire\Publik\BacaArtikel;
@@ -101,7 +102,10 @@ Route::middleware(['auth'])->group(function () {
     // 9. PENGATURAN (Semua Login)
     Route::get('/profil', Profil::class)->name('pengaturan.profil');
     
-    Route::middleware('peran:admin')->get('/log-aktivitas', LogAktivitas::class)->name('pengaturan.log');
+    Route::middleware('peran:admin')->group(function() {
+        Route::get('/pengaturan/instansi', ProfilInstansiController::class)->name('pengaturan.instansi');
+        Route::get('/log-aktivitas', LogAktivitas::class)->name('pengaturan.log');
+    });
     
     Route::post('/keluar', function () {
         auth()->logout();

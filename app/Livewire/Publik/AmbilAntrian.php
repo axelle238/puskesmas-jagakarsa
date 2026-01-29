@@ -165,6 +165,6 @@ class AmbilAntrian extends Component
 
         return view('livewire.publik.ambil-antrian', [
             'jadwalTersedia' => $jadwalTersedia
-        ]);
+        ])->layout('components.layouts.app');
     }
 }

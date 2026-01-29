@@ -22,14 +22,10 @@
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center gap-3">
                     <a href="/" wire:navigate class="flex items-center gap-3">
-                        <div class="bg-emerald-600 text-white p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                        </div>
+                        <img src="{{ asset('logo-puskesmas.svg') }}" alt="Logo Puskesmas" class="h-10 w-10">
                         <div>
                             <h1 class="text-xl font-bold text-emerald-900 leading-none">Puskesmas Jagakarsa</h1>
-                            <p class="text-xs text-emerald-600 font-medium">Layanan Kesehatan Terpadu</p>
+                            <p class="text-xs text-emerald-600 font-medium tracking-wide">Dinas Kesehatan Provinsi DKI Jakarta</p>
                         </div>
                     </a>
                 </div>
@@ -70,13 +66,19 @@
     <footer class="bg-slate-900 text-white pt-16 pb-8">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- About -->
                 <div>
-                    <h3 class="text-lg font-bold mb-4">Puskesmas Jagakarsa</h3>
+                    <div class="flex items-center gap-3 mb-6">
+                        <img src="{{ asset('logo-kemenkes.svg') }}" alt="Logo Kemenkes" class="h-12 w-auto brightness-0 invert opacity-80">
+                        <div>
+                            <h3 class="text-lg font-bold leading-tight">Puskesmas<br>Jagakarsa</h3>
+                        </div>
+                    </div>
                     <p class="text-slate-400 text-sm leading-relaxed">
-                        Melayani dengan hati, mengutamakan kesehatan masyarakat Jagakarsa dengan standar pelayanan prima.
+                        Unit Pelaksana Teknis Dinas Kesehatan Provinsi DKI Jakarta. Melayani dengan hati, profesional, dan terintegrasi untuk masyarakat sehat.
                     </p>
                 </div>
-                <div>
+                <!-- Links -->
                     <h4 class="text-lg font-semibold mb-4">Layanan</h4>
                     <ul class="space-y-2 text-sm text-slate-400">
                         <li><a href="#" class="hover:text-emerald-400">Poli Umum</a></li>

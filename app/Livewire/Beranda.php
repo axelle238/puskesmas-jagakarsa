@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Antrian;
 use App\Models\ArtikelEdukasi;
 use App\Models\KlasterIlp;
+use App\Models\ProfilInstansi;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -12,6 +13,9 @@ class Beranda extends Component
 {
     public function render()
     {
+        // Data Profil & CMS
+        $profil = ProfilInstansi::first();
+
         // Data Klaster ILP
         $klaster = KlasterIlp::with('poli')->get();
 
@@ -28,11 +32,12 @@ class Beranda extends Component
             ->count();
 
         return view('livewire.beranda', [
+            'profil' => $profil,
             'klaster' => $klaster,
             'artikel' => $artikel,
             'totalAntrian' => $totalAntrian,
             'sedangDilayani' => $sedangDilayani,
             'sisaAntrian' => $sisaAntrian,
-        ]);
+        ])->layout('components.layouts.app');
     }
 }
