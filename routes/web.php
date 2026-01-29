@@ -12,6 +12,7 @@ use App\Livewire\Publik\LayarAntrian;
 use App\Livewire\Publik\EdukasiKesehatan;
 use App\Livewire\Publik\BacaArtikel;
 use App\Livewire\Publik\FasilitasPublik;
+use App\Livewire\Publik\JadwalDokter; // Import JadwalDokter
 
 // Internal Components
 use App\Livewire\Dasbor;
@@ -56,8 +57,9 @@ Route::get('/masuk', Masuk::class)->name('login');
 Route::get('/login', function() { return redirect('/masuk'); }); // Alias
 
 // Antrian Publik
-Route::get('/antrian-online', AmbilAntrian::class)->name('publik.antrian'); // Ganti URL lebih user friendly
+Route::get('/antrian-online', AmbilAntrian::class)->name('publik.antrian');
 Route::get('/layar-antrian', LayarAntrian::class)->name('publik.layar-antrian');
+Route::get('/jadwal-dokter', JadwalDokter::class)->name('publik.jadwal'); // Route Jadwal Dokter Publik
 
 // Informasi Publik
 Route::get('/artikel', EdukasiKesehatan::class)->name('publik.artikel');
