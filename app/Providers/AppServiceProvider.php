@@ -49,32 +49,39 @@ class AppServiceProvider extends ServiceProvider
 
     protected function defineGates(): void
     {
+        // Admin memiliki akses penuh ke seluruh sistem (Superuser)
+        Gate::before(function ($user, $ability) {
+            if ($user->peran === 'admin') {
+                return true;
+            }
+        });
+
         Gate::define('akses-admin', function ($user) {
             return $user->peran === 'admin';
         });
 
         Gate::define('akses-pendaftaran', function ($user) {
-            return in_array($user->peran, ['admin', 'pendaftaran']);
+            return $user->peran === 'pendaftaran';
         });
 
         Gate::define('akses-medis', function ($user) {
-            return in_array($user->peran, ['admin', 'dokter', 'perawat']);
+            return in_array($user->peran, ['dokter', 'perawat']);
         });
 
         Gate::define('akses-farmasi', function ($user) {
-            return in_array($user->peran, ['admin', 'apoteker']);
+            return $user->peran === 'apoteker';
         });
 
         Gate::define('akses-lab', function ($user) {
-            return in_array($user->peran, ['admin', 'analis']);
+            return $user->peran === 'analis';
         });
 
         Gate::define('akses-kasir', function ($user) {
-            return in_array($user->peran, ['admin', 'kasir']);
+            return $user->peran === 'kasir';
         });
         
         Gate::define('akses-manajemen', function ($user) {
-            return in_array($user->peran, ['admin', 'kapus']);
+            return $user->peran === 'kapus';
         });
     }
 }

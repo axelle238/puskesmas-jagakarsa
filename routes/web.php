@@ -52,6 +52,24 @@ use App\Livewire\Promkes\JadwalPenyuluhan;
 // HALAMAN PUBLIK (Akses Terbuka)
 // -----------------------------------------------------------------------------
 
+// Debug Route
+Route::get('/debug-role', function() {
+    $user = auth()->user();
+    if (!$user) return 'Not logged in';
+    
+    return [
+        'id' => $user->id,
+        'nama' => $user->nama_lengkap,
+        'email' => $user->email,
+        'peran' => $user->peran,
+        'gates' => [
+            'akses-admin' => Gate::allows('akses-admin'),
+            'akses-pendaftaran' => Gate::allows('akses-pendaftaran'),
+            'akses-medis' => Gate::allows('akses-medis'),
+        ]
+    ];
+})->middleware('auth');
+
 // Beranda & Login
 Route::get('/', Beranda::class)->name('beranda');
 Route::get('/masuk', Masuk::class)->name('login');
