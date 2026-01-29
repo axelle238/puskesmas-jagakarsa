@@ -13,12 +13,10 @@ return new class extends Migration
             $tabel->unsignedBigInteger('id_pasien');
             $tabel->unsignedBigInteger('id_jadwal');
             $tabel->unsignedBigInteger('id_poli'); // Denormalisasi untuk query cepat
-            $tabel->integer('nomor_antrian');
-            $tabel->string('kode_antrian'); // Contoh: UM-001
-            $tabel->enum('status', ['menunggu', 'dipanggil', 'sedang_diperiksa', 'selesai', 'batal'])->default('menunggu');
-            $tabel->date('tanggal_kunjungan');
-            $tabel->timestamp('waktu_check_in')->nullable(); // Saat pasien datang fisik
-            $tabel->timestamp('waktu_dipanggil')->nullable();
+            $tabel->string('nomor_antrian'); // String, contoh: A-001
+            $tabel->date('tanggal_antrian');
+            $tabel->enum('status', ['menunggu', 'dipanggil', 'diperiksa', 'selesai', 'batal'])->default('menunggu');
+            $tabel->timestamp('waktu_checkin')->nullable();
             $tabel->timestamp('waktu_selesai')->nullable();
             $tabel->timestamps();
 
