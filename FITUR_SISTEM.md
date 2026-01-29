@@ -1,12 +1,12 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
 Status Dokumen: **TERGENERASI OTOMATIS**
-Terakhir Diupdate: 30 January 2026 03:17:11
+Terakhir Diupdate: 30 January 2026 03:28:54
 
 ## 1. Statistik Sistem
 - **Total Model Database:** 41
-- **Total Komponen Livewire:** 2
-- **Total Migrasi Database:** 27
+- **Total Komponen Livewire:** 41
+- **Total Migrasi Database:** 28
 
 ## 2. Struktur Database (Tabel)
 - Buat Tabel Pengguna (`2024_01_01_000001_buat_tabel_pengguna`)
@@ -36,8 +36,52 @@ Terakhir Diupdate: 30 January 2026 03:17:11
 - Buat Tabel Presensi (`2026_01_30_000008_buat_tabel_presensi`)
 - Upgrade Tabel Log (`2026_01_30_000009_upgrade_tabel_log`)
 - Buat Tabel Pengaduan Survei (`2026_01_30_000010_buat_tabel_pengaduan_survei`)
+- Buat Tabel Sesi Fix (`2026_01_30_000011_buat_tabel_sesi_fix`)
 
-## 3. Peta Rute & Halaman
+## 3. Model Data
+- **ActivityLog**
+- **Antrian**
+- **ArtikelEdukasi**
+- **Barang**
+- **DetailResep**
+- **DetailTagihan**
+- **DisposisiSurat**
+- **Fasilitas**
+- **HasilLab**
+- **HasilMutu**
+- **IndikatorMutu**
+- **InsidenKeselamatan**
+- **JadwalDokter**
+- **JadwalPenyuluhan**
+- **KategoriBarang**
+- **KegiatanPerencanaan**
+- **KlasterIlp**
+- **LaporanPenyuluhan**
+- **LogBackup**
+- **LogKeamanan**
+- **MutasiBarang**
+- **Obat**
+- **Pasien**
+- **Pegawai**
+- **PengaduanMasyarakat**
+- **PengaturanKeamanan**
+- **Pengguna**
+- **PermintaanLab**
+- **Poli**
+- **Presensi**
+- **ProfilInstansi**
+- **RealisasiAnggaran**
+- **RegisterRisiko**
+- **RekamMedis**
+- **SuratKeluar**
+- **SuratKeterangan**
+- **SuratMasuk**
+- **SurveiKepuasan**
+- **Tagihan**
+- **TindakanMedis**
+- **WhitelistIp**
+
+## 4. Peta Rute & Halaman
 - **POST** `/_boost/browser-logs` -> `Fungsi Langsung`
 - **GET|HEAD** `/livewire-7a744fa5/livewire.js` -> `Livewire\Mechanisms\FrontendAssets\FrontendAssets@returnJavaScriptAsFile`
 - **GET|HEAD** `/livewire-7a744fa5/livewire.min.js.map` -> `Livewire\Mechanisms\FrontendAssets\FrontendAssets@maps`
@@ -94,6 +138,45 @@ Terakhir Diupdate: 30 January 2026 03:17:11
 - **GET|HEAD** `/storage/{path}` -> `Fungsi Langsung`
 - **POST** `/livewire-7a744fa5/update` -> `Livewire\Mechanisms\HandleRequests\HandleRequests@handleUpdate`
 
-## 4. Modul Utama (Livewire)
+## 5. Modul Utama (Livewire)
+- **Auth\Masuk**: Komponen interaktif SPA.
+- **Barang\DaftarBarang**: Komponen interaktif SPA.
 - **Beranda**: Komponen interaktif SPA.
 - **Dasbor**: Komponen interaktif SPA.
+- **Farmasi\DaftarResep**: Komponen interaktif SPA.
+- **Farmasi\StokObat**: Komponen interaktif SPA.
+- **Kasir\Pembayaran**: Komponen interaktif SPA.
+- **Kesekretariatan\SuratKeluar**: Komponen interaktif SPA.
+- **Kesekretariatan\SuratMasuk**: Komponen interaktif SPA.
+- **Keuangan\BukuKasUmum**: Komponen interaktif SPA.
+- **Laboratorium\InputHasil**: Komponen interaktif SPA.
+- **Laporan\LaporanKunjungan**: Komponen interaktif SPA.
+- **Laporan\LaporanPenyakit**: Komponen interaktif SPA.
+- **Master\DaftarPoli**: Komponen interaktif SPA.
+- **Master\DaftarTindakan**: Komponen interaktif SPA.
+- **Master\JadwalPraktik**: Komponen interaktif SPA.
+- **Medis\AntrianPoli**: Komponen interaktif SPA.
+- **Medis\BuatSurat**: Komponen interaktif SPA.
+- **Medis\Pemeriksaan**: Komponen interaktif SPA.
+- **Mutu\IndikatorMutu**: Komponen interaktif SPA.
+- **Mutu\InsidenKeselamatan**: Komponen interaktif SPA.
+- **Mutu\RegisterRisiko**: Komponen interaktif SPA.
+- **Pasien\DaftarPasien**: Komponen interaktif SPA.
+- **Pegawai\DaftarPegawai**: Komponen interaktif SPA.
+- **Pegawai\PresensiHarian**: Komponen interaktif SPA.
+- **Pengaturan\LogAktivitas**: Komponen interaktif SPA.
+- **Pengaturan\ManajemenIT**: Komponen interaktif SPA.
+- **Pengaturan\Profil**: Komponen interaktif SPA.
+- **Pengaturan\ProfilInstansiController**: Komponen interaktif SPA.
+- **Perencanaan\DaftarKegiatan**: Komponen interaktif SPA.
+- **Promkes\JadwalPenyuluhan**: Komponen interaktif SPA.
+- **Publik\AmbilAntrian**: Komponen interaktif SPA.
+- **Publik\BacaArtikel**: Komponen interaktif SPA.
+- **Publik\Beranda**: Komponen interaktif SPA.
+- **Publik\EdukasiKesehatan**: Komponen interaktif SPA.
+- **Publik\FasilitasPublik**: Komponen interaktif SPA.
+- **Publik\JadwalDokter**: Komponen interaktif SPA.
+- **Publik\LayarAntrian**: Komponen interaktif SPA.
+- **Publik\Pengaduan**: Komponen interaktif SPA.
+- **Publikasi\KelolaArtikel**: Komponen interaktif SPA.
+- **Publikasi\KelolaFasilitas**: Komponen interaktif SPA.

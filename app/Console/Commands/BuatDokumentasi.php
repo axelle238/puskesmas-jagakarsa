@@ -31,26 +31,44 @@ class BuatDokumentasi extends Command
         $header .= "Status Dokumen: **TERGENERASI OTOMATIS**\n";
         $header .= "Terakhir Diupdate: " . now()->format('d F Y H:i:s') . "\n\n";
         
-        $content = "## 1. Statistik Sistem\n";
-        $content .= "- **Total Model Database:** " . count(glob(app_path('Models/*.php'))) . "\n";
-        $content .= "- **Total Komponen Livewire:** " . count(glob(app_path('Livewire/*.php'))) . "\n";
-        $content .= "- **Total Migrasi Database:** " . count(glob(database_path('migrations/*.php'))) . "\n\n";
+        // 1. Statistik
+        $totalModels = count(glob(app_path('Models/*.php')));
+        
+        // Scan Livewire recursively
+        $livewireFiles = $this->getAllFiles(app_path('Livewire'));
+        $totalLivewire = count($livewireFiles);
 
+        $totalMigrations = count(glob(database_path('migrations/*.php')));
+
+        $content = "## 1. Statistik Sistem\n";
+        $content .= "- **Total Model Database:** " . $totalModels . "\n";
+        $content .= "- **Total Komponen Livewire:** " . $totalLivewire . "\n";
+        $content .= "- **Total Migrasi Database:** " . $totalMigrations . "\n\n";
+
+        // 2. Struktur Database
         $content .= "## 2. Struktur Database (Tabel)\n";
-        // Simulasi pembacaan nama file migrasi untuk daftar tabel
         $migrations = glob(database_path('migrations/*.php'));
         foreach ($migrations as $migration) {
             $name = basename($migration, '.php');
-            // Ambil nama tabel dari nama file (asumsi format standar)
             $parts = explode('_', $name);
-            // Hapus timestamp
+            // Hapus timestamp (YYYY_MM_DD_HIS)
             array_shift($parts); array_shift($parts); array_shift($parts); array_shift($parts);
             $tableName = implode(' ', $parts);
             $content .= "- " . ucwords($tableName) . " (`$name`)\n";
         }
         $content .= "\n";
 
-        $content .= "## 3. Peta Rute & Halaman\n";
+        // 3. Model & Relasi (Simple inspection)
+        $content .= "## 3. Model Data\n";
+        $models = glob(app_path('Models/*.php'));
+        foreach ($models as $modelPath) {
+            $modelName = basename($modelPath, '.php');
+            $content .= "- **$modelName**\n";
+        }
+        $content .= "\n";
+
+        // 4. Peta Rute
+        $content .= "## 4. Peta Rute & Halaman\n";
         $routes = Route::getRoutes();
         foreach ($routes as $route) {
             if (str_contains($route->uri(), '_ignition') || str_contains($route->uri(), 'sanctum')) continue;
@@ -64,15 +82,29 @@ class BuatDokumentasi extends Command
         }
         $content .= "\n";
 
-        $content .= "## 4. Modul Utama (Livewire)\n";
-        $components = glob(app_path('Livewire/*.php'));
-        foreach ($components as $component) {
-            $className = basename($component, '.php');
+        // 5. Modul Livewire (Recursive)
+        $content .= "## 5. Modul Utama (Livewire)\n";
+        foreach ($livewireFiles as $file) {
+            $relativePath = str_replace(app_path('Livewire') . DIRECTORY_SEPARATOR, '', $file);
+            $className = str_replace(['.php', DIRECTORY_SEPARATOR], ['', '\\'], $relativePath);
             $content .= "- **$className**: Komponen interaktif SPA.\n";
         }
 
         $this->info('Menulis file FITUR_SISTEM.md...');
         file_put_contents(base_path('FITUR_SISTEM.md'), $header . $content);
         $this->info('Dokumentasi berhasil diperbarui!');
+    }
+
+    private function getAllFiles($dir) {
+        $files = [];
+        if (!is_dir($dir)) return $files;
+        
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir));
+        foreach ($iterator as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $files[] = $file->getPathname();
+            }
+        }
+        return $files;
     }
 }
