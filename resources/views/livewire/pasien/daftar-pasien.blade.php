@@ -69,6 +69,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button wire:click="bukaModalAntrian({{ $pasien->id }})" class="text-blue-600 hover:text-blue-900 mr-3 font-bold">Daftar Antrian</button>
                             <button wire:click="edit({{ $pasien->id }})" class="text-emerald-600 hover:text-emerald-900 mr-3">Edit</button>
                             <button wire:click="hapus({{ $pasien->id }})" class="text-red-600 hover:text-red-900" onclick="confirm('Yakin ingin menghapus pasien ini?') || event.stopImmediatePropagation()">Hapus</button>
                         </td>
@@ -92,6 +93,64 @@
             {{ $dataPasien->links() }}
         </div>
     </div>
+
+    <!-- MODAL ANTRIAN -->
+    @if($tampilkanModalAntrian)
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" aria-hidden="true" wire:click="tutupModalAntrian"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <form wire:submit="simpanAntrian">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <h3 class="text-lg leading-6 font-medium text-slate-900 mb-4 border-b border-slate-100 pb-2">
+                            Daftarkan Pasien ke Poli
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Pilih Poli</label>
+                                <select wire:model.live="pilihPoli" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
+                                    <option value="">-- Pilih Poli --</option>
+                                    @foreach($daftarPoli as $poli)
+                                        <option value="{{ $poli->id }}">{{ $poli->nama_poli }}</option>
+                                    @endforeach
+                                </select>
+                                @error('pilihPoli') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+
+                            @if($pilihPoli)
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Pilih Dokter (Jadwal Hari Ini)</label>
+                                @if(count($jadwalTersedia) > 0)
+                                    <select wire:model="pilihDokter" class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:text-sm">
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($jadwalTersedia as $jadwal)
+                                            <option value="{{ $jadwal->id }}">
+                                                {{ $jadwal->dokter->pengguna->nama_lengkap }} ({{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('pilihDokter') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                @else
+                                    <p class="text-sm text-red-500 bg-red-50 p-3 rounded-lg">Tidak ada jadwal dokter untuk poli ini hari ini.</p>
+                                @endif
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-auto sm:text-sm" @if(empty($jadwalTersedia)) disabled @endif>
+                            Daftarkan
+                        </button>
+                        <button type="button" wire:click="tutupModalAntrian" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- MODAL FORM -->
     @if($tampilkanModal)

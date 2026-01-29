@@ -135,6 +135,78 @@ class DaftarPasien extends Component
         return $prefix . str_pad($number, 4, '0', STR_PAD_LEFT);
     }
 
+    // Modal Antrian
+    public $tampilkanModalAntrian = false;
+    public $idPasienAntrian = null;
+    public $pilihPoli = null;
+    public $pilihDokter = null;
+    public $jadwalTersedia = [];
+
+    // ... (kode sebelumnya)
+
+    public function updatedPilihPoli($value)
+    {
+        // Cari jadwal dokter hari ini berdasarkan poli
+        $hariIni = \Carbon\Carbon::now()->isoFormat('dddd');
+        // Mapping hari indo ke format database jika perlu, tapi asumsi database pakai format Indo 'Senin' dsb.
+        
+        $this->jadwalTersedia = \App\Models\JadwalDokter::with('dokter.pengguna')
+            ->where('id_poli', $value)
+            ->where('hari', $hariIni)
+            ->where('aktif', true)
+            ->get();
+            
+        $this->pilihDokter = null;
+    }
+
+    public function bukaModalAntrian($id)
+    {
+        $this->idPasienAntrian = $id;
+        $this->pilihPoli = null;
+        $this->pilihDokter = null;
+        $this->jadwalTersedia = [];
+        $this->tampilkanModalAntrian = true;
+    }
+    
+    public function tutupModalAntrian()
+    {
+        $this->tampilkanModalAntrian = false;
+        $this->reset(['idPasienAntrian', 'pilihPoli', 'pilihDokter', 'jadwalTersedia']);
+    }
+
+    public function simpanAntrian()
+    {
+        $this->validate([
+            'pilihPoli' => 'required',
+            'pilihDokter' => 'required', // Ini adalah ID Jadwal
+        ]);
+
+        $jadwal = \App\Models\JadwalDokter::find($this->pilihDokter);
+        $poli = \App\Models\Poli::find($this->pilihPoli);
+        
+        // Generate Nomor Antrian
+        // Format: [KODE_POLI]-[URUTAN]
+        $hariIni = \Carbon\Carbon::today();
+        $urutan = \App\Models\Antrian::where('id_poli', $this->pilihPoli)
+            ->whereDate('tanggal_antrian', $hariIni)
+            ->count() + 1;
+            
+        $nomorAntrian = $poli->kode_poli . '-' . $urutan;
+
+        \App\Models\Antrian::create([
+            'id_pasien' => $this->idPasienAntrian,
+            'id_poli' => $this->pilihPoli,
+            'id_jadwal' => $jadwal->id,
+            'nomor_antrian' => $nomorAntrian,
+            'tanggal_antrian' => $hariIni,
+            'status' => 'menunggu',
+            'waktu_checkin' => now()
+        ]);
+
+        session()->flash('sukses', 'Pasien berhasil didaftarkan ke antrian: ' . $nomorAntrian);
+        $this->tutupModalAntrian();
+    }
+
     public function render()
     {
         $pasien = Pasien::where('nama_lengkap', 'like', '%' . $this->cari . '%')
@@ -142,9 +214,12 @@ class DaftarPasien extends Component
             ->orWhere('no_rekam_medis', 'like', '%' . $this->cari . '%')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+            
+        $daftarPoli = \App\Models\Poli::where('aktif', true)->get();
 
         return view('livewire.pasien.daftar-pasien', [
-            'dataPasien' => $pasien
+            'dataPasien' => $pasien,
+            'daftarPoli' => $daftarPoli
         ])->layout('components.layouts.admin', ['title' => 'Manajemen Pasien']);
     }
 }
