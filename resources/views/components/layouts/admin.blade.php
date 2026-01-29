@@ -13,7 +13,7 @@
     @livewireStyles
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-slate-50 font-sans antialiased text-slate-800" x-data="{ sidebarOpen: false }">
+<body class="bg-slate-50 font-sans antialiased text-slate-800 flex h-screen overflow-hidden" x-data="{ sidebarOpen: false }">
 
     <!-- Mobile Sidebar Backdrop -->
     <div x-show="sidebarOpen" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-slate-900/80 z-40 lg:hidden" @click="sidebarOpen = false"></div>
