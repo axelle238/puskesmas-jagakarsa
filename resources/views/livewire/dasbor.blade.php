@@ -16,7 +16,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         
         <!-- Card 1 -->
-        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500 hover:shadow-md transition">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Antrian Hari Ini</p>
@@ -34,7 +34,7 @@
         </div>
 
         <!-- Card 2 -->
-        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500 hover:shadow-md transition">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Pasien</p>
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Card 3 -->
-        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500 hover:shadow-md transition">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Dokter Aktif</p>
@@ -66,7 +66,7 @@
         </div>
 
         <!-- Card 4 -->
-        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-500">
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-500 hover:shadow-md transition">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Layanan ILP</p>
@@ -82,64 +82,94 @@
         </div>
     </div>
 
-    <!-- Recent Activity Table -->
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-            <h3 class="font-bold text-gray-800">Antrian Masuk Terkini</h3>
-            <a href="#" class="text-sm text-blue-600 hover:underline">Lihat Semua</a>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <!-- Chart Section -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
+            <h3 class="font-bold text-gray-800 mb-4">Tren Kunjungan (7 Hari Terakhir)</h3>
+            <div class="relative h-64 w-full">
+                <canvas id="visitChart"></canvas>
+            </div>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left">
-                <thead class="bg-gray-50 text-gray-500 uppercase font-bold text-xs">
-                    <tr>
-                        <th class="px-6 py-3">No. Antrian</th>
-                        <th class="px-6 py-3">Pasien</th>
-                        <th class="px-6 py-3">Poli Tujuan</th>
-                        <th class="px-6 py-3">Waktu Masuk</th>
-                        <th class="px-6 py-3">Status</th>
-                        <th class="px-6 py-3">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    @forelse($antrianTerbaru as $antrian)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 font-bold text-gray-800">{{ $antrian->nomor_antrian }}</td>
-                        <td class="px-6 py-4">
-                            <div class="font-medium text-gray-900">{{ $antrian->pasien->nama_lengkap }}</div>
-                            <div class="text-xs text-gray-500">{{ $antrian->pasien->no_rekam_medis }}</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">
-                                {{ $antrian->poli->nama_poli }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-gray-500">
-                            {{ $antrian->created_at->format('H:i') }}
-                        </td>
-                        <td class="px-6 py-4">
-                            @if($antrian->status == 'menunggu')
-                                <span class="bg-orange-100 text-orange-600 px-2 py-1 rounded-full text-xs font-bold">Menunggu</span>
-                            @elseif($antrian->status == 'dipanggil')
-                                <span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-bold">Dipanggil</span>
-                            @else
-                                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs font-bold">{{ ucfirst($antrian->status) }}</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4">
-                            <button class="text-blue-600 hover:text-blue-800 font-medium text-xs border border-blue-200 px-3 py-1 rounded hover:bg-blue-50 transition">
-                                Panggil
-                            </button>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="px-6 py-8 text-center text-gray-400">
-                            Belum ada antrian hari ini.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+
+        <!-- Mini List -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-gray-800 text-sm">Antrian Masuk Terkini</h3>
+                <a href="#" class="text-xs text-blue-600 hover:underline">Lihat Semua</a>
+            </div>
+            <div class="divide-y divide-gray-100">
+                @forelse($antrianTerbaru as $antrian)
+                <div class="p-4 hover:bg-gray-50 transition flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+                            {{ $antrian->nomor_antrian }}
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-800 text-sm">{{ $antrian->pasien->nama_lengkap }}</div>
+                            <div class="text-xs text-gray-500">{{ $antrian->poli->nama_poli }}</div>
+                        </div>
+                    </div>
+                    <div>
+                        @if($antrian->status == 'menunggu')
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">Menunggu</span>
+                        @else
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">{{ ucfirst($antrian->status) }}</span>
+                        @endif
+                    </div>
+                </div>
+                @empty
+                <div class="p-6 text-center text-gray-400 text-sm">
+                    Belum ada antrian hari ini.
+                </div>
+                @endforelse
+            </div>
         </div>
     </div>
+
+    <!-- Chart Script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('livewire:navigated', () => {
+            const ctx = document.getElementById('visitChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: @json($chartLabels),
+                        datasets: [{
+                            label: 'Jumlah Pasien',
+                            data: @json($chartData),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    borderDash: [2, 4]
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </div>

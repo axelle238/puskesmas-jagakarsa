@@ -13,6 +13,7 @@ use App\Livewire\Medis\Pemeriksaan;
 use App\Livewire\Farmasi\DaftarResep;
 use App\Livewire\Farmasi\StokObat;
 use App\Livewire\Laporan\LaporanKunjungan;
+use App\Livewire\Laporan\LaporanPenyakit; // Import Baru
 use App\Livewire\Publik\AmbilAntrian;
 use App\Livewire\Publik\EdukasiKesehatan;
 use App\Livewire\Publik\BacaArtikel;
@@ -54,4 +55,5 @@ Route::middleware(['auth'])->group(function () {
 
     // Laporan
     Route::get('/laporan/kunjungan', LaporanKunjungan::class)->name('laporan.kunjungan');
+    Route::get('/laporan/penyakit', LaporanPenyakit::class)->name('laporan.penyakit'); // Route Baru
 });

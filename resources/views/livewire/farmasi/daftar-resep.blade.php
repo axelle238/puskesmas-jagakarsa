@@ -1,5 +1,5 @@
 <div>
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 print:hidden">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Antrian Farmasi</h1>
             <p class="text-gray-500">Kelola penyiapan dan penyerahan obat pasien</p>
@@ -20,14 +20,14 @@
     </div>
 
     @if (session()->has('pesan'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 print:hidden">
             {{ session('pesan') }}
         </div>
     @endif
 
-    <div class="space-y-6">
+    <div class="space-y-6 print:hidden">
         @forelse($reseps as $rm)
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" x-data="{ showPrint: false }">
             <!-- Header Resep -->
             <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                 <div class="flex items-center gap-4">
@@ -39,13 +39,18 @@
                         <p class="text-xs text-gray-500">RM: {{ $rm->pasien->no_rekam_medis }} • {{ $rm->poli->nama_poli }}</p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <div class="text-xs text-gray-500">Dokter Peresep</div>
-                    <div class="font-medium text-gray-800">{{ $rm->dokter->pengguna->nama_lengkap }}</div>
+                <div class="text-right flex items-center gap-4">
+                    <div>
+                        <div class="text-xs text-gray-500">Dokter Peresep</div>
+                        <div class="font-medium text-gray-800">{{ $rm->dokter->pengguna->nama_lengkap }}</div>
+                    </div>
+                    <button @click="printResep('resep-{{ $rm->id }}')" class="text-gray-500 hover:text-gray-700 p-2" title="Cetak Resep">
+                        🖨️
+                    </button>
                 </div>
             </div>
 
-            <!-- List Obat -->
+            <!-- List Obat (Tampilan Web) -->
             <div class="p-6">
                 <table class="w-full text-sm text-left">
                     <thead class="text-gray-500 border-b border-gray-100">
@@ -89,6 +94,57 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Layout Cetak Tersembunyi -->
+            <div id="resep-{{ $rm->id }}" class="hidden print:block print:visible p-8 bg-white text-black font-serif">
+                <div class="border-b-2 border-black pb-4 mb-6 text-center">
+                    <h2 class="text-xl font-bold uppercase tracking-widest">Puskesmas Jagakarsa</h2>
+                    <p class="text-xs">Jl. Moh. Kahfi 1, Jagakarsa, Jakarta Selatan</p>
+                    <p class="text-xs">Telp: (021) 786-xxxx | SIP: {{ $rm->dokter->sip }}</p>
+                </div>
+                
+                <div class="flex justify-between items-end mb-6 text-sm">
+                    <div>
+                        <p>Dokter: <strong>{{ $rm->dokter->pengguna->nama_lengkap }}</strong></p>
+                        <p>Poli: {{ $rm->poli->nama_poli }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p>Tanggal: {{ $rm->created_at->format('d/m/Y') }}</p>
+                        <p>No. RM: {{ $rm->pasien->no_rekam_medis }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="font-bold border-b border-gray-400 mb-2">R/ Resep Obat</h3>
+                    <ul class="list-none space-y-4">
+                        @foreach($rm->resepDetail as $obat)
+                        <li class="flex justify-between items-start">
+                            <div>
+                                <span class="font-bold text-lg">R/ {{ $obat->nama_obat }}</span>
+                                <div class="ml-4 italic text-sm">S {{ $obat->pivot->aturan_pakai }}</div>
+                            </div>
+                            <div class="font-bold">No. {{ $obat->pivot->jumlah }} ({{ $obat->satuan }})</div>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <div class="mt-12 pt-4 border-t border-black flex justify-between text-sm">
+                    <div>
+                        <p>Pro: <strong>{{ $rm->pasien->nama_lengkap }}</strong></p>
+                        <p>Usia: {{ \Carbon\Carbon::parse($rm->pasien->tanggal_lahir)->age }} Tahun</p>
+                        <p>Alamat: {{ $rm->pasien->alamat_lengkap }}</p>
+                    </div>
+                    <div class="text-center w-32">
+                        <p class="mb-8">Apoteker</p>
+                        <div class="border-b border-black"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center text-xs italic text-gray-500">
+                    -- Semoga Lekas Sembuh --
+                </div>
+            </div>
         </div>
         @empty
         <div class="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
@@ -99,7 +155,20 @@
         @endforelse
     </div>
     
-    <div class="mt-6">
+    <div class="mt-6 print:hidden">
         {{ $reseps->links() }}
     </div>
+
+    <!-- Script Cetak -->
+    <script>
+        function printResep(elementId) {
+            const printContent = document.getElementById(elementId).innerHTML;
+            const originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = originalContents;
+            window.location.reload(); // Reload agar event listener Livewire kembali aktif
+        }
+    </script>
 </div>

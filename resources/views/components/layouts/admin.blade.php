@@ -50,7 +50,10 @@
             <x-nav-link href="/pegawai" icon="id-card" :active="request()->is('pegawai*')">Data Pegawai</x-nav-link>
             <x-nav-link href="/publikasi/artikel" icon="📰" :active="request()->is('publikasi/artikel*')">Artikel Edukasi</x-nav-link>
             <x-nav-link href="/publikasi/fasilitas" icon="🏥" :active="request()->is('publikasi/fasilitas*')">Data Fasilitas</x-nav-link>
-            <x-nav-link href="/laporan/kunjungan" icon="📊" :active="request()->is('laporan*')">Laporan</x-nav-link>
+            
+            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Laporan</div>
+            <x-nav-link href="/laporan/kunjungan" icon="📊" :active="request()->is('laporan/kunjungan*')">Kunjungan</x-nav-link>
+            <x-nav-link href="/laporan/penyakit" icon="🦠" :active="request()->is('laporan/penyakit*')">10 Besar Penyakit</x-nav-link>
             
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Pengaturan</div>
             <x-nav-link href="/poli" icon="⚙️" :active="request()->is('poli*')">Poli / Unit</x-nav-link>
@@ -93,7 +96,7 @@
         </header>
 
         <!-- Content Area -->
-        <main class="flex-1 overflow-y-auto p-6 bg-gray-100">
+        <main class="flex-1 overflow-y-auto p-6 bg-gray-100" id="main-content">
             {{ $slot }}
         </main>
     </div>

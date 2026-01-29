@@ -1,7 +1,7 @@
 <div class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
     
-    <!-- Progress Indicator -->
-    <div class="mb-8">
+    <!-- Progress Indicator (Sembunyikan saat cetak) -->
+    <div class="mb-8 print:hidden">
         <div class="flex items-center justify-between relative">
             <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-10"></div>
             
@@ -27,7 +27,7 @@
 
     <!-- Step 1: Cek Data Pasien -->
     @if($langkah == 1)
-    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 print:hidden">
         <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Identifikasi Pasien</h2>
         
         @if (session()->has('error'))
@@ -54,7 +54,7 @@
 
     <!-- Step 2: Pilih Layanan -->
     @if($langkah == 2)
-    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 print:hidden">
         <div class="flex items-center gap-4 mb-8 border-b border-gray-100 pb-6">
             <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xl">👤</div>
             <div>
@@ -109,26 +109,61 @@
 
     <!-- Step 3: Tiket Antrian -->
     @if($langkah == 3 && $tiketAntrian)
-    <div class="bg-white rounded-2xl shadow-xl border-t-8 border-medis-500 p-8 text-center max-w-md mx-auto">
-        <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+    <div class="bg-white rounded-2xl shadow-xl border-t-8 border-medis-500 p-8 text-center max-w-md mx-auto print:shadow-none print:border-none print:w-full print:max-w-none">
+        <div class="print:hidden w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
             ✅
         </div>
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Berhasil Mendaftar!</h2>
-        <p class="text-gray-500 mb-8">Silakan screenshot bukti antrian ini.</p>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2 print:hidden">Berhasil Mendaftar!</h2>
+        <p class="text-gray-500 mb-8 print:hidden">Silakan screenshot atau cetak bukti antrian ini.</p>
 
-        <div class="bg-gray-50 p-6 rounded-xl border border-dashed border-gray-300 mb-8">
+        <!-- Area Cetak Tiket -->
+        <div id="tiket-area" class="bg-gray-50 p-6 rounded-xl border border-dashed border-gray-300 mb-8 print:border-2 print:border-black print:bg-white">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <span class="text-2xl font-bold text-medis-900">PUSKESMAS JAGAKARSA</span>
+            </div>
             <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">NOMOR ANTRIAN ANDA</p>
-            <div class="text-5xl font-black text-medis-600 tracking-wider mb-2">{{ $tiketAntrian->nomor_antrian }}</div>
-            <div class="text-sm font-medium text-gray-800">{{ $tiketAntrian->poli->nama_poli }}</div>
-            <div class="text-xs text-gray-500 mt-4 pt-4 border-t border-gray-200">
-                {{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y') }}
+            <div class="text-6xl font-black text-medis-600 tracking-wider mb-2 print:text-black">{{ $tiketAntrian->nomor_antrian }}</div>
+            <div class="text-lg font-bold text-gray-800">{{ $tiketAntrian->poli->nama_poli }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $tiketAntrian->jadwal->dokter->pengguna->nama_lengkap }}</div>
+            
+            <div class="text-xs text-gray-500 mt-6 pt-4 border-t border-gray-200">
+                {{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y - H:mm') }} WIB
+                <br>Simpan struk ini sebagai bukti pendaftaran.
             </div>
         </div>
 
-        <a href="/" class="block w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">
-            Kembali ke Beranda
-        </a>
+        <div class="flex gap-4 print:hidden">
+            <a href="/" class="w-1/2 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-300 transition text-center">
+                Kembali
+            </a>
+            <button onclick="window.print()" class="w-1/2 bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition">
+                🖨️ Cetak Tiket
+            </button>
+        </div>
     </div>
+    
+    <!-- Style Khusus Cetak -->
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #tiket-area, #tiket-area * {
+                visibility: visible;
+            }
+            #tiket-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+            }
+            header, footer {
+                display: none !important;
+            }
+        }
+    </style>
     @endif
 
 </div>
