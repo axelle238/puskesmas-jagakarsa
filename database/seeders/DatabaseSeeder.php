@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\ArtikelEdukasi;
+use App\Models\Fasilitas;
 use App\Models\KlasterIlp;
 use App\Models\Obat;
 use App\Models\Pegawai;
@@ -10,6 +12,7 @@ use App\Models\Poli;
 use App\Models\TindakanMedis;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -32,7 +35,6 @@ class DatabaseSeeder extends Seeder
         Poli::create(['id_klaster' => $klaster3->id, 'nama_poli' => 'Poli Lansia', 'deskripsi' => 'Pelayanan prioritas lansia', 'lokasi_ruangan' => 'Lantai 1 - R.104']);
         Poli::create(['id_klaster' => $klaster5->id, 'nama_poli' => 'IGD 24 Jam', 'deskripsi' => 'Penanganan gawat darurat', 'lokasi_ruangan' => 'Lantai Dasar']);
         
-        // Poli Tambahan untuk ILP
         Poli::create(['id_klaster' => $klaster2->id, 'nama_poli' => 'MTBS / MTBM', 'deskripsi' => 'Manajemen Terpadu Balita Sakit', 'lokasi_ruangan' => 'Lantai 1 - R.105']);
         Poli::create(['id_klaster' => $klaster4->id, 'nama_poli' => 'Poli TB / Paru', 'deskripsi' => 'Penanganan Tuberkulosis', 'lokasi_ruangan' => 'Lantai 2 - R.201']);
 
@@ -114,6 +116,40 @@ class DatabaseSeeder extends Seeder
             'str' => '9876543210',
             'jabatan' => 'Kepala Farmasi',
             'tanggal_masuk' => '2019-03-01'
+        ]);
+
+        // 8. Buat Data Fasilitas Dummy
+        Fasilitas::create([
+            'nama_fasilitas' => 'Ruang Tunggu Nyaman',
+            'deskripsi' => 'Dilengkapi AC, TV, dan kursi prioritas untuk lansia dan ibu hamil.',
+        ]);
+        Fasilitas::create([
+            'nama_fasilitas' => 'Laboratorium Terpadu',
+            'deskripsi' => 'Melayani pemeriksaan darah lengkap, urin, dahak, dan kimia darah dengan hasil cepat.',
+        ]);
+        Fasilitas::create([
+            'nama_fasilitas' => 'Pojok Bermain Anak',
+            'deskripsi' => 'Area bermain yang aman dan bersih untuk anak-anak saat menunggu antrian.',
+        ]);
+
+        // 9. Buat Artikel Edukasi Dummy
+        ArtikelEdukasi::create([
+            'judul' => 'Pentingnya Imunisasi Dasar Lengkap',
+            'slug' => 'pentingnya-imunisasi-dasar-lengkap',
+            'ringkasan' => 'Imunisasi melindungi anak dari berbagai penyakit berbahaya. Simak jadwal lengkapnya.',
+            'konten' => "Imunisasi adalah cara paling efektif untuk melindungi buah hati dari penyakit menular.\n\nJadwal imunisasi dasar:\n1. Usia 0 bulan: Hepatitis B\n2. Usia 1 bulan: BCG, Polio 1\n3. Usia 2 bulan: DPT-HB-Hib 1, Polio 2\n\nJangan lewatkan jadwal posyandu atau kunjungi poli KIA kami.",
+            'kategori' => 'Ibu & Anak',
+            'id_penulis' => $dokter->id,
+            'publikasi' => true
+        ]);
+        ArtikelEdukasi::create([
+            'judul' => 'Cara Mencegah Diabetes Sejak Dini',
+            'slug' => 'cara-mencegah-diabetes',
+            'ringkasan' => 'Diabetes bisa menyerang siapa saja. Kurangi gula dan rajin olahraga adalah kuncinya.',
+            'konten' => "Diabetes Melitus kini tidak hanya menyerang lansia, tetapi juga usia muda.\n\nTips pencegahan:\n1. Kurangi minuman manis kemasan.\n2. Lakukan aktivitas fisik minimal 30 menit sehari.\n3. Perbanyak konsumsi sayur dan buah.\n\nLakukan skrining gula darah rutin di Posbindu atau Puskesmas.",
+            'kategori' => 'Umum',
+            'id_penulis' => $dokter->id,
+            'publikasi' => true
         ]);
     }
 }

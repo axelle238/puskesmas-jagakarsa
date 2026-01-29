@@ -1,6 +1,6 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
-Status Dokumen: **FINAL RELEASE v1.1 (ILP INTEGRATED)**
+Status Dokumen: **FINAL RELEASE v1.2 (CMS READY)**
 Terakhir Diupdate: 29 January 2026
 
 ## 1. Ikhtisar Sistem
@@ -27,6 +27,8 @@ Setiap Poli/Unit Layanan wajib terhubung dengan salah satu Klaster di atas, mema
 ### A. Halaman Publik (Front Office)
 *Akses: Masyarakat Umum*
 - **Beranda Interaktif:** Menampilkan informasi layanan, jadwal dokter, dan statistik.
+- **CMS Edukasi Kesehatan:** Portal artikel/berita kesehatan yang dikelola admin/dokter.
+- **Info Fasilitas:** Direktori fasilitas puskesmas lengkap dengan deskripsi.
 - **Ambil Antrian Online:** Wizard pendaftaran antrian mandiri (Cek Data -> Pilih Poli -> Tiket).
 - **Informasi Jadwal:** Jadwal praktik dokter real-time.
 
@@ -51,6 +53,7 @@ Setiap Poli/Unit Layanan wajib terhubung dengan salah satu Klaster di atas, mema
 *Akses: Admin, Kepala Puskesmas*
 - **Dasbor Operasional:** Statistik real-time.
 - **Manajemen SDM:** Pendaftaran pegawai & akun login.
+- **Manajemen Konten (CMS):** Kelola Artikel Edukasi & Fasilitas untuk web publik.
 - **Manajemen Poli & Klaster:** Pengaturan unit layanan yang terstruktur berdasarkan Klaster ILP.
 - **Laporan Kunjungan:** Rekapitulasi pasien dan estimasi pendapatan jasa medis.
 

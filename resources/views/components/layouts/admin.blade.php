@@ -48,10 +48,12 @@
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Manajemen</div>
             <x-nav-link href="/farmasi/stok" icon="📦" :active="request()->is('farmasi/stok*')">Stok Obat</x-nav-link>
             <x-nav-link href="/pegawai" icon="id-card" :active="request()->is('pegawai*')">Data Pegawai</x-nav-link>
+            <x-nav-link href="/publikasi/artikel" icon="📰" :active="request()->is('publikasi/artikel*')">Artikel Edukasi</x-nav-link>
+            <x-nav-link href="/publikasi/fasilitas" icon="🏥" :active="request()->is('publikasi/fasilitas*')">Data Fasilitas</x-nav-link>
             <x-nav-link href="/laporan/kunjungan" icon="📊" :active="request()->is('laporan*')">Laporan</x-nav-link>
             
             <div class="px-4 mt-6 mb-2 text-xs font-semibold text-gray-500 uppercase" x-show="sidebarOpen">Pengaturan</div>
-            <x-nav-link href="/poli" icon="🏥" :active="request()->is('poli*')">Poli / Unit</x-nav-link>
+            <x-nav-link href="/poli" icon="⚙️" :active="request()->is('poli*')">Poli / Unit</x-nav-link>
             <x-nav-link href="/jadwal" icon="📅" :active="request()->is('jadwal*')">Jadwal Praktik</x-nav-link>
         </nav>
 
