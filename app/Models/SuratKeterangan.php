@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\MencatatAktivitas; // Tambahkan Trait
 
 class SuratKeterangan extends Model
 {
+    use MencatatAktivitas; // Aktifkan Audit Trail
+
     protected $table = 'surat_keterangan';
     protected $guarded = [];
 

@@ -11,6 +11,7 @@ class BuatSurat extends Component
     public $nik;
     public $pasien;
     public $jenis_surat = 'sakit';
+    public $modeCetak = false;
     
     // Form Sakit
     public $lama_istirahat = 3;
@@ -25,6 +26,12 @@ class BuatSurat extends Component
 
     public $suratBaru;
 
+    protected $messages = [
+        'nik.required' => 'NIK wajib diisi.',
+        'lama_istirahat.required' => 'Lama istirahat wajib diisi.',
+        'keperluan.required' => 'Keperluan surat wajib diisi.'
+    ];
+
     public function mount()
     {
         $this->tanggal_mulai = date('Y-m-d');
@@ -33,26 +40,48 @@ class BuatSurat extends Component
     public function cariPasien()
     {
         $this->validate(['nik' => 'required']);
-        $this->pasien = Pasien::where('nik', $this->nik)->first();
+        // Cari by NIK atau No RM
+        $this->pasien = Pasien::where('nik', $this->nik)
+            ->orWhere('no_rekam_medis', $this->nik)
+            ->first();
+            
         if (!$this->pasien) {
-            session()->flash('error', 'Pasien tidak ditemukan.');
+            session()->flash('error', 'Pasien tidak ditemukan. Pastikan NIK atau No. RM benar.');
+        } else {
+            $this->resetErrorBag();
         }
     }
 
     public function simpanSurat()
     {
-        $this->validate([
-            'pasien' => 'required',
-            'jenis_surat' => 'required'
-        ]);
+        if (!$this->pasien) {
+            $this->addError('nik', 'Silakan cari pasien terlebih dahulu.');
+            return;
+        }
 
-        $noSurat = 'SRT-' . date('Ymd') . '-' . rand(100,999);
+        $rules = ['jenis_surat' => 'required'];
+        if ($this->jenis_surat == 'sakit') {
+            $rules['lama_istirahat'] = 'required|numeric|min:1';
+            $rules['tanggal_mulai'] = 'required|date';
+        } else {
+            $rules['bb'] = 'required|numeric';
+            $rules['tb'] = 'required|numeric';
+            $rules['tensi'] = 'required';
+            $rules['keperluan'] = 'required';
+        }
+        $this->validate($rules);
+
+        // Generate No Surat (Auto Increment per bulan)
+        $bulanRomawi = $this->getRomawi(date('n'));
+        $tahun = date('Y');
+        $count = SuratKeterangan::whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->count() + 1;
+        $noSurat = sprintf("%03d/SK/%s/%s", $count, $bulanRomawi, $tahun);
         
         $data = [
             'no_surat' => $noSurat,
             'jenis_surat' => $this->jenis_surat,
             'id_pasien' => $this->pasien->id,
-            'id_dokter' => auth()->user()->pegawai->id ?? 1,
+            'id_dokter' => auth()->user()->pegawai->id ?? 1, // Fallback ID 1 jika testing
         ];
 
         if ($this->jenis_surat == 'sakit') {
@@ -69,7 +98,19 @@ class BuatSurat extends Component
         }
 
         $this->suratBaru = SuratKeterangan::create($data);
-        session()->flash('sukses', 'Surat berhasil dibuat.');
+        $this->modeCetak = true;
+        session()->flash('sukses', 'Surat berhasil dibuat. Silakan cetak.');
+    }
+
+    public function resetForm()
+    {
+        $this->reset(['nik', 'pasien', 'jenis_surat', 'lama_istirahat', 'bb', 'tb', 'tensi', 'keperluan', 'modeCetak', 'suratBaru']);
+        $this->tanggal_mulai = date('Y-m-d');
+    }
+
+    private function getRomawi($n) {
+        $romawi = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+        return $romawi[$n];
     }
 
     public function render()
