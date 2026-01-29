@@ -12,7 +12,8 @@ use App\Livewire\Publik\LayarAntrian;
 use App\Livewire\Publik\EdukasiKesehatan;
 use App\Livewire\Publik\BacaArtikel;
 use App\Livewire\Publik\FasilitasPublik;
-use App\Livewire\Publik\JadwalDokter; // Import JadwalDokter
+use App\Livewire\Publik\JadwalDokter;
+use App\Livewire\Publik\Pengaduan; // Import Pengaduan
 
 // Internal Components
 use App\Livewire\Dasbor;
@@ -38,14 +39,14 @@ use App\Livewire\Pengaturan\ManajemenIT;
 use App\Livewire\Pegawai\PresensiHarian;
 use App\Livewire\Publikasi\KelolaArtikel;
 use App\Livewire\Publikasi\KelolaFasilitas;
-use App\Livewire\Perencanaan\DaftarKegiatan; // Import Perencanaan
-use App\Livewire\Kesekretariatan\SuratMasuk; // Import Surat Masuk
-use App\Livewire\Kesekretariatan\SuratKeluar; // Import Surat Keluar
-use App\Livewire\Keuangan\BukuKasUmum; // Import Keuangan
+use App\Livewire\Perencanaan\DaftarKegiatan;
+use App\Livewire\Kesekretariatan\SuratMasuk;
+use App\Livewire\Kesekretariatan\SuratKeluar;
+use App\Livewire\Keuangan\BukuKasUmum;
 use App\Livewire\Mutu\IndikatorMutu;
 use App\Livewire\Mutu\InsidenKeselamatan;
 use App\Livewire\Mutu\RegisterRisiko;
-use App\Livewire\Promkes\JadwalPenyuluhan; // Import Promkes
+use App\Livewire\Promkes\JadwalPenyuluhan;
 
 // -----------------------------------------------------------------------------
 // HALAMAN PUBLIK (Akses Terbuka)
@@ -54,18 +55,19 @@ use App\Livewire\Promkes\JadwalPenyuluhan; // Import Promkes
 // Beranda & Login
 Route::get('/', Beranda::class)->name('beranda');
 Route::get('/masuk', Masuk::class)->name('login');
-Route::get('/login', function() { return redirect('/masuk'); }); // Alias
+Route::get('/login', function() { return redirect('/masuk'); });
 
-// Antrian Publik
+// Layanan Publik
 Route::get('/antrian-online', AmbilAntrian::class)->name('publik.ambil-antrian');
 Route::get('/layar-antrian', LayarAntrian::class)->name('publik.layar-antrian');
-Route::get('/jadwal-dokter', JadwalDokter::class)->name('publik.jadwal'); // Route Jadwal Dokter Publik
+Route::get('/jadwal-dokter', JadwalDokter::class)->name('publik.jadwal');
+Route::get('/pengaduan', Pengaduan::class)->name('publik.pengaduan'); // Route Pengaduan Baru
 
 // Informasi Publik
 Route::get('/artikel', EdukasiKesehatan::class)->name('publik.artikel');
 Route::get('/artikel/{slug}', BacaArtikel::class)->name('publik.artikel.baca');
 Route::get('/fasilitas', FasilitasPublik::class)->name('publik.fasilitas');
-Route::get('/layanan', function() { return redirect('/#layanan'); }); // Redirect ke section di homepage
+Route::get('/layanan', function() { return redirect('/#layanan'); });
 
 // -----------------------------------------------------------------------------
 // HALAMAN SISTEM (Butuh Login)
@@ -78,7 +80,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Profil User
     Route::get('/profil', Profil::class)->name('pengaturan.profil');
-    Route::get('/presensi', PresensiHarian::class)->name('pegawai.presensi'); // Route baru
+    Route::get('/presensi', PresensiHarian::class)->name('pegawai.presensi');
 
     // -------------------------------------------------------------------------
     // ROLE: ADMIN & PENDAFTARAN
