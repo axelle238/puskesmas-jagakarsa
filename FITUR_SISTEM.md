@@ -3,7 +3,7 @@
 Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 
 ## 1. Status Sistem
-- **Versi:** 1.3.0-RC (Release Candidate)
+- **Versi:** 1.4.0-Stable
 - **Framework:** Laravel 12 / Livewire 3
 - **Basis Data:** MySQL / MariaDB
 - **Bahasa Kode:** 100% Bahasa Indonesia
@@ -15,6 +15,7 @@ Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 - [x] Model `App\Models\Pengguna` (Autentikasi Kustom)
 - [x] Halaman Login (`Livewire\Auth\Masuk`)
 - [x] Middleware Peran (Admin, Dokter, dll)
+- [x] **Pengaturan Profil & Keamanan**
 
 ### B. Manajemen Master Data
 - [x] Tabel `poli` (Klaster ILP)
@@ -47,6 +48,13 @@ Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
 - [x] **Kasir & Billing System (Integrasi Poli + Obat + Lab)**
 - [x] **Laporan Kunjungan Pasien**
 
+### F. Manajemen Konten Publik (CMS)
+- [x] Tabel `artikel_edukasi` & `fasilitas`
+- [x] **CMS Artikel Kesehatan (CRUD + Upload)**
+- [x] **CMS Fasilitas (CRUD + Upload)**
+- [x] **Halaman Publik: Edukasi Kesehatan**
+- [x] **Halaman Publik: Fasilitas**
+
 ## 3. Fitur Unggulan Terselesaikan
 1.  **Siklus Medis End-to-End:**
     - Alur: Pendaftaran -> Antrian Poli -> Pemeriksaan Dokter -> Resep/Lab -> Kasir -> Selesai.
@@ -56,13 +64,9 @@ Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
     - Tagihan otomatis menarik data biaya dari tindakan dokter, obat farmasi, dan pemeriksaan lab.
     - Mendukung metode pembayaran Tunai, QRIS, dan BPJS (Gratis).
 
-3.  **Laboratorium Digital:**
-    - Input hasil lab terstruktur dengan nilai rujukan.
-    - Riwayat lab tersimpan digital.
-
-4.  **Pelaporan Manajemen:**
-    - Dashboard real-time.
-    - Laporan rekapitulasi kunjungan harian/bulanan.
+3.  **Portal Informasi Publik:**
+    - Masyarakat dapat membaca artikel kesehatan dan melihat fasilitas tanpa login.
+    - Konten dikelola langsung oleh petugas via Admin Panel.
 
 ## 4. Konvensi Penamaan (Wajib)
 - **Model:** Singular, PascalCase (contoh: `Pasien`, `RekamMedis`)

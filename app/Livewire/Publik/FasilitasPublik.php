@@ -9,8 +9,10 @@ class FasilitasPublik extends Component
 {
     public function render()
     {
+        $fasilitas = Fasilitas::latest()->get();
+        
         return view('livewire.publik.fasilitas-publik', [
-            'fasilitas' => Fasilitas::all()
-        ])->layout('components.layouts.public', ['title' => 'Fasilitas Kami']);
+            'fasilitas' => $fasilitas
+        ])->layout('components.layouts.app', ['title' => 'Fasilitas Puskesmas']);
     }
 }

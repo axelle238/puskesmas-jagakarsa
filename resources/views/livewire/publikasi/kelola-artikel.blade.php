@@ -1,115 +1,134 @@
 <div>
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Artikel Edukasi Kesehatan</h1>
-        <button wire:click="tambah" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 shadow transition">
-            <span>+</span> Tulis Artikel
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900">Publikasi Artikel</h1>
+            <p class="text-slate-500">Kelola konten edukasi kesehatan untuk masyarakat.</p>
+        </div>
+        <button wire:click="tambah" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-5 rounded-lg flex items-center gap-2 shadow-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Tulis Artikel
         </button>
     </div>
 
-    @if (session()->has('pesan'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-            {{ session('pesan') }}
-        </div>
+    @if(session('sukses'))
+    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg">
+        {{ session('sukses') }}
+    </div>
     @endif
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table class="w-full text-left text-sm">
-            <thead class="bg-gray-50 text-gray-500 font-bold border-b border-gray-200">
-                <tr>
-                    <th class="px-6 py-4">Judul & Ringkasan</th>
-                    <th class="px-6 py-4">Kategori</th>
-                    <th class="px-6 py-4">Status</th>
-                    <th class="px-6 py-4 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse($artikels as $artikel)
-                <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4">
-                        <div class="font-bold text-gray-800 text-lg">{{ $artikel->judul }}</div>
-                        <p class="text-gray-500 text-sm mt-1 line-clamp-2">{{ $artikel->ringkasan }}</p>
-                        <div class="text-xs text-gray-400 mt-2">Penulis: {{ $artikel->penulis->nama_lengkap }} • {{ $artikel->created_at->format('d M Y') }}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold">{{ $artikel->kategori }}</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        @if($artikel->publikasi)
-                            <span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-bold">Terbit</span>
-                        @else
-                            <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs font-bold">Draf</span>
-                        @endif
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <button wire:click="edit({{ $artikel->id }})" class="text-blue-600 hover:bg-blue-50 p-2 rounded mr-1">✏️</button>
-                        <button wire:click="hapus({{ $artikel->id }})" wire:confirm="Hapus artikel ini?" class="text-red-600 hover:bg-red-50 p-2 rounded">🗑️</button>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="px-6 py-8 text-center text-gray-400">Belum ada artikel.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-        <div class="px-6 py-4 border-t border-gray-100">
-            {{ $artikels->links() }}
+    <!-- Daftar Artikel -->
+    <div class="space-y-4">
+        @forelse($dataArtikel as $a)
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col md:flex-row gap-4 items-start">
+            <!-- Thumbnail -->
+            <div class="w-full md:w-48 h-32 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
+                @if($a->gambar_sampul)
+                    <img src="{{ asset('storage/' . $a->gambar_sampul) }}" class="w-full h-full object-cover">
+                @else
+                    <div class="w-full h-full flex items-center justify-center text-slate-400">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                @endif
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-bold">{{ $a->kategori }}</span>
+                    @if($a->publikasi)
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full font-bold">Terbit</span>
+                    @else
+                        <span class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full font-bold">Draft</span>
+                    @endif
+                    <span class="text-xs text-slate-400">{{ $a->created_at->format('d M Y') }}</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">{{ $a->judul }}</h3>
+                <p class="text-sm text-slate-600 line-clamp-2 mb-3">{{ $a->ringkasan }}</p>
+                <div class="flex gap-3">
+                    <button wire:click="edit({{ $a->id }})" class="text-sm font-medium text-emerald-600 hover:text-emerald-800">Edit</button>
+                    <button wire:click="hapus({{ $a->id }})" class="text-sm font-medium text-red-600 hover:text-red-800" onclick="confirm('Hapus artikel ini?') || event.stopImmediatePropagation()">Hapus</button>
+                    <a href="{{ route('publik.artikel.baca', $a->slug) }}" target="_blank" class="text-sm font-medium text-blue-600 hover:text-blue-800">Lihat</a>
+                </div>
+            </div>
         </div>
+        @empty
+        <div class="text-center py-12 text-slate-400 bg-white rounded-xl border border-dashed border-slate-300">
+            Belum ada artikel.
+        </div>
+        @endforelse
+
+        {{ $dataArtikel->links() }}
     </div>
 
     <!-- Modal Form -->
     @if($tampilkanModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
-                <h3 class="font-bold text-lg text-gray-800">{{ $modeEdit ? 'Edit Artikel' : 'Tulis Artikel Baru' }}</h3>
-                <button wire:click="$set('tampilkanModal', false)" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+    <div class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-slate-900 bg-opacity-75" wire:click="tutupModal"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <form wire:submit="simpan">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+                        <h3 class="text-lg font-bold text-slate-900 mb-6">{{ $modeEdit ? 'Edit Artikel' : 'Tulis Artikel Baru' }}</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-2 space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Judul Artikel</label>
+                                    <input type="text" wire:model="judul" class="w-full rounded-lg border-slate-300">
+                                    @error('judul') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Ringkasan (Intro)</label>
+                                    <textarea wire:model="ringkasan" rows="3" class="w-full rounded-lg border-slate-300"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Isi Konten</label>
+                                    <textarea wire:model="konten" rows="10" class="w-full rounded-lg border-slate-300 font-mono text-sm"></textarea>
+                                    @error('konten') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Kategori</label>
+                                    <select wire:model="kategori" class="w-full rounded-lg border-slate-300">
+                                        <option value="Umum">Umum</option>
+                                        <option value="Ibu & Anak">Ibu & Anak</option>
+                                        <option value="Penyakit Menular">Penyakit Menular</option>
+                                        <option value="Gizi">Gizi</option>
+                                        <option value="Lansia">Lansia</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Gambar Sampul</label>
+                                    @if($gambar)
+                                        <img src="{{ $gambar->temporaryUrl() }}" class="w-full h-32 object-cover rounded-lg mb-2">
+                                    @elseif($gambar_lama)
+                                        <img src="{{ asset('storage/' . $gambar_lama) }}" class="w-full h-32 object-cover rounded-lg mb-2">
+                                    @endif
+                                    <input type="file" wire:model="gambar" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                                    @error('gambar') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-lg">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" wire:model="publikasi" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                                        <span class="ml-2 text-sm text-slate-900">Terbitkan Langsung</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            Simpan Artikel
+                        </button>
+                        <button type="button" wire:click="tutupModal" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Batal
+                        </button>
+                    </div>
+                </form>
             </div>
-            
-            <form wire:submit="simpan" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Judul Artikel</label>
-                    <input type="text" wire:model="judul" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500">
-                    @error('judul') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                        <select wire:model="kategori" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500">
-                            <option value="Umum">Umum</option>
-                            <option value="Ibu & Anak">Ibu & Anak</option>
-                            <option value="Gizi">Gizi</option>
-                            <option value="Lansia">Lansia</option>
-                            <option value="Penyakit Menular">Penyakit Menular</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Status Publikasi</label>
-                        <select wire:model="publikasi" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500">
-                            <option value="1">Terbit (Publik)</option>
-                            <option value="0">Simpan sebagai Draf</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Ringkasan (Intro)</label>
-                    <textarea wire:model="ringkasan" rows="2" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500" placeholder="Ringkasan singkat untuk tampilan kartu..."></textarea>
-                    @error('ringkasan') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Konten Lengkap</label>
-                    <textarea wire:model="konten" rows="10" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 font-mono text-sm" placeholder="Tulis isi artikel di sini..."></textarea>
-                    @error('konten') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                </div>
-
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="button" wire:click="$set('tampilkanModal', false)" class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg">Batal</button>
-                    <button type="submit" class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow">Simpan Artikel</button>
-                </div>
-            </form>
         </div>
     </div>
     @endif

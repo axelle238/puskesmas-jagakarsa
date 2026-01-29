@@ -10,13 +10,35 @@ class EdukasiKesehatan extends Component
 {
     use WithPagination;
 
+    public $kategori = '';
+    public $cari = '';
+
+    public function updatedKategori()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedCari()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
+        $query = ArtikelEdukasi::where('publikasi', true);
+
+        if ($this->kategori) {
+            $query->where('kategori', $this->kategori);
+        }
+
+        if ($this->cari) {
+            $query->where('judul', 'like', '%' . $this->cari . '%');
+        }
+
+        $artikel = $query->latest()->paginate(9);
+
         return view('livewire.publik.edukasi-kesehatan', [
-            'artikels' => ArtikelEdukasi::where('publikasi', true)
-                ->with('penulis')
-                ->latest()
-                ->paginate(9)
-        ])->layout('components.layouts.public', ['title' => 'Edukasi Kesehatan']);
+            'artikel' => $artikel
+        ])->layout('components.layouts.app', ['title' => 'Edukasi Kesehatan']);
     }
 }

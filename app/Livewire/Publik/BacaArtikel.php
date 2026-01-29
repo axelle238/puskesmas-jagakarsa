@@ -18,7 +18,16 @@ class BacaArtikel extends Component
 
     public function render()
     {
-        return view('livewire.publik.baca-artikel')
-            ->layout('components.layouts.public', ['title' => $this->artikel->judul]);
+        // Artikel terkait (3 terbaru selain ini)
+        $terkait = ArtikelEdukasi::where('publikasi', true)
+            ->where('id', '!=', $this->artikel->id)
+            ->where('kategori', $this->artikel->kategori)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return view('livewire.publik.baca-artikel', [
+            'terkait' => $terkait
+        ])->layout('components.layouts.app', ['title' => $this->artikel->judul]);
     }
 }

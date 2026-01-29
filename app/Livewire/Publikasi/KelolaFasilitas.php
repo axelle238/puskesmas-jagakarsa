@@ -4,43 +4,44 @@ namespace App\Livewire\Publikasi;
 
 use App\Models\Fasilitas;
 use Livewire\Component;
-use Livewire\Attributes\Title;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
-#[Title('Kelola Fasilitas')]
 class KelolaFasilitas extends Component
 {
+    use WithPagination, WithFileUploads;
+
     public $tampilkanModal = false;
     public $modeEdit = false;
-    public $idFasilitas;
+    public $idFasilitasDiedit = null;
 
-    public $nama_fasilitas, $deskripsi;
+    // Form
+    public $nama_fasilitas;
+    public $deskripsi;
+    public $foto;
+    public $foto_lama;
 
     protected $rules = [
         'nama_fasilitas' => 'required|string|max:255',
         'deskripsi' => 'required|string',
+        'foto' => 'nullable|image|max:2048',
     ];
-
-    public function render()
-    {
-        return view('livewire.publikasi.kelola-fasilitas', [
-            'fasilitas' => Fasilitas::all()
-        ])->layout('components.layouts.admin');
-    }
 
     public function tambah()
     {
-        $this->reset(['nama_fasilitas', 'deskripsi', 'idFasilitas']);
-        $this->modeEdit = false;
+        $this->resetForm();
         $this->tampilkanModal = true;
+        $this->modeEdit = false;
     }
 
     public function edit($id)
     {
-        $fasilitas = Fasilitas::find($id);
-        $this->idFasilitas = $id;
-        $this->nama_fasilitas = $fasilitas->nama_fasilitas;
-        $this->deskripsi = $fasilitas->deskripsi;
-        
+        $f = Fasilitas::findOrFail($id);
+        $this->idFasilitasDiedit = $id;
+        $this->nama_fasilitas = $f->nama_fasilitas;
+        $this->deskripsi = $f->deskripsi;
+        $this->foto_lama = $f->foto;
+
         $this->modeEdit = true;
         $this->tampilkanModal = true;
     }
@@ -49,25 +50,51 @@ class KelolaFasilitas extends Component
     {
         $this->validate();
 
-        if ($this->modeEdit) {
-            Fasilitas::find($this->idFasilitas)->update([
-                'nama_fasilitas' => $this->nama_fasilitas,
-                'deskripsi' => $this->deskripsi,
-            ]);
-        } else {
-            Fasilitas::create([
-                'nama_fasilitas' => $this->nama_fasilitas,
-                'deskripsi' => $this->deskripsi,
-            ]);
+        $pathFoto = $this->foto_lama;
+        if ($this->foto) {
+            $pathFoto = $this->foto->store('fasilitas', 'public');
         }
 
-        $this->tampilkanModal = false;
-        session()->flash('pesan', 'Data fasilitas berhasil disimpan.');
+        $data = [
+            'nama_fasilitas' => $this->nama_fasilitas,
+            'deskripsi' => $this->deskripsi,
+            'foto' => $pathFoto
+        ];
+
+        if ($this->modeEdit) {
+            if (!$this->foto) unset($data['foto']);
+            Fasilitas::find($this->idFasilitasDiedit)->update($data);
+            session()->flash('sukses', 'Fasilitas diperbarui.');
+        } else {
+            Fasilitas::create($data);
+            session()->flash('sukses', 'Fasilitas ditambahkan.');
+        }
+
+        $this->tutupModal();
     }
 
     public function hapus($id)
     {
         Fasilitas::find($id)->delete();
-        session()->flash('pesan', 'Fasilitas dihapus.');
+        session()->flash('sukses', 'Fasilitas dihapus.');
+    }
+
+    public function tutupModal()
+    {
+        $this->tampilkanModal = false;
+        $this->resetForm();
+    }
+
+    private function resetForm()
+    {
+        $this->reset(['nama_fasilitas', 'deskripsi', 'foto', 'foto_lama', 'idFasilitasDiedit']);
+    }
+
+    public function render()
+    {
+        $fasilitas = Fasilitas::paginate(10);
+        return view('livewire.publikasi.kelola-fasilitas', [
+            'dataFasilitas' => $fasilitas
+        ])->layout('components.layouts.admin', ['title' => 'Kelola Fasilitas']);
     }
 }

@@ -3,56 +3,55 @@
 namespace App\Livewire\Publikasi;
 
 use App\Models\ArtikelEdukasi;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
-use Livewire\Attributes\Title;
 
-#[Title('Kelola Artikel Edukasi')]
 class KelolaArtikel extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $tampilkanModal = false;
     public $modeEdit = false;
-    public $idArtikel;
+    public $idArtikelDiedit = null;
+    public $cari = '';
 
-    public $judul, $ringkasan, $konten, $kategori = 'Umum', $publikasi = true;
+    // Form
+    public $judul;
+    public $kategori = 'Umum';
+    public $ringkasan;
+    public $konten;
+    public $gambar; // Upload file
+    public $gambar_lama;
+    public $publikasi = true;
 
     protected $rules = [
         'judul' => 'required|string|max:255',
-        'ringkasan' => 'required|string|max:500',
-        'konten' => 'required|string',
         'kategori' => 'required',
+        'ringkasan' => 'required|string|max:255',
+        'konten' => 'required',
+        'gambar' => 'nullable|image|max:2048', // Max 2MB
     ];
-
-    public function render()
-    {
-        return view('livewire.publikasi.kelola-artikel', [
-            'artikels' => ArtikelEdukasi::with('penulis')
-                ->latest()
-                ->paginate(10)
-        ])->layout('components.layouts.admin');
-    }
 
     public function tambah()
     {
-        $this->reset(['judul', 'ringkasan', 'konten', 'kategori', 'publikasi', 'idArtikel']);
-        $this->modeEdit = false;
+        $this->resetForm();
         $this->tampilkanModal = true;
+        $this->modeEdit = false;
     }
 
     public function edit($id)
     {
-        $artikel = ArtikelEdukasi::find($id);
-        $this->idArtikel = $id;
+        $artikel = ArtikelEdukasi::findOrFail($id);
+        $this->idArtikelDiedit = $id;
         $this->judul = $artikel->judul;
+        $this->kategori = $artikel->kategori;
         $this->ringkasan = $artikel->ringkasan;
         $this->konten = $artikel->konten;
-        $this->kategori = $artikel->kategori;
+        $this->gambar_lama = $artikel->gambar_sampul;
         $this->publikasi = $artikel->publikasi;
-        
+
         $this->modeEdit = true;
         $this->tampilkanModal = true;
     }
@@ -61,31 +60,63 @@ class KelolaArtikel extends Component
     {
         $this->validate();
 
+        $pathGambar = $this->gambar_lama;
+        if ($this->gambar) {
+            // Simpan gambar ke storage public
+            $pathGambar = $this->gambar->store('artikel', 'public');
+        }
+
         $data = [
             'judul' => $this->judul,
             'slug' => Str::slug($this->judul) . '-' . Str::random(5),
+            'kategori' => $this->kategori,
             'ringkasan' => $this->ringkasan,
             'konten' => $this->konten,
-            'kategori' => $this->kategori,
+            'gambar_sampul' => $pathGambar,
             'publikasi' => $this->publikasi,
-            'id_penulis' => Auth::id(),
+            'id_penulis' => auth()->id()
         ];
 
         if ($this->modeEdit) {
-            unset($data['slug']); // Jangan ubah slug saat edit agar SEO aman
-            ArtikelEdukasi::find($this->idArtikel)->update($data);
-            session()->flash('pesan', 'Artikel berhasil diperbarui.');
+            // Jangan update slug/penulis jika edit
+            unset($data['slug'], $data['id_penulis']);
+            if (!$this->gambar) unset($data['gambar_sampul']);
+            
+            ArtikelEdukasi::find($this->idArtikelDiedit)->update($data);
+            session()->flash('sukses', 'Artikel berhasil diperbarui.');
         } else {
             ArtikelEdukasi::create($data);
-            session()->flash('pesan', 'Artikel baru diterbitkan.');
+            session()->flash('sukses', 'Artikel berhasil diterbitkan.');
         }
 
-        $this->tampilkanModal = false;
+        $this->tutupModal();
     }
 
     public function hapus($id)
     {
         ArtikelEdukasi::find($id)->delete();
-        session()->flash('pesan', 'Artikel dihapus.');
+        session()->flash('sukses', 'Artikel dihapus.');
+    }
+
+    public function tutupModal()
+    {
+        $this->tampilkanModal = false;
+        $this->resetForm();
+    }
+
+    private function resetForm()
+    {
+        $this->reset(['judul', 'kategori', 'ringkasan', 'konten', 'gambar', 'gambar_lama', 'publikasi', 'idArtikelDiedit']);
+    }
+
+    public function render()
+    {
+        $artikel = ArtikelEdukasi::where('judul', 'like', '%' . $this->cari . '%')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
+        return view('livewire.publikasi.kelola-artikel', [
+            'dataArtikel' => $artikel
+        ])->layout('components.layouts.admin', ['title' => 'Kelola Artikel']);
     }
 }
