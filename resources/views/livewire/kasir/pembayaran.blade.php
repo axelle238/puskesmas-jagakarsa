@@ -60,7 +60,7 @@
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-slate-900 bg-opacity-75" wire:click="tutupModal"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
                 
                 <div class="bg-slate-50 px-4 py-4 sm:px-6 border-b border-slate-200 flex justify-between items-center">
                     <h3 class="text-lg leading-6 font-bold text-slate-900">Rincian Tagihan</h3>
@@ -71,6 +71,20 @@
                 </div>
 
                 <div class="px-4 py-4 sm:px-6">
+                    
+                    <!-- Tambah Tindakan -->
+                    <div class="flex gap-2 mb-4 bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                        <select wire:model="tindakanDipilihId" class="flex-1 rounded-lg border-slate-300 text-sm">
+                            <option value="">-- Tambah Tindakan Tambahan --</option>
+                            @foreach($tindakanTersedia as $t)
+                                <option value="{{ $t->id }}">{{ $t->nama_tindakan }} - Rp {{ number_format($t->tarif,0) }}</option>
+                            @endforeach
+                        </select>
+                        <button wire:click="tambahTindakan" class="bg-yellow-600 text-white px-3 py-2 rounded-lg text-sm font-bold hover:bg-yellow-700">
+                            + Tambah
+                        </button>
+                    </div>
+
                     <!-- Rincian -->
                     <div class="border rounded-lg overflow-hidden mb-6">
                         <table class="min-w-full divide-y divide-slate-200">
@@ -79,10 +93,11 @@
                                     <th class="px-4 py-2 text-left text-xs font-bold text-slate-600">Item</th>
                                     <th class="px-4 py-2 text-left text-xs font-bold text-slate-600">Jml</th>
                                     <th class="px-4 py-2 text-right text-xs font-bold text-slate-600">Subtotal</th>
+                                    <th class="px-4 py-2 text-right"></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white">
-                                @foreach($detailTagihanList as $d)
+                                @foreach($detailTagihanList as $index => $d)
                                 <tr>
                                     <td class="px-4 py-2 text-sm text-slate-800">
                                         {{ $d['item'] }}
@@ -91,6 +106,11 @@
                                     <td class="px-4 py-2 text-sm text-slate-600">{{ $d['jumlah'] }}</td>
                                     <td class="px-4 py-2 text-right text-sm font-medium text-slate-900">
                                         {{ number_format($d['subtotal'], 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-4 py-2 text-right">
+                                        @if($d['kategori'] == 'Tindakan')
+                                            <button wire:click="hapusItem({{ $index }})" class="text-red-500 hover:text-red-700 font-bold text-xs">x</button>
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach
