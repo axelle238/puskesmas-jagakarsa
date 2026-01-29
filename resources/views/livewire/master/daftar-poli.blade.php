@@ -25,7 +25,10 @@
                         <button wire:click="hapus({{ $poli->id }})" wire:confirm="Hapus poli ini?" class="text-gray-400 hover:text-red-600">🗑️</button>
                     </div>
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $poli->nama_poli }}</h3>
+                <div class="mb-2">
+                    <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $poli->nama_poli }}</h3>
+                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-mono">{{ $poli->kode_poli }}</span>
+                </div>
                 
                 @if($poli->klaster)
                     <span class="inline-block bg-purple-50 text-purple-700 text-xs px-2 py-0.5 rounded mb-2 font-medium border border-purple-100">
@@ -54,10 +57,17 @@
             <h3 class="font-bold text-lg text-gray-800 mb-4">{{ $modeEdit ? 'Edit Poli' : 'Tambah Poli Baru' }}</h3>
             
             <form wire:submit="simpan" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Poli</label>
-                    <input type="text" wire:model="nama_poli" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
-                    @error('nama_poli') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kode Poli</label>
+                        <input type="text" wire:model="kode_poli" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500" placeholder="Contoh: P-GIGI">
+                        @error('kode_poli') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Poli</label>
+                        <input type="text" wire:model="nama_poli" class="w-full px-3 py-2 border rounded-lg focus:ring-blue-500">
+                        @error('nama_poli') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div>

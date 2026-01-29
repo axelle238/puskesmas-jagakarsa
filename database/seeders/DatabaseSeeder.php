@@ -29,14 +29,14 @@ class DatabaseSeeder extends Seeder
         $klaster5 = KlasterIlp::create(['nama_klaster' => 'Lintas Klaster', 'deskripsi_layanan' => 'Laboratorium, Farmasi, dan Gawat Darurat']);
 
         // 2. Buat Poli / Unit Layanan Terhubung dengan Klaster
-        Poli::create(['id_klaster' => $klaster3->id, 'nama_poli' => 'Poli Umum', 'deskripsi' => 'Pelayanan kesehatan umum dasar', 'lokasi_ruangan' => 'Lantai 1 - R.101']);
-        Poli::create(['id_klaster' => $klaster3->id, 'nama_poli' => 'Poli Gigi & Mulut', 'deskripsi' => 'Kesehatan gigi dasar dan tindakan', 'lokasi_ruangan' => 'Lantai 1 - R.102']);
-        Poli::create(['id_klaster' => $klaster2->id, 'nama_poli' => 'Poli KIA (Ibu & Anak)', 'deskripsi' => 'Pemeriksaan hamil dan balita', 'lokasi_ruangan' => 'Lantai 1 - R.103']);
-        Poli::create(['id_klaster' => $klaster3->id, 'nama_poli' => 'Poli Lansia', 'deskripsi' => 'Pelayanan prioritas lansia', 'lokasi_ruangan' => 'Lantai 1 - R.104']);
-        Poli::create(['id_klaster' => $klaster5->id, 'nama_poli' => 'IGD 24 Jam', 'deskripsi' => 'Penanganan gawat darurat', 'lokasi_ruangan' => 'Lantai Dasar']);
+        Poli::create(['id_klaster' => $klaster3->id, 'kode_poli' => 'P-UMUM', 'nama_poli' => 'Poli Umum', 'deskripsi' => 'Pelayanan kesehatan umum dasar', 'lokasi_ruangan' => 'Lantai 1 - R.101']);
+        Poli::create(['id_klaster' => $klaster3->id, 'kode_poli' => 'P-GIGI', 'nama_poli' => 'Poli Gigi & Mulut', 'deskripsi' => 'Kesehatan gigi dasar dan tindakan', 'lokasi_ruangan' => 'Lantai 1 - R.102']);
+        Poli::create(['id_klaster' => $klaster2->id, 'kode_poli' => 'P-KIA', 'nama_poli' => 'Poli KIA (Ibu & Anak)', 'deskripsi' => 'Pemeriksaan hamil dan balita', 'lokasi_ruangan' => 'Lantai 1 - R.103']);
+        Poli::create(['id_klaster' => $klaster3->id, 'kode_poli' => 'P-LANSIA', 'nama_poli' => 'Poli Lansia', 'deskripsi' => 'Pelayanan prioritas lansia', 'lokasi_ruangan' => 'Lantai 1 - R.104']);
+        Poli::create(['id_klaster' => $klaster5->id, 'kode_poli' => 'P-IGD', 'nama_poli' => 'IGD 24 Jam', 'deskripsi' => 'Penanganan gawat darurat', 'lokasi_ruangan' => 'Lantai Dasar']);
         
-        Poli::create(['id_klaster' => $klaster2->id, 'nama_poli' => 'MTBS / MTBM', 'deskripsi' => 'Manajemen Terpadu Balita Sakit', 'lokasi_ruangan' => 'Lantai 1 - R.105']);
-        Poli::create(['id_klaster' => $klaster4->id, 'nama_poli' => 'Poli TB / Paru', 'deskripsi' => 'Penanganan Tuberkulosis', 'lokasi_ruangan' => 'Lantai 2 - R.201']);
+        Poli::create(['id_klaster' => $klaster2->id, 'kode_poli' => 'P-MTBS', 'nama_poli' => 'MTBS / MTBM', 'deskripsi' => 'Manajemen Terpadu Balita Sakit', 'lokasi_ruangan' => 'Lantai 1 - R.105']);
+        Poli::create(['id_klaster' => $klaster4->id, 'kode_poli' => 'P-PARU', 'nama_poli' => 'Poli TB / Paru', 'deskripsi' => 'Penanganan Tuberkulosis', 'lokasi_ruangan' => 'Lantai 2 - R.201']);
 
         // 3. Buat Tindakan Medis Dasar
         $poliUmum = Poli::where('nama_poli', 'Poli Umum')->first();
@@ -49,23 +49,23 @@ class DatabaseSeeder extends Seeder
 
         // 4. Buat Stok Obat Awal
         Obat::create([
-            'kode_obat' => 'OBT-001', 'nama_obat' => 'Paracetamol 500mg', 'kategori' => 'Obat Bebas', 
-            'satuan' => 'Tablet', 'stok_saat_ini' => 1000, 'stok_minimum' => 100, 
+            'kode_obat' => 'OBT-001', 'nama_obat' => 'Paracetamol 500mg', 'kategori' => 'Obat Bebas',
+            'satuan' => 'Tablet', 'stok_saat_ini' => 1000, 'stok_minimum' => 100,
             'harga_satuan' => 500, 'tanggal_kedaluwarsa' => '2027-12-31'
         ]);
         Obat::create([
-            'kode_obat' => 'OBT-002', 'nama_obat' => 'Amoxicillin 500mg', 'kategori' => 'Obat Keras', 
-            'satuan' => 'Kapsul', 'stok_saat_ini' => 500, 'stok_minimum' => 50, 
+            'kode_obat' => 'OBT-002', 'nama_obat' => 'Amoxicillin 500mg', 'kategori' => 'Obat Keras',
+            'satuan' => 'Kapsul', 'stok_saat_ini' => 500, 'stok_minimum' => 50,
             'harga_satuan' => 1000, 'tanggal_kedaluwarsa' => '2026-06-30'
         ]);
         Obat::create([
-            'kode_obat' => 'OBT-003', 'nama_obat' => 'Vitamin C 50mg', 'kategori' => 'Obat Bebas', 
-            'satuan' => 'Tablet', 'stok_saat_ini' => 2000, 'stok_minimum' => 200, 
+            'kode_obat' => 'OBT-003', 'nama_obat' => 'Vitamin C 50mg', 'kategori' => 'Obat Bebas',
+            'satuan' => 'Tablet', 'stok_saat_ini' => 2000, 'stok_minimum' => 200,
             'harga_satuan' => 200, 'tanggal_kedaluwarsa' => '2028-01-01'
         ]);
         Obat::create([
-            'kode_obat' => 'OBT-004', 'nama_obat' => 'OAT (Paket Obat TB)', 'kategori' => 'Obat Keras', 
-            'satuan' => 'Paket', 'stok_saat_ini' => 50, 'stok_minimum' => 10, 
+            'kode_obat' => 'OBT-004', 'nama_obat' => 'OAT (Paket Obat TB)', 'kategori' => 'Obat Keras',
+            'satuan' => 'Paket', 'stok_saat_ini' => 50, 'stok_minimum' => 10,
             'harga_satuan' => 0, 'tanggal_kedaluwarsa' => '2026-12-31'
         ]);
 

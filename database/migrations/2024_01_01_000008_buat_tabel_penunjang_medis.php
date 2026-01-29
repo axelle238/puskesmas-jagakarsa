@@ -48,7 +48,7 @@ return new class extends Migration
             $tabel->integer('jumlah');
             $tabel->string('aturan_pakai'); // 3x1 sesudah makan
             $tabel->text('catatan_apoteker')->nullable();
-            $tabel->enum('status_pengambilan', ['menunggu', 'disiapkan', 'selesai']).default('menunggu');
+            $tabel->enum('status_pengambilan', ['menunggu', 'disiapkan', 'selesai'])->default('menunggu');
             $tabel->timestamps();
 
             $tabel->foreign('id_rekam_medis')->references('id')->on('rekam_medis')->onDelete('cascade');

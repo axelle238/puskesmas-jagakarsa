@@ -17,6 +17,7 @@ class Poli extends Model
     protected $fillable = [
         'id_klaster',
         'nama_poli',
+        'kode_poli',
         'deskripsi',
         'lokasi_ruangan'
     ];
