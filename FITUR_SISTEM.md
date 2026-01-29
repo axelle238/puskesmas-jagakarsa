@@ -1,12 +1,12 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
 Status Dokumen: **TERGENERASI OTOMATIS**
-Terakhir Diupdate: 30 January 2026 01:59:52
+Terakhir Diupdate: 30 January 2026 02:09:47
 
 ## 1. Statistik Sistem
-- **Total Model Database:** 34
+- **Total Model Database:** 38
 - **Total Komponen Livewire:** 2
-- **Total Migrasi Database:** 23
+- **Total Migrasi Database:** 24
 
 ## 2. Struktur Database (Tabel)
 - Buat Tabel Pengguna (`2024_01_01_000001_buat_tabel_pengguna`)
@@ -32,6 +32,7 @@ Terakhir Diupdate: 30 January 2026 01:59:52
 - Buat Tabel Manajemen Perencanaan (`2026_01_30_000004_buat_tabel_manajemen_perencanaan`)
 - Buat Tabel Manajemen Kesekretariatan (`2026_01_30_000005_buat_tabel_manajemen_kesekretariatan`)
 - Buat Tabel Promkes (`2026_01_30_000006_buat_tabel_promkes`)
+- Buat Tabel Manajemen Mutu (`2026_01_30_000007_buat_tabel_manajemen_mutu`)
 
 ## 3. Peta Rute & Halaman
 - **POST** `/_boost/browser-logs` -> `Fungsi Langsung`
@@ -72,6 +73,9 @@ Terakhir Diupdate: 30 January 2026 01:59:52
 - **GET|HEAD** `/pengaturan/keamanan` -> `App\Livewire\Pengaturan\ManajemenIT`
 - **GET|HEAD** `/pengaturan/log` -> `App\Livewire\Pengaturan\LogAktivitas`
 - **GET|HEAD** `/keuangan/buku-kas-umum` -> `App\Livewire\Keuangan\BukuKasUmum`
+- **GET|HEAD** `/mutu/indikator` -> `App\Livewire\Mutu\IndikatorMutu`
+- **GET|HEAD** `/mutu/ikp` -> `App\Livewire\Mutu\InsidenKeselamatan`
+- **GET|HEAD** `/mutu/risiko` -> `App\Livewire\Mutu\RegisterRisiko`
 - **GET|HEAD** `/publikasi/artikel` -> `App\Livewire\Publikasi\KelolaArtikel`
 - **GET|HEAD** `/publikasi/fasilitas` -> `App\Livewire\Publikasi\KelolaFasilitas`
 - **GET|HEAD** `/perencanaan/kegiatan` -> `App\Livewire\Perencanaan\DaftarKegiatan`

@@ -40,6 +40,9 @@ use App\Livewire\Perencanaan\DaftarKegiatan; // Import Perencanaan
 use App\Livewire\Kesekretariatan\SuratMasuk; // Import Surat Masuk
 use App\Livewire\Kesekretariatan\SuratKeluar; // Import Surat Keluar
 use App\Livewire\Keuangan\BukuKasUmum; // Import Keuangan
+use App\Livewire\Mutu\IndikatorMutu;
+use App\Livewire\Mutu\InsidenKeselamatan;
+use App\Livewire\Mutu\RegisterRisiko;
 use App\Livewire\Promkes\JadwalPenyuluhan; // Import Promkes
 
 // -----------------------------------------------------------------------------
@@ -134,6 +137,15 @@ Route::middleware(['auth'])->group(function () {
     // -------------------------------------------------------------------------
     Route::middleware('peran:admin,kapus')->prefix('keuangan')->group(function () {
         Route::get('/buku-kas-umum', BukuKasUmum::class)->name('keuangan.bku');
+    });
+
+    // -------------------------------------------------------------------------
+    // MANAJEMEN MUTU & AKREDITASI (Admin, Kapus, Tim Mutu)
+    // -------------------------------------------------------------------------
+    Route::middleware('peran:admin,kapus')->prefix('mutu')->group(function () {
+        Route::get('/indikator', IndikatorMutu::class)->name('mutu.indikator');
+        Route::get('/ikp', InsidenKeselamatan::class)->name('mutu.ikp');
+        Route::get('/risiko', RegisterRisiko::class)->name('mutu.risiko');
     });
 
     // -------------------------------------------------------------------------
