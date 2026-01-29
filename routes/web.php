@@ -37,6 +37,7 @@ use App\Livewire\Pengaturan\ManajemenIT;
 use App\Livewire\Publikasi\KelolaArtikel;
 use App\Livewire\Publikasi\KelolaFasilitas;
 use App\Livewire\Perencanaan\DaftarKegiatan; // Import Perencanaan
+use App\Livewire\Kesekretariatan\SuratMasuk;
 
 // -----------------------------------------------------------------------------
 // HALAMAN PUBLIK (Akses Terbuka)
@@ -138,6 +139,13 @@ Route::middleware(['auth'])->group(function () {
     // -------------------------------------------------------------------------
     Route::middleware('peran:admin,kapus')->prefix('perencanaan')->group(function () {
         Route::get('/kegiatan', DaftarKegiatan::class)->name('perencanaan.kegiatan');
+    });
+
+    // -------------------------------------------------------------------------
+    // MANAJEMEN KESEKRETARIATAN (TU)
+    // -------------------------------------------------------------------------
+    Route::middleware('peran:admin,kapus')->prefix('surat')->group(function () {
+        Route::get('/masuk', SuratMasuk::class)->name('surat.masuk');
     });
 
     // -------------------------------------------------------------------------
