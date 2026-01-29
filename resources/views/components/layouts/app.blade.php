@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +13,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-
 <body class="bg-slate-50 font-sans antialiased text-slate-800">
     
     <!-- Navbar -->
@@ -23,42 +21,41 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center gap-3">
-                    <div class="bg-emerald-600 text-white p-2 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold text-emerald-900 leading-none">Puskesmas Jagakarsa</h1>
-                        <p class="text-xs text-emerald-600 font-medium">Layanan Kesehatan Terpadu</p>
-                    </div>
+                    <a href="/" wire:navigate class="flex items-center gap-3">
+                        <div class="bg-emerald-600 text-white p-2 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-emerald-900 leading-none">Puskesmas Jagakarsa</h1>
+                            <p class="text-xs text-emerald-600 font-medium">Layanan Kesehatan Terpadu</p>
+                        </div>
+                    </a>
                 </div>
 
                 <!-- Desktop Menu -->
                 <nav class="hidden md:flex space-x-8">
                     <a href="/" wire:navigate class="text-slate-600 hover:text-emerald-600 font-medium transition-colors">Beranda</a>
-                    <a href="/layanan" wire:navigate class="text-slate-600 hover:text-emerald-600 font-medium transition-colors">Layanan</a>
-                    <a href="/jadwal-dokter" wire:navigate class="text-slate-600 hover:text-emerald-600 font-medium transition-colors">Jadwal Dokter</a>
-                    <a href="/artikel" wire:navigate class="text-slate-600 hover:text-emerald-600 font-medium transition-colors">Edukasi</a>
+                    <a href="{{ route('publik.artikel') }}" wire:navigate class="text-slate-600 hover:text-emerald-600 font-medium transition-colors">Edukasi</a>
+                    <a href="{{ route('publik.fasilitas') }}" wire:navigate class="text-slate-600 hover:text-emerald-600 font-medium transition-colors">Fasilitas</a>
+                    <a href="{{ route('publik.jadwal') }}" wire:navigate class="text-slate-600 hover:text-emerald-600 font-medium transition-colors">Jadwal</a>
                 </nav>
 
                 <!-- CTA Button -->
                 <div class="hidden md:flex items-center gap-3">
-                    <a href="/ambil-antrian" wire:navigate class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm transition-all shadow-lg shadow-emerald-200">
+                    <a href="{{ route('publik.ambil-antrian') }}" wire:navigate class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm transition-all shadow-lg shadow-emerald-200">
                         Ambil Antrian
                     </a>
-                    <a href="/masuk" wire:navigate class="text-emerald-700 hover:bg-emerald-50 px-4 py-2.5 rounded-full font-semibold text-sm transition-colors">
-                        Masuk
-                    </a>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center">
-                    <button type="button" class="text-slate-500 hover:text-emerald-600 focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
+                    @auth
+                        <a href="{{ route('dasbor') }}" wire:navigate class="text-emerald-700 hover:bg-emerald-50 px-4 py-2.5 rounded-full font-semibold text-sm transition-colors">
+                            Dasbor
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" wire:navigate class="text-emerald-700 hover:bg-emerald-50 px-4 py-2.5 rounded-full font-semibold text-sm transition-colors">
+                            Masuk
+                        </a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -72,83 +69,45 @@
     <!-- Footer -->
     <footer class="bg-slate-900 text-white pt-16 pb-8">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <!-- About -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div>
-                    <div class="flex items-center gap-2 mb-6">
-                        <div class="bg-emerald-500 text-white p-1.5 rounded">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                        </div>
-                        <h3 class="text-lg font-bold">Puskesmas Jagakarsa</h3>
-                    </div>
-                    <p class="text-slate-400 text-sm leading-relaxed mb-6">
-                        Memberikan pelayanan kesehatan primer yang berkualitas, merata, dan terjangkau bagi seluruh masyarakat Jagakarsa dengan pendekatan Integrasi Layanan Primer (ILP).
+                    <h3 class="text-lg font-bold mb-4">Puskesmas Jagakarsa</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Melayani dengan hati, mengutamakan kesehatan masyarakat Jagakarsa dengan standar pelayanan prima.
                     </p>
                 </div>
-
-                <!-- Links -->
                 <div>
-                    <h4 class="text-lg font-semibold mb-6 border-b border-slate-700 pb-2 inline-block">Tautan Cepat</h4>
-                    <ul class="space-y-3 text-sm text-slate-400">
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Tentang Kami</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Jadwal Dokter</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Cek Antrian</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Pengaduan Masyarakat</a></li>
+                    <h4 class="text-lg font-semibold mb-4">Layanan</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#" class="hover:text-emerald-400">Poli Umum</a></li>
+                        <li><a href="#" class="hover:text-emerald-400">Poli Gigi</a></li>
+                        <li><a href="#" class="hover:text-emerald-400">KIA</a></li>
+                        <li><a href="#" class="hover:text-emerald-400">Laboratorium</a></li>
                     </ul>
                 </div>
-
-                <!-- Services -->
                 <div>
-                    <h4 class="text-lg font-semibold mb-6 border-b border-slate-700 pb-2 inline-block">Layanan Kami</h4>
-                    <ul class="space-y-3 text-sm text-slate-400">
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Poli Umum</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Poli Gigi & Mulut</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors">KIA & KB</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Laboratorium</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors">Farmasi</a></li>
+                    <h4 class="text-lg font-semibold mb-4">Tautan</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="{{ route('publik.artikel') }}" class="hover:text-emerald-400">Artikel Kesehatan</a></li>
+                        <li><a href="{{ route('publik.fasilitas') }}" class="hover:text-emerald-400">Fasilitas</a></li>
+                        <li><a href="{{ route('publik.jadwal') }}" class="hover:text-emerald-400">Jadwal Dokter</a></li>
                     </ul>
                 </div>
-
-                <!-- Contact -->
                 <div>
-                    <h4 class="text-lg font-semibold mb-6 border-b border-slate-700 pb-2 inline-block">Hubungi Kami</h4>
-                    <ul class="space-y-4 text-sm text-slate-400">
-                        <li class="flex items-start gap-3">
-                            <svg class="h-5 w-5 text-emerald-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <span>Jl. Moh. Kahfi 1, Jagakarsa, Jakarta Selatan, DKI Jakarta 12620</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                            <span>(021) 786-xxxx</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <svg class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            <span>info@puskesmas-jagakarsa.go.id</span>
-                        </li>
+                    <h4 class="text-lg font-semibold mb-4">Kontak</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li>Jl. Moh. Kahfi 1, Jagakarsa</li>
+                        <li>(021) 786-xxxx</li>
+                        <li>info@puskesmas-jagakarsa.go.id</li>
                     </ul>
                 </div>
             </div>
-
-            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-                <p>&copy; {{ date('Y') }} Puskesmas Jagakarsa. Hak Cipta Dilindungi.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="hover:text-white transition-colors">Kebijakan Privasi</a>
-                    <a href="#" class="hover:text-white transition-colors">Syarat & Ketentuan</a>
-                </div>
+            <div class="border-t border-slate-800 pt-8 text-center text-xs text-slate-500">
+                &copy; {{ date('Y') }} Puskesmas Jagakarsa. Hak Cipta Dilindungi.
             </div>
         </div>
     </footer>
 
     @livewireScripts
 </body>
-
 </html>
