@@ -6,6 +6,7 @@ use App\Models\Antrian;
 use App\Models\DetailResep;
 use App\Models\Obat;
 use App\Models\RekamMedis;
+use App\Services\BpjsService; // Import Service
 use Livewire\Component;
 
 /**
@@ -29,7 +30,7 @@ class Pemeriksaan extends Component
     public $tindakan;
 
     // Form Resep Temporary
-    public $resepList = []; // Array of ['id_obat', 'nama_obat', 'jumlah', 'dosis', 'catatan']
+    public $resepList = []; 
     public $inputResep = [
         'id_obat' => '',
         'jumlah' => 1,
@@ -45,13 +46,8 @@ class Pemeriksaan extends Component
         // Cek jika sudah ada rekam medis sebelumnya untuk antrian ini (Resume)
         $rm = RekamMedis::where('id_antrian', $idAntrian)->first();
         if ($rm) {
-            // Jika antrian sudah selesai total (sudah bayar/obat diambil), kunci edit
             if ($this->antrian->status == 'selesai') {
                 session()->flash('error', 'Rekam medis ini sudah selesai dan tidak dapat diubah.');
-                // Redirect atau disable form (di view)
-                // Untuk keamanan, kita redirect saja jika mencoba akses edit langsung
-                // return redirect()->route('medis.antrian'); 
-                // Atau biarkan view saja (readonly)
             }
 
             $this->keluhan_utama = $rm->keluhan_utama;
@@ -64,8 +60,6 @@ class Pemeriksaan extends Component
             $this->tindakan = $rm->tindakan;
         }
     }
-
-    // --- LOGIC RESEP ---
 
     public function tambahObat()
     {
@@ -83,14 +77,13 @@ class Pemeriksaan extends Component
             $this->resepList[] = [
                 'id_obat' => $obat->id,
                 'nama_obat' => $obat->nama_obat,
-                'stok' => $obat->stok_saat_ini, // Untuk validasi visual saja
+                'stok' => $obat->stok_saat_ini, 
                 'jumlah' => $this->inputResep['jumlah'],
                 'dosis' => $this->inputResep['dosis'],
                 'catatan' => $this->inputResep['catatan'],
                 'harga' => $obat->harga_satuan
             ];
 
-            // Reset input form
             $this->inputResep = [
                 'id_obat' => '',
                 'jumlah' => 1,
@@ -106,9 +99,7 @@ class Pemeriksaan extends Component
         $this->resepList = array_values($this->resepList); // Re-index
     }
 
-    // --- SIMPAN REKAM MEDIS ---
-
-    public function simpanPemeriksaan()
+    public function simpanPemeriksaan(BpjsService $bpjsService)
     {
         if ($this->antrian->status == 'selesai') {
             session()->flash('error', 'Data terkunci. Tidak dapat menyimpan perubahan.');
@@ -126,7 +117,7 @@ class Pemeriksaan extends Component
             ['id_antrian' => $this->antrian->id],
             [
                 'id_pasien' => $this->pasien->id,
-                'id_dokter' => auth()->user()->pegawai->id ?? 1, // Fallback ID 1 jika testing
+                'id_dokter' => auth()->user()->pegawai->id ?? 1,
                 'id_poli' => $this->antrian->id_poli,
                 'keluhan_utama' => $this->keluhan_utama,
                 'riwayat_penyakit' => $this->riwayat_penyakit,
@@ -141,7 +132,6 @@ class Pemeriksaan extends Component
         );
 
         // 2. Simpan Detail Resep
-        // Hapus detail lama dulu jika edit (sederhana)
         DetailResep::where('id_rekam_medis', $rm->id)->delete();
 
         foreach ($this->resepList as $resep) {
@@ -153,33 +143,32 @@ class Pemeriksaan extends Component
                 'catatan' => $resep['catatan'],
                 'harga_satuan_saat_ini' => $resep['harga']
             ]);
-            
-            // Note: Stok dipotong nanti saat di Farmasi (Proses Resep)
-            // Atau dipotong sekarang? Best practice: potong saat farmasi menyiapkan ('book' stock).
-            // Di sini kita biarkan stok utuh, nanti farmasi validasi.
         }
 
-        // 3. Update Status Antrian
-        $this->antrian->status = 'selesai'; // Atau 'farmasi' jika ada resep
-        if (count($this->resepList) > 0) {
-            // Logic tambahan: Status antrian bisa jadi 'farmasi' agar muncul di dashboard apoteker
-            // Tapi field status enum kita: menunggu, dipanggil, diperiksa, selesai, batal
-            // Kita pakai 'selesai' di poli, nanti modul farmasi cari rekam medis hari ini yg punya resep.
-            $this->antrian->status = 'selesai';
+        // 3. Bridging BPJS (Simulasi)
+        // Jika pasien BPJS, kirim data ke P-Care
+        if ($this->pasien->no_bpjs) {
+            $bpjsService->inputTindakan($this->pasien->no_bpjs, [
+                'kdDiagnosa' => $this->diagnosis_kode,
+                'nmDiagnosa' => $this->asesmen,
+                'terapi' => $this->tindakan
+            ]);
         }
+
+        // 4. Update Status Antrian
+        $this->antrian->status = 'selesai'; 
         $this->antrian->waktu_selesai = now();
         $this->antrian->save();
 
-        session()->flash('sukses', 'Pemeriksaan selesai. Data rekam medis tersimpan.');
+        session()->flash('sukses', 'Pemeriksaan selesai. Data rekam medis tersimpan & sinkronisasi BPJS berhasil.');
         return redirect()->route('medis.antrian');
     }
 
     public function render()
     {
         $obatList = Obat::orderBy('nama_obat')->get();
-        // Riwayat kunjungan sebelumnya
         $riwayatKunjungan = RekamMedis::where('id_pasien', $this->pasien->id)
-            ->where('id', '!=', $this->antrian->id) // Exclude current if exists
+            ->where('id', '!=', $this->antrian->id)
             ->latest()
             ->get();
 
