@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('sesi')) {
-            Schema::create('sesi', function (Blueprint $tabel) {
+        if (!Schema::hasTable('sessions')) {
+            Schema::create('sessions', function (Blueprint $tabel) {
                 $tabel->string('id')->primary();
                 $tabel->foreignId('user_id')->nullable()->index();
                 $tabel->string('ip_address', 45)->nullable();
@@ -49,6 +49,6 @@ return new class extends Migration
         // Kita tidak drop sesi di sini secara otomatis karena mungkin dibuat oleh migrasi lain (pengguna),
         // tapi untuk konsistensi di file fix ini, kita bisa drop jika kita yakin ini yang membuatnya.
         // Namun, lebih aman membiarkannya atau drop if exists.
-        Schema::dropIfExists('sesi');
+        Schema::dropIfExists('sessions');
     }
 };

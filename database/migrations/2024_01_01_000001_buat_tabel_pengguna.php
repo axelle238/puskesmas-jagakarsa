@@ -37,7 +37,7 @@ return new class extends Migration
         });
 
         // Tabel sesi untuk driver database
-        Schema::create('sesi', function (Blueprint $tabel) {
+        Schema::create('sessions', function (Blueprint $tabel) {
             $tabel->string('id')->primary();
             $tabel->foreignId('user_id')->nullable()->index(); 
             $tabel->string('ip_address', 45)->nullable();
@@ -67,7 +67,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('cache_locks');
         Schema::dropIfExists('cache');
-        Schema::dropIfExists('sesi');
+        Schema::dropIfExists('sessions');
         Schema::dropIfExists('pengguna');
     }
 };
