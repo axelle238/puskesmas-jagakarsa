@@ -16,6 +16,7 @@ class Pemeriksaan extends Component
 {
     public $antrian;
     public $pasien;
+    public $riwayatMedis = []; // Properti Baru
     
     // SOAP Data
     public $keluhan_utama;
@@ -29,28 +30,34 @@ class Pemeriksaan extends Component
     public $plan_terapi;
 
     // Resep Obat (Dynamic Input)
-    public $list_obat = []; // Referensi Data Obat
-    public $resep_input = []; // Array of [id_obat, jumlah, aturan_pakai]
+    public $list_obat = [];
+    public $resep_input = []; 
 
     // Tindakan (Dynamic Input)
-    public $list_tindakan = []; // Referensi Data Tindakan
-    public $tindakan_input = []; // Array of [id_tindakan]
+    public $list_tindakan = []; 
+    public $tindakan_input = []; 
+
+    // UI State
+    public $tabAktif = 'periksa'; // 'periksa' atau 'riwayat'
 
     public function mount($idAntrian)
     {
         $this->antrian = Antrian::with(['pasien', 'poli', 'jadwal.dokter'])->findOrFail($idAntrian);
         $this->pasien = $this->antrian->pasien;
 
-        // Validasi akses: Hanya bisa memeriksa antrian yang statusnya 'diperiksa'
         if ($this->antrian->status !== 'diperiksa') {
             return redirect()->route('medis.antrian');
         }
 
-        // Load Data Referensi
+        // Ambil Riwayat Medis Sebelumnya (Descending)
+        $this->riwayatMedis = RekamMedis::where('id_pasien', $this->pasien->id)
+                                ->with(['dokter.pengguna', 'poli', 'resepDetail'])
+                                ->latest()
+                                ->get();
+
         $this->list_obat = Obat::where('stok_saat_ini', '>', 0)->get();
         $this->list_tindakan = TindakanMedis::where('id_poli', $this->antrian->id_poli)->get();
 
-        // Inisialisasi baris pertama resep
         $this->tambahResep();
     }
 
@@ -87,7 +94,7 @@ class Pemeriksaan extends Component
             // 1. Simpan Rekam Medis Header
             $rm = RekamMedis::create([
                 'id_pasien' => $this->pasien->id,
-                'id_dokter' => $this->antrian->jadwal->id_dokter, // Dokter dari jadwal antrian
+                'id_dokter' => $this->antrian->jadwal->id_dokter,
                 'id_poli' => $this->antrian->id_poli,
                 'id_antrian' => $this->antrian->id,
                 'keluhan_utama' => $this->keluhan_utama,
@@ -99,7 +106,7 @@ class Pemeriksaan extends Component
                 'plan' => $this->plan_terapi,
             ]);
 
-            // 2. Simpan Detail Resep & Kurangi Stok
+            // 2. Simpan Detail Resep
             foreach ($this->resep_input as $item) {
                 if (!empty($item['id_obat'])) {
                     $rm->resepDetail()->attach($item['id_obat'], [
@@ -107,10 +114,6 @@ class Pemeriksaan extends Component
                         'aturan_pakai' => $item['aturan_pakai'],
                         'status_pengambilan' => 'menunggu'
                     ]);
-
-                    // Kurangi stok obat
-                    // Note: Idealnya stok berkurang saat diambil di apotek, tapi untuk MVP kita kurangi saat resep dibuat/final.
-                    // Atau biarkan stok dikurangi oleh Apoteker nanti. Saya pilih kurangi langsung untuk simulasi cepat.
                     $obat = Obat::find($item['id_obat']);
                     $obat->decrement('stok_saat_ini', $item['jumlah']);
                 }

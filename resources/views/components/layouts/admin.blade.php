@@ -63,12 +63,12 @@
         <!-- User Profile Bottom -->
         <div class="p-4 border-t border-gray-800">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                <a href="/profil" class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition">
                     👤
-                </div>
+                </a>
                 <div class="flex-1 min-w-0" x-show="sidebarOpen">
                     <p class="text-sm font-medium text-white truncate">{{ auth()->user()->nama_lengkap ?? 'Admin' }}</p>
-                    <p class="text-xs text-gray-400 truncate">{{ ucfirst(auth()->user()->peran ?? 'Staff') }}</p>
+                    <a href="/profil" class="text-xs text-gray-400 truncate hover:text-white">Pengaturan Akun</a>
                 </div>
             </div>
             <a href="/login" class="block mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm font-medium transition text-center" x-show="sidebarOpen">

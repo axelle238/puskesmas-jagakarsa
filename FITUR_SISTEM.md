@@ -1,6 +1,6 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
-Status Dokumen: **FINAL RELEASE v1.4 (COMPLETE SUITE)**
+Status Dokumen: **FINAL POLISHED RELEASE v1.5 (CLINICAL & SECURITY ENHANCED)**
 Terakhir Diupdate: 29 January 2026
 
 ## 1. Ikhtisar Sistem
@@ -8,6 +8,7 @@ Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berba
 
 ## 2. Fitur Unggulan (Advanced)
 - **Layar Antrian TV (Digital Signage):** Tampilan full-screen untuk ruang tunggu dengan pemanggilan suara otomatis (Text-to-Speech).
+- **Rekam Medis Komprehensif:** Dokter dapat melihat riwayat kunjungan pasien sebelumnya (diagnosis & obat) saat melakukan pemeriksaan.
 - **Visual Analytics Dashboard:** Grafik tren kunjungan mingguan real-time.
 - **Epidemiology Report:** Analisis otomatis 10 Besar Penyakit (Morbiditas) berdasarkan kode ICD-10.
 - **Smart Printing:** Cetak Tiket Antrian (Thermal) dan Copy Resep Dokter otomatis.
@@ -28,6 +29,7 @@ Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berba
 *Akses: Dokter, Perawat*
 - **Antrian Poli Real-time:** Dashboard khusus dokter untuk melihat pasien yang menunggu di polinya.
 - **Pemeriksaan Medis (SOAP):**
+  - **Riwayat Medis Pasien:** Tab khusus untuk melihat history diagnosis dan resep terdahulu.
   - **Subjektif:** Input keluhan utama & riwayat penyakit.
   - **Objektif:** Input tanda vital (Tensi, Suhu, Nadi, RR, BB, TB).
   - **Asesmen:** Input Diagnosis (ICD-10) dan diagnosis klinis.
@@ -51,6 +53,7 @@ Sistem Informasi Puskesmas Jagakarsa (SIMPUS) adalah platform terintegrasi berba
 - **Laporan:**
     - Laporan Kunjungan Harian/Bulanan.
     - Laporan 10 Besar Penyakit (Grafik + Tabel).
+- **Pengaturan Profil:** Manajemen akun mandiri (Ganti Profil & Kata Sandi).
 
 ## 4. Keamanan & Performa
 - **Transaction Handling:** Penyimpanan data kritis menggunakan Database Transaction.
