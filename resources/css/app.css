@@ -1,8 +1,49 @@
 @import 'tailwindcss';
 
-@source '../views';
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@layer utilities {
+    .pattern-dots {
+        background-image: radial-gradient(#10b981 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+@media print {
+    /* Sembunyikan elemen navigasi dan dekorasi saat mencetak */
+    header, aside, footer, .no-print {
+        display: none !important;
+    }
+
+    /* Pastikan konten utama memenuhi halaman */
+    body, main, .min-h-screen {
+        background: white !important;
+        height: auto !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* Reset grid layout admin */
+    .flex, .grid {
+        display: block !important;
+    }
+
+    /* Khusus untuk area cetak yang biasanya di modal/hidden */
+    .print\:block {
+        display: block !important;
+        position: static !important;
+        visibility: visible !important;
+    }
+
+    /* Typography cetak */
+    body {
+        font-family: 'Times New Roman', serif;
+        font-size: 12pt;
+        color: black;
+    }
+    
+    /* Tombol cetak sendiri harus hilang */
+    button {
+        display: none !important;
+    }
 }

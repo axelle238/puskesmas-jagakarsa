@@ -5,7 +5,7 @@ namespace App\Livewire;
 use App\Models\Antrian;
 use App\Models\Obat;
 use App\Models\Pasien;
-use App\Models\Tagihan; // Asumsi ada model Tagihan
+use App\Models\Tagihan;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -18,34 +18,43 @@ class Dasbor extends Component
         // Statistik Utama
         $totalPasienHariIni = Antrian::whereDate('tanggal_antrian', $hariIni)->count();
         $sedangDilayani = Antrian::whereDate('tanggal_antrian', $hariIni)
-            ->whereIn('status', ['dipanggil', 'diperiksa']) // Status aktif
+            ->whereIn('status', ['dipanggil', 'diperiksa']) 
             ->count();
         
-        // Asumsi logic pendapatan: Sum tagihan yang lunas hari ini
-        // Jika tabel tagihan belum ada/siap, kita pakai placeholder 0
-        $pendapatanHariIni = 0; 
-        if (class_exists(Tagihan::class)) {
-            // $pendapatanHariIni = Tagihan::whereDate('created_at', $hariIni)->where('status', 'lunas')->sum('total_biaya');
-        }
+        $pendapatanHariIni = Tagihan::whereDate('created_at', $hariIni)
+            ->where('status_bayar', 'lunas')
+            ->sum('jumlah_bayar');
 
-        // Stok Obat Menipis (Warning)
+        // Stok Obat Menipis
         $obatMenipis = Obat::whereColumn('stok_saat_ini', '<=', 'stok_minimum')
             ->limit(5)
             ->get();
 
-        // Antrian Terakhir (Tabel Ringkas)
+        // Antrian Terakhir
         $antrianTerbaru = Antrian::with(['pasien', 'poli'])
             ->whereDate('tanggal_antrian', $hariIni)
-            ->orderBy('id', 'desc') // Yang baru daftar di atas
+            ->orderBy('id', 'desc')
             ->limit(5)
             ->get();
+
+        // Data Grafik Kunjungan (7 Hari Terakhir)
+        $grafikLabel = [];
+        $grafikData = [];
+        
+        for ($i = 6; $i >= 0; $i--) {
+            $tgl = Carbon::today()->subDays($i);
+            $grafikLabel[] = $tgl->isoFormat('dddd'); // Nama hari
+            $grafikData[] = Antrian::whereDate('tanggal_antrian', $tgl)->count();
+        }
 
         return view('livewire.dasbor', [
             'totalPasienHariIni' => $totalPasienHariIni,
             'sedangDilayani' => $sedangDilayani,
             'pendapatanHariIni' => $pendapatanHariIni,
             'obatMenipis' => $obatMenipis,
-            'antrianTerbaru' => $antrianTerbaru
+            'antrianTerbaru' => $antrianTerbaru,
+            'grafikLabel' => $grafikLabel,
+            'grafikData' => $grafikData
         ])->layout('components.layouts.admin', ['title' => 'Dasbor Utama']);
     }
 }

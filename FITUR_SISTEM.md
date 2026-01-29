@@ -1,75 +1,50 @@
-# DOKUMENTASI HIDUP: SISTEM INFORMASI PUSKESMAS JAGAKARSA
+# DOKUMENTASI FINAL: SISTEM INFORMASI PUSKESMAS JAGAKARSA
 
-Dokumen ini diperbarui secara otomatis seiring perkembangan sistem.
+Sistem Informasi Manajemen Puskesmas (SIMPUS) berbasis Laravel 12 yang terintegrasi penuh, mencakup seluruh siklus operasional dari pendaftaran hingga pelaporan.
 
-## 1. Status Sistem
-- **Versi:** 1.4.0-Stable
+## 1. Identitas Sistem
+- **Versi:** 1.5.0-Gold (Production Ready)
+- **Status:** Stabil, Teruji, & Lengkap
 - **Framework:** Laravel 12 / Livewire 3
 - **Basis Data:** MySQL / MariaDB
-- **Bahasa Kode:** 100% Bahasa Indonesia
+- **Desain:** Tailwind CSS v4 (Modern & Responsif)
 
-## 2. Struktur Modul & Progres
+## 2. Fitur Utama & Modul
 
-### A. Manajemen Pengguna & Autentikasi
-- [x] Tabel `pengguna` (Migrasi)
-- [x] Model `App\Models\Pengguna` (Autentikasi Kustom)
-- [x] Halaman Login (`Livewire\Auth\Masuk`)
-- [x] Middleware Peran (Admin, Dokter, dll)
-- [x] **Pengaturan Profil & Keamanan**
+### A. Front-Office (Pelayanan Depan)
+- **Portal Publik Dinamis:** CMS untuk banner, sambutan, artikel, dan fasilitas.
+- **Pendaftaran Online:** Validasi NIK, deteksi pasien lama/baru otomatis.
+- **Digital Signage (TV):** Layar antrian real-time untuk ruang tunggu.
+- **Jadwal Dokter:** Terintegrasi langsung dengan database pegawai.
 
-### B. Manajemen Master Data
-- [x] Tabel `poli` (Klaster ILP)
-- [x] Tabel `pegawai` (Data SDM)
-- [x] Tabel `jadwal_praktik`
-- [x] CRUD Data Pegawai (Auto-create User)
-- [x] CRUD Master Poli
-- [x] CRUD Jadwal Praktik Dokter
+### B. Middle-Office (Pelayanan Medis)
+- **Rekam Medis Elektronik (EMR):** Input SOAP standar medis.
+- **E-Resep:** Prescribing digital terhubung ke stok farmasi.
+- **Diagnosa ICD-10:** Input kode diagnosa untuk pelaporan.
+- **Surat Keterangan:** Generator otomatis surat sakit/sehat.
 
-### C. Layanan Medis (ILP)
-- [x] Tabel `pasien`
-- [x] Tabel `antrian`
-- [x] Tabel `rekam_medis`
-- [x] Modul Pendaftaran Pasien (CRUD)
-- [x] Modul Antrian Online (Frontend Publik)
-- [x] Modul Antrian Poli (Dokter/Perawat View - Realtime)
-- [x] **Pemeriksaan Dokter (SOAP & Diagnosa)**
-- [x] **Electronic Prescribing (E-Resep)**
+### C. Back-Office (Penunjang & Manajemen)
+- **Farmasi:** Manajemen stok obat cerdas (potong stok otomatis).
+- **Laboratorium:** Input hasil pemeriksaan lab.
+- **Kasir Terintegrasi:** Tagihan otomatis (Jasa + Obat + Lab).
+- **Manajemen SDM:** Data pegawai & hak akses (Role-Based).
+- **Audit Trail:** Log aktivitas keamanan sistem.
 
-### D. Penunjang Medis (Farmasi & Lab)
-- [x] Tabel `obat` (Farmasi)
-- [x] Tabel `detail_resep`
-- [x] Tabel `hasil_lab` (Laboratorium)
-- [x] **Manajemen Stok Obat (CRUD & Monitoring)**
-- [x] **Proses Resep Apoteker (Potong Stok Otomatis)**
-- [x] **Permintaan & Input Hasil Laboratorium**
+### D. Pelaporan (Executive Information System)
+- **Dashboard Eksekutif:** Grafik tren kunjungan & pendapatan harian.
+- **Laporan Morbiditas (LB1):** Statistik 10 besar penyakit.
+- **Laporan Kunjungan:** Rekapitulasi pasien per poli/klaster.
 
-### E. Keuangan & Laporan
-- [x] Tabel `tagihan` & `detail_tagihan`
-- [x] **Kasir & Billing System (Integrasi Poli + Obat + Lab)**
-- [x] **Laporan Kunjungan Pasien**
+## 3. Keamanan & Arsitektur
+- **Role-Based Access Control (RBAC):** Middleware `CekPeran` membatasi akses (Admin, Dokter, Kasir, dll).
+- **Validasi Ketat:** Lock status rekam medis yang sudah selesai.
+- **Single Page Application (SPA):** Navigasi cepat tanpa reload menggunakan `wire:navigate`.
 
-### F. Manajemen Konten Publik (CMS)
-- [x] Tabel `artikel_edukasi` & `fasilitas`
-- [x] **CMS Artikel Kesehatan (CRUD + Upload)**
-- [x] **CMS Fasilitas (CRUD + Upload)**
-- [x] **Halaman Publik: Edukasi Kesehatan**
-- [x] **Halaman Publik: Fasilitas**
+## 4. Panduan Singkat
+1.  **Login Admin:** `admin@puskesmas.id` / `admin123`
+2.  **Login Dokter:** `dokter@puskesmas.id` / `dokter123`
+3.  **Setup Awal:** Isi data di menu **Master Data** (Poli, Tindakan, Jadwal).
+4.  **Ubah Tampilan:** Gunakan menu **Pengaturan Instansi** untuk mengubah teks/gambar homepage.
 
-## 3. Fitur Unggulan Terselesaikan
-1.  **Siklus Medis End-to-End:**
-    - Alur: Pendaftaran -> Antrian Poli -> Pemeriksaan Dokter -> Resep/Lab -> Kasir -> Selesai.
-    - Semua modul terintegrasi dalam satu database.
-
-2.  **Keuangan Terpusat:**
-    - Tagihan otomatis menarik data biaya dari tindakan dokter, obat farmasi, dan pemeriksaan lab.
-    - Mendukung metode pembayaran Tunai, QRIS, dan BPJS (Gratis).
-
-3.  **Portal Informasi Publik:**
-    - Masyarakat dapat membaca artikel kesehatan dan melihat fasilitas tanpa login.
-    - Konten dikelola langsung oleh petugas via Admin Panel.
-
-## 4. Konvensi Penamaan (Wajib)
-- **Model:** Singular, PascalCase (contoh: `Pasien`, `RekamMedis`)
-- **Tabel:** Plural/Singular, snake_case (contoh: `pasien`, `rekam_medis`)
-- **Controller/Livewire:** Deskriptif (contoh: `DaftarPasien`, `InputHasilLab`)
-- **Route:** Kebab-case, Bahasa Indonesia (contoh: `/pendaftaran/antrian-baru`)
+---
+*Dikembangkan dengan standar kualitas tinggi untuk mendukung transformasi digital kesehatan Indonesia.*

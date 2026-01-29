@@ -45,6 +45,15 @@ class Pemeriksaan extends Component
         // Cek jika sudah ada rekam medis sebelumnya untuk antrian ini (Resume)
         $rm = RekamMedis::where('id_antrian', $idAntrian)->first();
         if ($rm) {
+            // Jika antrian sudah selesai total (sudah bayar/obat diambil), kunci edit
+            if ($this->antrian->status == 'selesai') {
+                session()->flash('error', 'Rekam medis ini sudah selesai dan tidak dapat diubah.');
+                // Redirect atau disable form (di view)
+                // Untuk keamanan, kita redirect saja jika mencoba akses edit langsung
+                // return redirect()->route('medis.antrian'); 
+                // Atau biarkan view saja (readonly)
+            }
+
             $this->keluhan_utama = $rm->keluhan_utama;
             $this->riwayat_penyakit = $rm->riwayat_penyakit;
             $this->subjektif = $rm->subjektif;
@@ -60,6 +69,8 @@ class Pemeriksaan extends Component
 
     public function tambahObat()
     {
+        if ($this->antrian->status == 'selesai') return;
+
         $this->validate([
             'inputResep.id_obat' => 'required',
             'inputResep.jumlah' => 'required|numeric|min:1',
@@ -99,6 +110,11 @@ class Pemeriksaan extends Component
 
     public function simpanPemeriksaan()
     {
+        if ($this->antrian->status == 'selesai') {
+            session()->flash('error', 'Data terkunci. Tidak dapat menyimpan perubahan.');
+            return;
+        }
+
         $this->validate([
             'keluhan_utama' => 'required',
             'subjektif' => 'required',
