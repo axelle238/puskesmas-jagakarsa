@@ -34,6 +34,7 @@ use App\Livewire\Pengaturan\Profil;
 use App\Livewire\Pengaturan\LogAktivitas;
 use App\Livewire\Pengaturan\ProfilInstansiController;
 use App\Livewire\Pengaturan\ManajemenIT;
+use App\Livewire\Pegawai\PresensiHarian;
 use App\Livewire\Publikasi\KelolaArtikel;
 use App\Livewire\Publikasi\KelolaFasilitas;
 use App\Livewire\Perencanaan\DaftarKegiatan; // Import Perencanaan
@@ -75,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Profil User
     Route::get('/profil', Profil::class)->name('pengaturan.profil');
+    Route::get('/presensi', PresensiHarian::class)->name('pegawai.presensi'); // Route baru
 
     // -------------------------------------------------------------------------
     // ROLE: ADMIN & PENDAFTARAN

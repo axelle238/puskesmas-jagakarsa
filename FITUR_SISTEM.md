@@ -1,12 +1,12 @@
 # RANGKUMAN FITUR & FUNGSI SISTEM PUSKESMAS JAGAKARSA
 
 Status Dokumen: **TERGENERASI OTOMATIS**
-Terakhir Diupdate: 30 January 2026 02:09:47
+Terakhir Diupdate: 30 January 2026 02:19:01
 
 ## 1. Statistik Sistem
-- **Total Model Database:** 38
+- **Total Model Database:** 39
 - **Total Komponen Livewire:** 2
-- **Total Migrasi Database:** 24
+- **Total Migrasi Database:** 25
 
 ## 2. Struktur Database (Tabel)
 - Buat Tabel Pengguna (`2024_01_01_000001_buat_tabel_pengguna`)
@@ -33,6 +33,7 @@ Terakhir Diupdate: 30 January 2026 02:09:47
 - Buat Tabel Manajemen Kesekretariatan (`2026_01_30_000005_buat_tabel_manajemen_kesekretariatan`)
 - Buat Tabel Promkes (`2026_01_30_000006_buat_tabel_promkes`)
 - Buat Tabel Manajemen Mutu (`2026_01_30_000007_buat_tabel_manajemen_mutu`)
+- Buat Tabel Presensi (`2026_01_30_000008_buat_tabel_presensi`)
 
 ## 3. Peta Rute & Halaman
 - **POST** `/_boost/browser-logs` -> `Fungsi Langsung`
@@ -56,6 +57,7 @@ Terakhir Diupdate: 30 January 2026 02:09:47
 - **GET|HEAD** `/layanan` -> `Fungsi Langsung`
 - **GET|HEAD** `/dasbor` -> `App\Livewire\Dasbor`
 - **GET|HEAD** `/profil` -> `App\Livewire\Pengaturan\Profil`
+- **GET|HEAD** `/presensi` -> `App\Livewire\Pegawai\PresensiHarian`
 - **GET|HEAD** `/pasien` -> `App\Livewire\Pasien\DaftarPasien`
 - **GET|HEAD** `/medis/antrian` -> `App\Livewire\Medis\AntrianPoli`
 - **GET|HEAD** `/medis/periksa/{idAntrian}` -> `App\Livewire\Medis\Pemeriksaan`

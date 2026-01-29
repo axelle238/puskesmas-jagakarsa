@@ -2,19 +2,19 @@
     <!-- Header Section -->
     <div class="mb-8">
         <h1 class="text-2xl font-bold text-slate-900">Selamat Datang, {{ auth()->user()->nama_lengkap }} 👋</h1>
-        <p class="text-slate-500">Berikut adalah ringkasan aktivitas Puskesmas hari ini.</p>
+        <p class="text-slate-500">Pusat Komando Operasional Puskesmas Jagakarsa (Executive Dashboard).</p>
     </div>
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Card 1: Total Pasien -->
+        <!-- Card 1: Total Pasien (MEDIS) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex items-start justify-between">
             <div>
                 <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Pasien Hari Ini</p>
                 <h3 class="text-3xl font-black text-slate-800">{{ $totalPasienHariIni }}</h3>
                 <p class="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                    Data Realtime
+                    Pelayanan Medis
                 </p>
             </div>
             <div class="bg-blue-50 text-blue-600 p-3 rounded-lg">
@@ -22,39 +22,39 @@
             </div>
         </div>
 
-        <!-- Card 2: Sedang Dilayani -->
+        <!-- Card 2: Kehadiran Pegawai (SDM) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex items-start justify-between">
             <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Sedang Dilayani</p>
-                <h3 class="text-3xl font-black text-slate-800">{{ $sedangDilayani }}</h3>
-                <p class="text-xs text-orange-600 font-medium mt-2">Dalam Ruang Periksa</p>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Pegawai Hadir</p>
+                <h3 class="text-3xl font-black text-slate-800">{{ $pegawaiHadir }}</h3>
+                <p class="text-xs text-purple-600 font-medium mt-2">SDM & Kepegawaian</p>
             </div>
-            <div class="bg-orange-50 text-orange-600 p-3 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <div class="bg-purple-50 text-purple-600 p-3 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
             </div>
         </div>
 
-        <!-- Card 3: Pendapatan -->
+        <!-- Card 3: Pendapatan (KEUANGAN) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex items-start justify-between">
             <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Pendapatan Tunai</p>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Omset Tunai</p>
                 <h3 class="text-3xl font-black text-slate-800">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</h3>
-                <p class="text-xs text-slate-400 font-medium mt-2">Hari Ini</p>
+                <p class="text-xs text-emerald-600 font-medium mt-2">Keuangan & Kasir</p>
             </div>
             <div class="bg-emerald-50 text-emerald-600 p-3 rounded-lg">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
         </div>
 
-        <!-- Card 4: Peringatan Stok -->
+        <!-- Card 4: Stok Kritis (FARMASI) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex items-start justify-between">
             <div>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Stok Kritis</p>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Stok Menipis</p>
                 <h3 class="text-3xl font-black {{ $obatMenipis->count() > 0 ? 'text-red-600' : 'text-emerald-600' }}">{{ $obatMenipis->count() }}</h3>
-                <p class="text-xs text-slate-400 font-medium mt-2">Jenis Obat Perlu Restock</p>
+                <p class="text-xs text-red-500 font-medium mt-2">Logistik Farmasi</p>
             </div>
             <div class="bg-red-50 text-red-600 p-3 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             </div>
         </div>
     </div>
